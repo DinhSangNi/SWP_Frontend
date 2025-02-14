@@ -6,12 +6,7 @@ type AuthState = {
 };
 
 const initialState: AuthState = {
-    user: {
-        id: "",
-        userName: "",
-        role: "",
-        status: "",
-    },
+    user: null,
 };
 
 const authSlice = createSlice({

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Header from "@/components/Header";
+import Footer from "../Footer";
 
 const MainLayout = () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -17,6 +18,7 @@ const MainLayout = () => {
                 <main className="p-4">
                     <Outlet />
                 </main>
+                <Footer />
             </div>
         </>
     );
