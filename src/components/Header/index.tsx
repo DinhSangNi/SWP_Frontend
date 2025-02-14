@@ -161,7 +161,7 @@ const Header = ({ setLoading }: Props) => {
                                                     label: (
                                                         <Link
                                                             to={`/${MenuItems.profile}`}
-                                                            className="px-4"
+                                                            className="px-4 font-bold"
                                                         >
                                                             Profile
                                                         </Link>
@@ -172,7 +172,7 @@ const Header = ({ setLoading }: Props) => {
                                                     label: (
                                                         <Link
                                                             to={`/${MenuItems.dashBoard}`}
-                                                            className="px-4"
+                                                            className="px-4 font-bold"
                                                         >
                                                             Dashboard
                                                         </Link>
@@ -183,7 +183,7 @@ const Header = ({ setLoading }: Props) => {
                                                     label: (
                                                         <Link
                                                             to={`/${MenuItems.myCourses}`}
-                                                            className="px-4"
+                                                            className="px-4 font-bold"
                                                         >
                                                             My Courses
                                                         </Link>
@@ -197,7 +197,7 @@ const Header = ({ setLoading }: Props) => {
                                                 {
                                                     label: (
                                                         <button
-                                                            className="px-4"
+                                                            className="px-4 font-bold"
                                                             onClick={() =>
                                                                 setIsOpenModal(
                                                                     true
@@ -218,10 +218,23 @@ const Header = ({ setLoading }: Props) => {
                                             onClick={(e) => e.preventDefault()}
                                         >
                                             <Space className="hover:text-[#6d28d2] text-black">
-                                                <FaCircleUser className="text-[1.7rem] " />
-                                                <h2 className="cursor-default">
-                                                    Hi, New User
-                                                </h2>
+                                                <div className="flex items-center gap-2 justify-center">
+                                                    {user ? (
+                                                        <div>
+                                                            <img
+                                                                src=""
+                                                                alt=""
+                                                            />
+                                                        </div>
+                                                    ) : (
+                                                        <div className="font-bold px-4 py-2.5 bg-purple-200 rounded-full">
+                                                            N
+                                                        </div>
+                                                    )}
+                                                    <h2 className="cursor-default">
+                                                        Hi, New User
+                                                    </h2>
+                                                </div>
                                             </Space>
                                         </a>
                                     </Dropdown>
