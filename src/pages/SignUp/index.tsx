@@ -72,7 +72,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
         const email = document.getElementById('email') as HTMLInputElement;
         const password = document.getElementById('password') as HTMLInputElement;
         const name = document.getElementById('name') as HTMLInputElement;
-
+        const userName = document.getElementById('userName') as HTMLInputElement;
         let isValid = true;
 
         if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
@@ -82,6 +82,15 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
         } else {
             setEmailError(false);
             setEmailErrorMessage('');
+        }
+
+        if (!userName.value || userName.value.length < 1) {
+            setNameError(true);
+            setNameErrorMessage('Name is required.');
+            isValid = false;
+        } else {
+            setNameError(false);
+            setNameErrorMessage('');
         }
 
         if (!password.value || password.value.length < 6) {
@@ -121,10 +130,10 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
     };
 
     return (
-        <div className='overflow-x-scroll'>
+        <div>
             <CssBaseline enableColorScheme />
-            <SignUpContainer direction="column" justifyContent="space-between" className='overflow-auto'>
-                <Card variant="outlined">
+            <SignUpContainer direction="column" justifyContent="space-between" >
+                <Card variant="outlined" style={{overflow: 'scroll'}}>
                     <Typography
                         component="h1"
                         variant="h4"
@@ -145,6 +154,20 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                                 required
                                 fullWidth
                                 id="name"
+                                placeholder="Jon Snow"
+                                error={nameError}
+                                helperText={nameErrorMessage}
+                                color={nameError ? 'error' : 'primary'}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel htmlFor="userName">User Name</FormLabel>
+                            <TextField
+                                autoComplete="userName"
+                                name="userName"
+                                required
+                                fullWidth
+                                id="userName"
                                 placeholder="Jon Snow"
                                 error={nameError}
                                 helperText={nameErrorMessage}
@@ -179,6 +202,19 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                                 variant="outlined"
                                 error={passwordError}
                                 helperText={passwordErrorMessage}
+                                color={passwordError ? 'error' : 'primary'}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel htmlFor="password">Phone number</FormLabel>
+                            <TextField
+                                required
+                                fullWidth
+                                name="phoneNumber"
+                                placeholder="••••••"
+                                type="phoneNumber"
+                                id="phoneNumber"
+                                variant="outlined"
                                 color={passwordError ? 'error' : 'primary'}
                             />
                         </FormControl>
