@@ -1,4 +1,8 @@
+import CourseCarousel from "@/components/CourseCarousel";
 import { Carousel } from "antd";
+import Target from "./components/Target";
+import Mission from "./components/Mission";
+import Report from "./components/Report";
 
 type Props = {};
 
@@ -20,7 +24,7 @@ const Home = (props: Props) => {
                         <img
                             src="https://img-c.udemycdn.com/notices/web_carousel_slide/image/db24b94e-d190-4d5a-b1dd-958f702cc8f5.jpg"
                             alt="example"
-                            className="w-full relative"
+                            className="relative w-full"
                         />
                         <div className="absolute w-[17rem] md:w-[30rem] shadow-lg rounded-sm bg-white text-xl text-black top-[2rem] left-[2rem] md:top-[4rem] md:left-[4rem]">
                             <div className="p-2 md:p-[2rem] flex flex-col items-start">
@@ -78,6 +82,14 @@ const Home = (props: Props) => {
             </Carousel>
 
             {/* COURSES SLIDER */}
+            <CourseCarousel />
+            {/* Target  */}
+            <Target />
+            {/* Mission  */}
+            <Mission />
+            {/* Report  */}
+            <Report />
+
             <div></div>
         </div>
     );
