@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { User } from "@/stores/types";
+import { AuthUser } from "@/stores/types";
 
 type AuthState = {
-    user: User | null;
+    user: null;
 };
 
-const initialState: AuthState = {
+const initialState = {
     user: null,
 };
 
@@ -14,7 +14,7 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         login: (state, action) => {
-            state.user = action.payload.user;
+            state.user = action.payload;
         },
         logout: (state) => {
             state.user = null;

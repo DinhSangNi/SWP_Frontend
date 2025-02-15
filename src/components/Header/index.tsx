@@ -15,7 +15,6 @@ import {
 import { useState } from "react";
 import { MdOutlineShoppingCart } from "react-icons/md";
 import { GoBell } from "react-icons/go";
-import { FaCircleUser } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import SearchForm from "../Search";
@@ -63,6 +62,8 @@ const Header = ({ setLoading }: Props) => {
     const dispatch = useDispatch<AppDispatch>();
     const [messageApi, contextHolder] = message.useMessage();
 
+    console.log("user :", user);
+
     const handleLogout = async () => {
         try {
             setLoading(true);
@@ -71,6 +72,7 @@ const Header = ({ setLoading }: Props) => {
 
             if (response.status === 200) {
                 dispatch(logout());
+                localStorage.removeItem("token");
                 messageApi.success("Logout successfully!");
                 navigate("/");
             }
@@ -131,7 +133,7 @@ const Header = ({ setLoading }: Props) => {
                                     <MdOutlineShoppingCart className="text-[1.6rem]" />
                                 </Badge>
                             </div>
-                            {user ? (
+                            {!user ? (
                                 <div className="flex items-center justify-center gap-x-[0.5rem]">
                                     <Link to="/login">
                                         <Button
@@ -171,7 +173,7 @@ const Header = ({ setLoading }: Props) => {
                                                 {
                                                     label: (
                                                         <Link
-                                                            to={`/${MenuItems.dashBoard}`}
+                                                            to={`/${MenuItems.dashBoard}/teachers`}
                                                             className="px-4 font-bold"
                                                         >
                                                             Dashboard
@@ -219,7 +221,7 @@ const Header = ({ setLoading }: Props) => {
                                         >
                                             <Space className="hover:text-[#6d28d2] text-black">
                                                 <div className="flex items-center gap-2 justify-center">
-                                                    {user ? (
+                                                    {!user ? (
                                                         <div>
                                                             <img
                                                                 src=""
