@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -56,12 +57,14 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
         ...theme.applyStyles('dark', {
             backgroundImage:
                 'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
+
         }),
     },
 }));
 
 export default function SignUp(props: { disableCustomTheme?: boolean }) {
     const [emailError, setEmailError] = React.useState(false);
+
     const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
     const [passwordError, setPasswordError] = React.useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
@@ -73,42 +76,51 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
         const password = document.getElementById('password') as HTMLInputElement;
         const name = document.getElementById('name') as HTMLInputElement;
         const userName = document.getElementById('userName') as HTMLInputElement;
+
         let isValid = true;
 
         if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
             setEmailError(true);
+
             setEmailErrorMessage('Please enter a valid email address.');
             isValid = false;
         } else {
             setEmailError(false);
             setEmailErrorMessage('');
+
         }
 
         if (!userName.value || userName.value.length < 1) {
             setNameError(true);
+
             setNameErrorMessage('Name is required.');
             isValid = false;
         } else {
             setNameError(false);
             setNameErrorMessage('');
+
         }
 
         if (!password.value || password.value.length < 6) {
             setPasswordError(true);
+
             setPasswordErrorMessage('Password must be at least 6 characters long.');
             isValid = false;
         } else {
             setPasswordError(false);
             setPasswordErrorMessage('');
+
         }
 
         if (!name.value || name.value.length < 1) {
             setNameError(true);
+
             setNameErrorMessage('Name is required.');
             isValid = false;
         } else {
             setNameError(false);
             setNameErrorMessage('');
+
         }
 
         return isValid;
@@ -122,29 +134,35 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
         }
         const data = new FormData(event.currentTarget);
         console.log({
+
             name: data.get('name'),
             lastName: data.get('lastName'),
             email: data.get('email'),
             password: data.get('password'),
+
         });
     };
 
     return (
         <div>
             <CssBaseline enableColorScheme />
+
             <SignUpContainer direction="column" justifyContent="space-between" >
                 <Card variant="outlined" style={{overflow: 'scroll'}}>
                     <Typography
                         component="h1"
                         variant="h4"
                         sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+
                     >
                         Sign up
                     </Typography>
                     <Box
                         component="form"
                         onSubmit={handleSubmit}
+
                         sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+
                     >
                         <FormControl>
                             <FormLabel htmlFor="name">Full name</FormLabel>
@@ -157,7 +175,9 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                                 placeholder="Jon Snow"
                                 error={nameError}
                                 helperText={nameErrorMessage}
+
                                 color={nameError ? 'error' : 'primary'}
+
                             />
                         </FormControl>
                         <FormControl>
@@ -171,7 +191,9 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                                 placeholder="Jon Snow"
                                 error={nameError}
                                 helperText={nameErrorMessage}
+
                                 color={nameError ? 'error' : 'primary'}
+
                             />
                         </FormControl>
                         <FormControl>
@@ -186,7 +208,9 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                                 variant="outlined"
                                 error={emailError}
                                 helperText={emailErrorMessage}
+
                                 color={passwordError ? 'error' : 'primary'}
+
                             />
                         </FormControl>
                         <FormControl>
@@ -202,11 +226,13 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                                 variant="outlined"
                                 error={passwordError}
                                 helperText={passwordErrorMessage}
+
                                 color={passwordError ? 'error' : 'primary'}
                             />
                         </FormControl>
                         <FormControl>
                             <FormLabel htmlFor="password">Phone number</FormLabel>
+
                             <TextField
                                 required
                                 fullWidth
@@ -215,7 +241,9 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                                 type="phoneNumber"
                                 id="phoneNumber"
                                 variant="outlined"
+
                                 color={passwordError ? 'error' : 'primary'}
+
                             />
                         </FormControl>
                         <Button
@@ -228,6 +256,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                         </Button>
                     </Box>
                     <Divider>
+
                         <Typography sx={{ color: 'text.secondary' }}>or</Typography>
                     </Divider>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -235,16 +264,19 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                             fullWidth
                             variant="outlined"
                             onClick={() => alert('Sign up with Google')}
+
                             startIcon={<GoogleIcon />}
                         >
                             Sign up with Google
                         </Button>
+
                         <Typography sx={{ textAlign: 'center' }}>
                             Already have an account?{' '}
                             <Link
                                 href="http://localhost:5173/login"
                                 variant="body2"
                                 sx={{ alignSelf: 'center' }}
+
                             >
                                 Sign in
                             </Link>
@@ -253,7 +285,9 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 </Card>
             </SignUpContainer>
 
+
         </div>
 
     );
 }
+

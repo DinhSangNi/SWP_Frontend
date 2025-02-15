@@ -5,4 +5,8 @@ export const enum MenuItems {
     dashBoard = "dashboard",
     profile = " profile",
     myCourses = "mycourses",
+    teachers = "teachers",
+    students = "students",
+    courses = "courses",
+    coursesEnrollments = "coursesenrollments",
 }
