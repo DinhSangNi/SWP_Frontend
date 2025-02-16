@@ -3,7 +3,7 @@ import { Carousel } from "antd";
 import Target from "./components/Target";
 import Mission from "./components/Mission";
 import Report from "./components/Report";
-
+import {Link} from "react-router-dom";
 type Props = {};
 
 const contentStyle: React.CSSProperties = {

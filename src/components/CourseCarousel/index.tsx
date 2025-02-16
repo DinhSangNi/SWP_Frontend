@@ -2,6 +2,7 @@ import { Button, Carousel, ConfigProvider } from 'antd';
 import { Card, Rate } from 'antd';
 import type { CarouselRef } from 'antd/es/carousel';
 import { useRef } from 'react';
+import { Link } from 'react-router-dom'; // Import Link từ react-router-dom
 
 const CourseCarousel = () => {
     const carouselRef = useRef<CarouselRef>(null);
@@ -37,47 +38,49 @@ const CourseCarousel = () => {
                 className='carousel-container'
             >
                 {[...Array(12)].map((item, index) => (
-                    <div key={index} className='px-2'> {/* Thêm padding giữa các card */}
-                        <Card
-                            style={{ width: '100%' }}
-                            cover={
-                                <img
-                                    alt="example"
-                                    src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                                    className='object-cover w-full h-40' // Đảm bảo hình ảnh có tỷ lệ phù hợp
-                                />
-                            }
-                            bodyStyle={{ padding: '16px' }}
-                            className='w-full h-[400px] shadow-md hover:shadow-lg transition-shadow' // Thêm hiệu ứng shadow
-                        >
-                            <div className='flex flex-col gap-y-2'>
-                                <div className='text-[17px] font-bold text-start'>
-                                    React js for beginners
-                                </div>
-                                <p className='text-[12px] opacity-50 font-normal text-start'>Developer</p>
-
-                                <div className='flex items-start  gap-x-1 text-[13px] font-medium'>
-                                    <p className='text-orange-600'>4,8</p>
-                                    <div>
-                                        <ConfigProvider
-                                            theme={{
-                                                components: {
-                                                    Rate: {
-                                                        starSize: 12,
-                                                    },
-                                                },
-                                            }}
-                                        >
-                                            <Rate disabled defaultValue={4} />
-                                        </ConfigProvider>
+                    <div key={index} className='px-2 transition-transform duration-300 hover:scale-105'> {/* Thêm hiệu ứng hover */}
+                        <Link to={`/course/detail/${index + 1}`}> {/* Thêm Link để chuyển hướng */}
+                            <Card
+                                style={{ width: '100%' }}
+                                cover={
+                                    <img
+                                        alt="example"
+                                        src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                                        className='object-cover w-full h-40'
+                                    />
+                                }
+                                bodyStyle={{ padding: '16px' }}
+                                className='w-full h-[400px] shadow-md hover:shadow-lg transition-shadow'
+                            >
+                                <div className='flex flex-col gap-y-2'>
+                                    <div className='text-[17px] font-bold text-start'>
+                                        React js for beginners
                                     </div>
-                                    <p>(359)</p>
+                                    <p className='text-[12px] opacity-50 font-normal text-start'>Developer</p>
+
+                                    <div className='flex items-start  gap-x-1 text-[13px] font-medium'>
+                                        <p className='text-orange-600'>4,8</p>
+                                        <div>
+                                            <ConfigProvider
+                                                theme={{
+                                                    components: {
+                                                        Rate: {
+                                                            starSize: 12,
+                                                        },
+                                                    },
+                                                }}
+                                            >
+                                                <Rate disabled defaultValue={4} />
+                                            </ConfigProvider>
+                                        </div>
+                                        <p>(359)</p>
+                                    </div>
+                                    <div className='text-[15px] font-bold text-start'>
+                                        200.000đ
+                                    </div>
                                 </div>
-                                <div className='text-[15px] font-bold text-start'>
-                                    200.000đ
-                                </div>
-                            </div>
-                        </Card>
+                            </Card>
+                        </Link>
                     </div>
                 ))}
             </Carousel>
