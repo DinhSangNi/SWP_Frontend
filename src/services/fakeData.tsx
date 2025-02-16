@@ -1,3 +1,5 @@
+import { getAllUser } from "./userService";
+
 export const teacherData = [
     {
         key: "1",
@@ -161,6 +163,16 @@ export const teacherData = [
     },
 ];
 
+const featchDataGetAllUser = async () => {
+    try {
+        const response = await getAllUser();
+        console.log('Response from server:', response);
+        // return response;
+    } catch (error) {
+        console.error('Error from server:', error.response?.data || error.message);
+    }
+}
+
 export const coursesData = [
     {
         key: "1",
@@ -196,3 +208,7 @@ export const courseEnrollmentsData = [
         enrollmentDate: "2/15/2025",
     },
 ];
+
+
+
+export default {featchDataGetAllUser};

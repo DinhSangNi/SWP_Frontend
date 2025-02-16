@@ -22,8 +22,6 @@ import useMediaQuery from "@/hooks/useMediaQuery";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import { AnimatePresence, motion } from "framer-motion";
 import { MenuItems } from "@/stores/enums";
-import MenuItem from "antd/es/menu/MenuItem";
-import MenuDivider from "antd/es/menu/MenuDivider";
 
 const { Item } = Menu;
 
@@ -33,11 +31,10 @@ type Props = {
 
 type MenuItem = Required<MenuProps>["items"][number];
 
-const menuItems: MenuItem[] = [
+const mobileMenuItems: MenuItem[] = [
     {
         key: MenuItems.login,
         label: "Login",
-        icon: "",
     },
     {
         key: MenuItems.signup,
@@ -49,7 +46,6 @@ const menuItems: MenuItem[] = [
     {
         key: MenuItems.logout,
         label: "Logout",
-        icon: "",
     },
 ];
 
@@ -61,8 +57,6 @@ const Header = ({ setLoading }: Props) => {
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
     const [messageApi, contextHolder] = message.useMessage();
-
-    console.log("user :", user);
 
     const handleLogout = async () => {
         try {
@@ -78,22 +72,62 @@ const Header = ({ setLoading }: Props) => {
             }
         } catch (error) {
             messageApi.error("Logout failed!");
-            console.log("here");
+            console.log("error:", error);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleOnclickMenuItems: MenuProps["onClick"] = (e: any) => {
+    const handleOnclickMenuItems: MenuProps["onClick"] = (e) => {
         if (e.key === MenuItems.logout) {
             setIsOpenModal(true);
             return;
         }
-
         navigate(`/${e.key}`);
-
-        console.log("click ", e.key);
     };
+
+    const userDropdownItems = [
+        {
+            label: (
+                <Link to={`/${MenuItems.profile}`} className="px-4 font-bold">
+                    Profile
+                </Link>
+            ),
+            key: "0",
+        },
+        {
+            label: (
+                <Link to={`/${MenuItems.dashBoard}/teachers`} className="px-4 font-bold">
+                    Dashboard
+                </Link>
+            ),
+            key: "1",
+        },
+        {
+            label: (
+                <Link to={`/${MenuItems.myCourses}`} className="px-4 font-bold">
+                    My Courses
+                </Link>
+            ),
+            key: "2",
+        },
+        {
+            type: "divider",
+            key: "3",
+        },
+        {
+            label: (
+                <button
+                    className="px-4 font-bold"
+                    onClick={() => setIsOpenModal(true)}
+                >
+                    Logout
+                </button>
+            ),
+            key: "4",
+        },
+    ];
+
     return (
         <>
             {contextHolder}
@@ -102,7 +136,7 @@ const Header = ({ setLoading }: Props) => {
                     {/* LEFTSIDE */}
                     <div className="flex gap-4 font-bold">
                         <img
-                            className="h-16 w-24"
+                            className="w-24 h-16"
                             src="https://frontends.udemycdn.com/frontends-homepage/staticx/udemy/images/v7/logo-udemy.svg"
                             alt="logo"
                         />
@@ -116,7 +150,7 @@ const Header = ({ setLoading }: Props) => {
                         <div className="flex items-center justify-center gap-x-[1.8rem] font-bold">
                             <div>
                                 <Badge
-                                    className="mt-1 relative hover:text-purple-700"
+                                    className="relative mt-1 hover:text-purple-700"
                                     count={1}
                                     size="default"
                                 >
@@ -125,8 +159,7 @@ const Header = ({ setLoading }: Props) => {
                             </div>
                             <div>
                                 <Badge
-                                    // className="mt-1 relative before:absolute before:content-[''] before:h-[1.6rem] before:w-[1.6rem] before:opacity-50 before:px-6 before:py-6 before:-top-3 before:-left-3 before:rounded-md before:hover:bg-purple-200"
-                                    className="mt-1 relative hover:text-purple-700"
+                                    className="relative mt-1 hover:text-purple-700"
                                     count={1}
                                     size="default"
                                 >
@@ -146,7 +179,7 @@ const Header = ({ setLoading }: Props) => {
                                     </Link>
                                     <Link to="/signup">
                                         <Button
-                                            className="py-5 px-4 text-white font-bold"
+                                            className="px-4 py-5 font-bold text-white"
                                             color="purple"
                                             variant="solid"
                                         >
@@ -157,62 +190,7 @@ const Header = ({ setLoading }: Props) => {
                             ) : (
                                 <div>
                                     <Dropdown
-                                        menu={{
-                                            items: [
-                                                {
-                                                    label: (
-                                                        <Link
-                                                            to={`/${MenuItems.profile}`}
-                                                            className="px-4 font-bold"
-                                                        >
-                                                            Profile
-                                                        </Link>
-                                                    ),
-                                                    key: "0",
-                                                },
-                                                {
-                                                    label: (
-                                                        <Link
-                                                            to={`/${MenuItems.dashBoard}/teachers`}
-                                                            className="px-4 font-bold"
-                                                        >
-                                                            Dashboard
-                                                        </Link>
-                                                    ),
-                                                    key: "1",
-                                                },
-                                                {
-                                                    label: (
-                                                        <Link
-                                                            to={`/${MenuItems.myCourses}`}
-                                                            className="px-4 font-bold"
-                                                        >
-                                                            My Courses
-                                                        </Link>
-                                                    ),
-                                                    key: "2",
-                                                },
-                                                {
-                                                    type: "divider",
-                                                    key: "3",
-                                                },
-                                                {
-                                                    label: (
-                                                        <button
-                                                            className="px-4 font-bold"
-                                                            onClick={() =>
-                                                                setIsOpenModal(
-                                                                    true
-                                                                )
-                                                            }
-                                                        >
-                                                            Logout
-                                                        </button>
-                                                    ),
-                                                    key: "4",
-                                                },
-                                            ],
-                                        }}
+                                        menu={{ items: userDropdownItems }}
                                         trigger={["click"]}
                                     >
                                         <a
@@ -220,21 +198,12 @@ const Header = ({ setLoading }: Props) => {
                                             onClick={(e) => e.preventDefault()}
                                         >
                                             <Space className="hover:text-[#6d28d2] text-black">
-                                                <div className="flex items-center gap-2 justify-center">
-                                                    {!user ? (
-                                                        <div>
-                                                            <img
-                                                                src=""
-                                                                alt=""
-                                                            />
-                                                        </div>
-                                                    ) : (
-                                                        <div className="font-bold px-4 py-2.5 bg-purple-200 rounded-full">
-                                                            N
-                                                        </div>
-                                                    )}
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <div className="font-bold px-4 py-2.5 bg-purple-200 rounded-full">
+                                                        {user.userName?.[0] || 'U'}
+                                                    </div>
                                                     <h2 className="cursor-default">
-                                                        Hi, New User
+                                                        {user.userName}
                                                     </h2>
                                                 </div>
                                             </Space>
@@ -245,7 +214,7 @@ const Header = ({ setLoading }: Props) => {
                         </div>
                     ) : (
                         <Button
-                            className="rounded-full bg-secondary-500 py-4 px-2 border-none"
+                            className="px-2 py-4 border-none rounded-full bg-secondary-500"
                             color="purple"
                             variant="text"
                             onClick={() => setIsMenuToggled(!isMenuToggled)}
@@ -254,24 +223,22 @@ const Header = ({ setLoading }: Props) => {
                         </Button>
                     )}
                 </div>
+
+                {/* Logout Modal */}
                 <Modal
-                    // className={
-                    //   loading
-                    //     ? `before:bg-white before:content-[''] before:w-full before:h-full before:absolute before:z-[100] before:opacity-80`
-                    //     : ''
-                    // }
                     title="CONFIRM"
                     open={isOpenModal}
                     onOk={handleLogout}
                     onCancel={() => setIsOpenModal(false)}
                 >
                     <p className="flex gap-2">
-                        <ExclamationCircleIcon className="h-6 w-6 text-orange-400" />
+                        <ExclamationCircleIcon className="w-6 h-6 text-orange-400" />
                         Are you sure you want to{" "}
-                        <span className="font-bold px-0 mx-0">Logout</span>?
+                        <span className="px-0 mx-0 font-bold">Logout</span>?
                     </p>
                 </Modal>
-                {/* MENUMODAL */}
+
+                {/* Mobile Menu Modal */}
                 <AnimatePresence>
                     {!isAboveMediumScreens && isMenuToggled && (
                         <motion.div
@@ -293,46 +260,38 @@ const Header = ({ setLoading }: Props) => {
                                     variant="text"
                                     color="purple"
                                     className="px-1 py-2 rounded-full"
-                                    onClick={() =>
-                                        setIsMenuToggled(!isMenuToggled)
-                                    }
+                                    onClick={() => setIsMenuToggled(!isMenuToggled)}
                                 >
-                                    <XMarkIcon className="h-6 w-6 text-gray-400 font-bold" />
+                                    <XMarkIcon className="w-6 h-6 font-bold text-gray-400" />
                                 </Button>
                             </div>
 
                             {/* MENU ITEMS */}
                             <div>
-                                {user ? (
+                                {!user ? (
                                     <Menu
                                         className="bg-purple-200"
                                         onClick={handleOnclickMenuItems}
                                         mode="inline"
-                                        items={menuItems}
+                                        items={mobileMenuItems}
                                     />
                                 ) : (
-                                    <div className="">
-                                        <div className="pl-4 flex justify-start gap-3 py-2 bg-purple-300">
-                                            <div>
-                                                {user ? (
-                                                    <img src="" alt="" />
-                                                ) : (
-                                                    <div className="font-bold px-4 py-2 bg-black text-white rounded-full border-[1px] border-black">
-                                                        N
-                                                    </div>
-                                                )}
+                                    <div>
+                                        <div className="flex justify-start gap-3 py-2 pl-4 bg-purple-300">
+                                            <div className="px-4 py-2 font-bold bg-purple-200 rounded-full">
+                                                {user.userName?.[0] || 'U'}
                                             </div>
                                             <div>
                                                 <h2 className="font-bold">
-                                                    Hi, New User
+                                                    {user.userName}
                                                 </h2>
                                                 <p className="text-xs">
-                                                    Welconm back.
+                                                    Welcome back
                                                 </p>
                                             </div>
                                         </div>
                                         <Menu
-                                            className="bg-purple-200 border-none font-bold"
+                                            className="font-bold bg-purple-200 border-none"
                                             onClick={handleOnclickMenuItems}
                                         >
                                             <Item key={MenuItems.dashBoard}>
@@ -344,7 +303,7 @@ const Header = ({ setLoading }: Props) => {
                                             <Item key={MenuItems.myCourses}>
                                                 My Courses
                                             </Item>
-                                            <MenuDivider />
+                                            <Menu.Divider />
                                             <Item key={MenuItems.logout}>
                                                 Logout
                                             </Item>

@@ -4,7 +4,10 @@ import SignUp from "@/pages/SignUp/index.tsx";
 import MainLayout from "@/components/MainLayout";
 import DashboardLayout from "@/components/DashboardLayout";
 import AdminContent from "@/components/AdminContent";
-
+import Course from "@/pages/Course/index.tsx";
+import Student from "@/pages/Admin/Students";
+import Teacher from "@/pages/Admin/Teacher";
+import Courses from "@/pages/Admin/Courses";
 export const routes = [
     {
         path: "/",
@@ -15,8 +18,8 @@ export const routes = [
                 element: <Home />,
             },
             {
-                path:"/course/:id",
-                // element: <CourseDetail />
+                path:"/course",
+                element: <Course />
             }
         ],
     },
@@ -34,15 +37,15 @@ export const routes = [
         children: [
             {
                 path: "teachers",
-                element: <AdminContent type="Teacher" />,
+                element: <Teacher  type="teacher"/>
             },
             {
                 path: "students",
-                element: <AdminContent type="Student" />,
+                element: <Student type="student"/>
             },
             {
                 path: "courses",
-                element: <AdminContent type="Courses" />,
+                element: <Courses type="Courses" />,
             },
             {
                 path: "coursesEnrollments",

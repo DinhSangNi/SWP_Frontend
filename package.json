@@ -19,6 +19,7 @@
     "antd": "^5.24.0",
     "axios": "^1.7.9",
     "framer-motion": "^12.4.1",
+    "motion": "^12.4.3",
     "react": "^19.0.0",
     "react-anchor-link-smooth-scroll": "^1.0.12",
     "react-dom": "^19.0.0",

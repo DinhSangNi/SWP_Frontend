@@ -35,7 +35,7 @@ export default function SignIn() {
     const validateInputs = (data) => {
         const newErrors = {};
         if (!data.userName) newErrors.userName = 'Please enter your username.';
-        if (!data.password || data.password.length < 6) newErrors.password = 'Password must be at least 6 characters long.';
+        // if (!data.password || data.password.length <= 5) newErrors.password = 'Password must be at least 6 characters long.';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -55,8 +55,16 @@ export default function SignIn() {
             const response = await loginAuth(record);
             if (response) {
                 console.log('Login successfully:', response);
+
                 dispatch(login(response));
-                navigate('/');
+                toast.success('Login successfully!');
+                console.log("role", response.role);
+
+                if (response.role === 'Admin') {
+                    navigate('/dashboard');
+                } else {
+                    navigate('/');
+                }
             }
         } catch (error) {
             console.error('Login error:', error);
