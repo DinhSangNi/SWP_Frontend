@@ -14,6 +14,10 @@ export const routes = [
                 path: "/",
                 element: <Home />,
             },
+            {
+                path:"/course/:id",
+                // element: <CourseDetail />
+            }
         ],
     },
     {
