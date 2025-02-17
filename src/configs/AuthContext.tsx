@@ -5,6 +5,7 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('token') || null);
 
   // Kiểm tra token khi khởi động ứng dụng
   useEffect(() => {
@@ -24,12 +25,14 @@ export const AuthProvider = ({ children }) => {
   const loginAuthContext = (userData) => {
     localStorage.setItem('token', userData.token);
     setUser(userData);
+    setToken(userData.token);
   };
 
 
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
+    setToken(null);
   };
 
   useEffect(() => {
@@ -52,6 +55,14 @@ export const AuthProvider = ({ children }) => {
         });
     }
   }, []);
+
+  useEffect(() => {
+    if (token) {
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } else {
+      delete axiosInstance.defaults.headers.common['Authorization'];
+    }
+  }, [token]);
 
   return (
     <AuthContext.Provider value={{ user, loginAuthContext, logout }}>

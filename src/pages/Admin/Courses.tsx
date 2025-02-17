@@ -1,24 +1,22 @@
-import { Button, Space, Table, Tag, Modal } from "antd";
+import { Button, Space, Table, Modal } from "antd";
 import { PaginationType } from "@/stores/types";
 import { useEffect, useState } from "react";
-import ModalCustomer from "@/components/Modal";
-import { getAllUser, getUserById, updateUser } from "@/services/userService";
 import { toast } from "react-toastify";
-import { deleteCourse, getAllCourses, getCourseById } from "@/services/courseService";
+import { deleteCourse, editCourse, getAllCourses, getCourseById} from "@/services/courseService";
 import ModalCreateCourse from "@/components/ModalCreateCourse";
+import ModalEditCourse from "@/components/ModalEditCourse";
 
 type Props = {
     type: string;
 };
 
 const Courses = ({ type }: Props) => {
-    const [dataCourse, setDataCourse] = useState([]); // State lưu danh sách giáo viên
-    const [loading, setLoading] = useState(false); // State loading
-    const [detailModalVisible, setDetailModalVisible] = useState(false); // State để hiển thị modal chi tiết
-    const [selectedCourse, setSelectedCourse] = useState(null); // State lưu thông tin chi tiết của người dùng
+    const [dataCourse, setDataCourse] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [detailModalVisible, setDetailModalVisible] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState(null);
     const [reload, setReload] = useState(false);
-
-
     const [pagination, setPagination] = useState<PaginationType>({
         currentPage: 1,
         pageSize: 10,
@@ -26,55 +24,67 @@ const Courses = ({ type }: Props) => {
 
     const handleReload = () => {
         setReload(!reload);
-    }
+    };
 
-    // Hàm fetch dữ liệu người dùng
     const fetchData = async () => {
-        setLoading(true); // Bắt đầu loading
+        setLoading(true);
         try {
             const response = await getAllCourses();
+            console.log("Response from server:", response);
             setDataCourse(response);
             toast.success(`Fetched ${type} successfully!`);
         } catch (error) {
-            console.error("Error fetching users:", error);
+            console.error("Error fetching courses:", error);
+            toast.error(`Failed to fetch ${type}.`);
         } finally {
-            setLoading(false); // Kết thúc loading
+            setLoading(false);
         }
     };
 
-    // Gọi API khi component được mount
     useEffect(() => {
         fetchData();
     }, [reload]);
 
-
-    // Hàm xử lý khi nhấn nút "Detail"
-    const handleDetailClick = async (userId) => {
-        console.log('courseId', userId);
+    const handleDetailClick = async (courseId) => {
         try {
-            const courseDetail = await getCourseById(userId); // Gọi API lấy thông tin chi tiết
-            setSelectedCourse(courseDetail); // Lưu thông tin chi tiết vào state
-            setDetailModalVisible(true); // Hiển thị modal
+            const courseDetail = await getCourseById(courseId);
+            setSelectedCourse(courseDetail);
+            setDetailModalVisible(true);
         } catch (error) {
-            console.error("Error fetching user details:", error);
-            toast.error("Failed to fetch user details.");
+            console.error("Error fetching course details:", error);
+            toast.error("Failed to fetch course details.");
         }
     };
 
-    // Hàm xóa course
+    const handleEditClick = (courseId) => {
+        const courseToEdit = dataCourse.find(course => course.courseId === courseId);
+        setSelectedCourse(courseToEdit);
+        setEditModalVisible(true);
+    };
+
     const handleDelete = async (courseId) => {
-        console.log('courseId', courseId);
         try {
-            await deleteCourse
+            await deleteCourse(courseId);
             toast.success("Deleted course successfully!");
             fetchData();
         } catch (error) {
             console.error("Error deleting course:", error);
             toast.error("Failed to delete course.");
         }
-    }
+    };
 
-    // Hàm xử lý phân trang
+    const handleSaveEdit = async (updatedCourse) => {
+        try {
+            await editCourse(updatedCourse.courseId, updatedCourse);
+            toast.success("Course updated successfully!");
+            setEditModalVisible(false);
+            fetchData();
+        } catch (error) {
+            console.error("Error updating course:", error);
+            toast.error("Failed to update course.");
+        }
+    };
+
     const handlePageChange = (page: number, pageSize: number) => {
         setPagination((prev) => ({
             ...prev,
@@ -92,7 +102,7 @@ const Courses = ({ type }: Props) => {
             </div>
 
             <div className="flex justify-end mb-5">
-                <ModalCreateCourse reload={handleReload} />
+                <ModalCreateCourse reload={handleReload} type="create" />
             </div>
 
             <Table
@@ -103,14 +113,14 @@ const Courses = ({ type }: Props) => {
                         key: "id",
                     },
                     {
-                        title: "courseName",
+                        title: "Course Name",
                         dataIndex: "courseName",
-                        key: "FullName",
+                        key: "courseName",
                     },
                     {
                         title: "Description",
                         dataIndex: "description",
-                        key: "email",
+                        key: "description",
                     },
                     {
                         title: "Action",
@@ -118,13 +128,22 @@ const Courses = ({ type }: Props) => {
                         render: (_, record) => (
                             <Space size="middle">
                                 <Button
-                                    type="primary"
-                                    onClick={() => handleDetailClick(record.courseId)} // Gọi hàm khi nhấn nút Detail
+                                    className="text-white bg-indigo-400"
+                                    onClick={() => handleDetailClick(record.courseId)}
                                 >
                                     Detail
                                 </Button>
-                                <Button type="primary" danger
-                                    onClick={() => handleDelete(record.coursedId)}>
+                                <Button
+                                    className="text-white bg-yellow-400"
+                                    onClick={() => handleEditClick(record.courseId)}
+                                >
+                                    Edit
+                                </Button>
+                                <Button
+                                    type="primary"
+                                    danger
+                                    onClick={() => handleDelete(record.courseId)}
+                                >
                                     Delete
                                 </Button>
                             </Space>
@@ -143,24 +162,27 @@ const Courses = ({ type }: Props) => {
                 }}
             />
 
-            {/* Modal hiển thị thông tin chi tiết */}
             <Modal
                 title="Course Details"
-                visible={detailModalVisible}
+                open={detailModalVisible}
                 onCancel={() => setDetailModalVisible(false)}
                 footer={null}
             >
                 {selectedCourse && (
                     <div>
                         <p><strong>ID:</strong> {selectedCourse.courseId || 0}</p>
-                        <p><strong>Full Name:</strong> {selectedCourse.courseName}</p>
-                        <p><strong>Email:</strong> {selectedCourse.description}</p>
-                        {/* Thêm các trường thông tin khác nếu cần */}
+                        <p><strong>Course Name:</strong> {selectedCourse.courseName}</p>
+                        <p><strong>Description:</strong> {selectedCourse.description}</p>
                     </div>
                 )}
             </Modal>
 
-
+            <ModalEditCourse
+                open={editModalVisible}
+                onCancel={() => setEditModalVisible(false)}
+                onSave={handleSaveEdit}
+                initialValues={selectedCourse}
+            />
         </div>
     );
 };

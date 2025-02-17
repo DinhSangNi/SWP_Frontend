@@ -9,12 +9,12 @@ type Props = {
     type: string;
 };
 
-const Teacher = ({ type }: Props) => {
+const Teacher = ({ type}: Props) => {
     const [dataTeacher, setDataTeacher] = useState([]); // State lưu danh sách giáo viên
     const [loading, setLoading] = useState(false); // State loading
     const [detailModalVisible, setDetailModalVisible] = useState(false); // State để hiển thị modal chi tiết
     const [selectedUser, setSelectedUser] = useState(null); // State lưu thông tin chi tiết của người dùng
-
+    const [reload, setReload] = useState(false); // State để reload dữ liệu
     const [pagination, setPagination] = useState<PaginationType>({
         currentPage: 1,
         pageSize: 10,
@@ -35,10 +35,6 @@ const Teacher = ({ type }: Props) => {
         }
     };
 
-    // Gọi API khi component được mount
-    useEffect(() => {
-        fetchData();
-    }, []);
 
     // Hàm xử lý khi nhấn nút "Detail"
     const handleDetailClick = async (userId) => {
@@ -80,6 +76,16 @@ const Teacher = ({ type }: Props) => {
         }));
     };
 
+
+    const handleReload = () => {
+        setReload(!reload);
+    }
+    
+    // Gọi API khi component được mount
+    useEffect(() => {
+        fetchData();
+    }, [reload]);
+
     return (
         <div className="w-full overflow-y-scroll">
             <div className="w-full">
@@ -89,7 +95,7 @@ const Teacher = ({ type }: Props) => {
             </div>
 
             <div className="flex justify-end mb-5">
-                <ModalCustomer type={'teacher'} />
+                <ModalCustomer type={'teacher'} reload={handleReload}/>
             </div>
 
             <Table
@@ -129,7 +135,7 @@ const Teacher = ({ type }: Props) => {
                         render: (_, record) => (
                             <Space size="middle">
                                 <Button
-                                    type="primary"
+                                    className="text-white bg-indigo-400"
                                     onClick={() => handleDetailClick(record.idUser)} // Gọi hàm khi nhấn nút Detail
                                 >
                                     Detail
