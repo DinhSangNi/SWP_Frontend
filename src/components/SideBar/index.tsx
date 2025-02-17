@@ -3,6 +3,7 @@ import { Button, Menu, MenuProps } from "antd";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
+
 import { useSelector } from "react-redux";
 import { RootState } from "@/stores/store";
 
@@ -17,6 +18,7 @@ const SideBar = () => {
         setSelectedItem([e.key]);
         navigate(`/dashboard/${e.key}`);
     };
+
 
     const user = useSelector((state: RootState) => state.auth.user);
     console.log("user", user);
@@ -46,12 +48,14 @@ const SideBar = () => {
                 </div>
             </div>
             {/* AVARTAR */}
+
             <div className="flex items-center w-full bg-purple-300 h-1/6">
                 <div className="flex items-center justify-start gap-3 py-2 pl-6">
                     <div className="font-bold px-5 py-2.5 bg-black text-[1.5rem] text-white rounded-full border-[1px] border-black">
                         N
                     </div>
                     <div>
+
                         <h2 className="font-bold text-[1.3rem]">{userName}</h2>
                         <p className="text-[0.9rem]">Administrator</p>
                     </div>
@@ -76,6 +80,7 @@ const SideBar = () => {
                     Courses Enrollments
                 </Menu.Item>
             </Menu>
+
             <div className="flex flex-col justify-end h-full">
                 <Button
                     className="flex items-center py-5 mb-10"

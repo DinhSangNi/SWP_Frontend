@@ -4,6 +4,7 @@ import SignUp from "@/pages/SignUp/index.tsx";
 import MainLayout from "@/components/MainLayout";
 import DashboardLayout from "@/components/DashboardLayout";
 import AdminContent from "@/components/AdminContent";
+
 import Course from "@/pages/Course/index.tsx";
 import Student from "@/pages/Admin/Students";
 import Teacher from "@/pages/Admin/Teacher";
@@ -37,6 +38,7 @@ export const routes = [
         children: [
             {
                 path: "teachers",
+
                 element: <Teacher  type="teacher"/>
             },
             {

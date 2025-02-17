@@ -1,5 +1,6 @@
 import { Button, Space, Table, Tag } from "antd";
 import { PaginationType } from "@/stores/types";
+
 import { useEffect, useState } from "react";
 import { courseEnrollmentsData, coursesData } from "@/services/fakeData";
 import ModalCustomer from "../Modal";
@@ -10,6 +11,7 @@ type Props = {
 };
 
 const AdminContent = ({ type }: Props) => {
+
     const [dataTeacher, setDataTeacher] = useState([]); // State lưu danh sách giáo viên
     const [dataStudent, setDataStudent] = useState([]); // State lưu danh sách học sinh
     const [loading, setLoading] = useState(false); // State loading
@@ -75,6 +77,7 @@ const AdminContent = ({ type }: Props) => {
     return (
         <div className="w-full overflow-y-scroll">
             <div className="w-full">
+
                 <div className="py-10 text-3xl font-bold">
                     <h1>{type} Management</h1>
                 </div>
@@ -88,6 +91,7 @@ const AdminContent = ({ type }: Props) => {
                 columns={
                     type === "CoursesEnrollments"
                         ? [
+
                             // Các cột cho CoursesEnrollments
                         ]
                         : type === "Courses"
@@ -121,6 +125,7 @@ const AdminContent = ({ type }: Props) => {
                                     key: "status",
                                     dataIndex: "status",
                                     render: (status) => (
+
                                         <Tag color={status === "inActive" ? "red" : "green"}>
                                             {status}
                                         </Tag>
@@ -131,6 +136,7 @@ const AdminContent = ({ type }: Props) => {
                                     key: "action",
                                     render: () => (
                                         <Space size="middle">
+
                                             <Button variant="solid" color="orange">
                                                 Detail
                                             </Button>
@@ -142,6 +148,7 @@ const AdminContent = ({ type }: Props) => {
                                 },
                             ]
                 }
+
                 dataSource={getDataSource()} // Sử dụng hàm getDataSource để chọn dữ liệu phù hợp
                 loading={loading} // Hiển thị loading khi đang fetch dữ liệu
                 className="w-full"
@@ -150,11 +157,13 @@ const AdminContent = ({ type }: Props) => {
                     pageSize: pagination.pageSize,
                     showSizeChanger: true,
                     pageSizeOptions: ["5", "10", "20"],
+
                     onChange: handlePageChange,
                 }}
             />
         </div>
     );
 };
+
 
 export default AdminContent;

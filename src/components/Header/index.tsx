@@ -58,9 +58,9 @@ const Header = ({ setLoading }: Props) => {
     const dispatch = useDispatch<AppDispatch>();
     const [messageApi, contextHolder] = message.useMessage();
 
+
     const userInfo = localStorage.getItem("user");
     const { userName } = JSON.parse(userInfo || "{}");
-
 
     const handleLogout = async () => {
         try {
@@ -194,6 +194,7 @@ const Header = ({ setLoading }: Props) => {
                             ) : (
                                 <div>
                                     <Dropdown
+
                                         menu={{ items: userDropdownItems }}
                                         trigger={["click"]}
                                     >
@@ -202,6 +203,7 @@ const Header = ({ setLoading }: Props) => {
                                             onClick={(e) => e.preventDefault()}
                                         >
                                             <Space className="hover:text-[#6d28d2] text-black">
+
                                                 <div className="flex items-center justify-center gap-2">
                                                     <div className="font-bold px-4 py-2.5 bg-purple-200 rounded-full">
                                                         {user.userName?.[0] || userName?.[0]}
