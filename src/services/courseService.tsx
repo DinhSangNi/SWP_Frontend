@@ -59,9 +59,9 @@ export const createCourse = async (courseData) => {
 }
 
 // Edit khóa học
-export const editCourse = async (courseId, courseData) => {
+export const editCourse = async (courseId, updateCourse) => {
     try {
-        const response = await API.put(`/Course/edit/${courseId}`, courseData);
+        const response = await API.put(`/Course/edit/${courseId}`, updateCourse);
         console.log("✅ Edit course successfully:", response.data);
         return response.data;
     } catch (error) {

@@ -19,6 +19,11 @@ const SideBar = () => {
     };
 
     const user = useSelector((state: RootState) => state.auth.user);
+    console.log("user", user);
+    const userInfo = localStorage.getItem("user");
+    console.log("userInfo", JSON.parse(userInfo || "{}"));
+    const {userName} = JSON.parse(userInfo || "{}");
+    console.log("userName", userName);
     
 
     // if(user.role !== 'Admin'){
@@ -47,7 +52,7 @@ const SideBar = () => {
                         N
                     </div>
                     <div>
-                        <h2 className="font-bold text-[1.3rem]">{user?.userName}</h2>
+                        <h2 className="font-bold text-[1.3rem]">{userName}</h2>
                         <p className="text-[0.9rem]">Administrator</p>
                     </div>
                 </div>

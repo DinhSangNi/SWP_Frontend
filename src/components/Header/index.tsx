@@ -12,7 +12,7 @@ import {
     Modal,
     Space,
 } from "antd";
-import { useState } from "react";
+import { use, useState } from "react";
 import { MdOutlineShoppingCart } from "react-icons/md";
 import { GoBell } from "react-icons/go";
 import { useDispatch, useSelector } from "react-redux";
@@ -57,6 +57,10 @@ const Header = ({ setLoading }: Props) => {
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
     const [messageApi, contextHolder] = message.useMessage();
+
+    const userInfo = localStorage.getItem("user");
+    const { userName } = JSON.parse(userInfo || "{}");
+
 
     const handleLogout = async () => {
         try {
@@ -200,10 +204,10 @@ const Header = ({ setLoading }: Props) => {
                                             <Space className="hover:text-[#6d28d2] text-black">
                                                 <div className="flex items-center justify-center gap-2">
                                                     <div className="font-bold px-4 py-2.5 bg-purple-200 rounded-full">
-                                                        {user.userName?.[0] || 'U'}
+                                                        {user.userName?.[0] || userName?.[0]}
                                                     </div>
                                                     <h2 className="cursor-default">
-                                                        {user.userName}
+                                                        {userName}
                                                     </h2>
                                                 </div>
                                             </Space>
@@ -279,11 +283,11 @@ const Header = ({ setLoading }: Props) => {
                                     <div>
                                         <div className="flex justify-start gap-3 py-2 pl-4 bg-purple-300">
                                             <div className="px-4 py-2 font-bold bg-purple-200 rounded-full">
-                                                {user.userName?.[0] || 'U'}
+                                                {user.userName?.[0] || userName?.[0]}
                                             </div>
                                             <div>
                                                 <h2 className="font-bold">
-                                                    {user.userName}
+                                                    {user?.userName || userName}
                                                 </h2>
                                                 <p className="text-xs">
                                                     Welcome back

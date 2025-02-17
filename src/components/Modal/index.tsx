@@ -10,9 +10,10 @@ import {
 import { toast } from 'react-toastify';
 import { addUser } from '@/services/userService';
 
-const ModalCustomer: React.FC = ({ type }) => {
+const ModalCustomer: React.FC = ({ type , reload}) => {
     const [openResponsive, setOpenResponsive] = useState(false);
     const [componentDisabled, setComponentDisabled] = useState<boolean>(true);
+    const [loading, setLoading] = useState(false);
 
     // Hàm xử lý khi form được submit thành công
     const onFinish = async (values) => {
@@ -21,17 +22,20 @@ const ModalCustomer: React.FC = ({ type }) => {
         try {
             // Thêm role vào dữ liệu gửi lên server
             values.role = type === 'teacher' ? 'Teacher' : 'Student';
-
+            setLoading(true);
             const response = await addUser(values);
             if (response ) {
                 console.log('Response from server:', response);
                 toast.success(`User added successfully!`);
                 setOpenResponsive(false); // Đóng modal sau khi submit
+                reload(); // Gọi hàm reload để fetch lại dữ liệu
             } else {
                 // Hiển thị thông báo lỗi từ server
                 toast.error(response?.message || 'Failed to add user. Please try again.');
+               
             }
         } catch (error) {
+            setLoading(false);
             console.error('Error adding user:', error);
             toast.error('An error occurred while adding the user. Please try again.');
         }
@@ -138,8 +142,8 @@ const ModalCustomer: React.FC = ({ type }) => {
                         )}
                     </Form.Item>
                     <Form.Item wrapperCol={{ offset: 4, span: 14 }}>
-                        <Button type="primary" htmlType="submit">
-                            Submit
+                        <Button type="primary" htmlType="submit" disabled={loading}>
+                            {loading ? 'Adding...' : 'Add'}
                         </Button>
                     </Form.Item>
                 </Form>

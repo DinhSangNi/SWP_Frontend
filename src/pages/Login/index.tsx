@@ -44,36 +44,39 @@ export default function SignIn() {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const record = {
-            userName: data.get('userName'),
-            password: data.get('password'),
+            userName: data.get("userName"),
+            password: data.get("password"),
         };
-
+    
         if (!validateInputs(record)) return;
-
+    
         setLoading(true);
         try {
             const response = await loginAuth(record);
-            if (response) {
-                console.log('Login successfully:', response);
-
-                dispatch(login(response));
-                toast.success('Login successfully!');
-                console.log("role", response.role);
-
-                if (response.role === 'Admin') {
-                    navigate('/dashboard');
+            if (response?.token) {
+                console.log("Login successful:", response);
+    
+                dispatch(login(response)); // Dispatch Redux action
+                localStorage.setItem("token", response.token); // Lưu token vào localStorage
+                console.log("Saved token in localStorage:", localStorage.getItem("token")); // Debug
+                localStorage.setItem("user", JSON.stringify(response)); // Lưu thông tin user vào localStorage
+                toast.success("Login successfully!");
+    
+                if (response.role === "Admin") {
+                    navigate("/dashboard");
                 } else {
-                    navigate('/');
+                    navigate("/");
                 }
+            } else {
+                console.error("No token received from server");
             }
         } catch (error) {
-            console.error('Login error:', error);
-            toast.error(error.response?.data?.message || 'Login failed. Please try again.');
+            console.error("Login error:", error);
+            toast.error(error.response?.data?.message || "Login failed. Please try again.");
         } finally {
             setLoading(false);
         }
     };
-
     return (
         <SignInContainer>
             <CssBaseline />

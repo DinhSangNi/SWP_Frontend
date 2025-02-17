@@ -10,11 +10,10 @@ type Props = {
 };
 
 const Student = ({ type }: Props) => {
-    const [dataTeacher, setDataTeacher] = useState([]); // State lưu danh sách giáo viên
     const [dataStudent, setDataStudent] = useState([]); // State lưu danh sách học sinh
     const [loading, setLoading] = useState(false); // State loading
-
-
+    const [reload, setReload] = useState(false); // State để reload dữ liệu
+    
 
     const [detailModalVisible, setDetailModalVisible] = useState(false); // State để hiển thị modal chi tiết
     const [selectedUser, setSelectedUser] = useState(null); // State lưu thông tin chi tiết của người dùng
@@ -33,7 +32,7 @@ const Student = ({ type }: Props) => {
             // console.log("Response from server:", response);
 
             const students = response.filter(user => user.role === "Student");
-            // console.log("Students:", students);
+            console.log("Students:", students);
             setDataStudent(students);
 
         } catch (error) {
@@ -43,10 +42,6 @@ const Student = ({ type }: Props) => {
         }
     };
 
-    // Gọi API khi component được mount
-    useEffect(() => {
-        fetchData();
-    }, []);
 
     // Hàm xử lý khi nhấn nút "Detail"
     const handleDetailClick = async (userId) => {
@@ -54,7 +49,7 @@ const Student = ({ type }: Props) => {
             const userDetail = await getUserById(userId) // Gọi API lấy thông tin chi tiết
             setSelectedUser(userDetail); // Lưu thông tin chi tiết vào state
             setDetailModalVisible(true); // Hiển thị modal
-          
+
         } catch (error) {
             console.error("Error fetching user details:", error);
             toast.error("Failed to fetch user details.");
@@ -62,24 +57,24 @@ const Student = ({ type }: Props) => {
     };
 
 
-     // Hàm xử lý khi nhấn vào Tag "Status"
-        const handleStatusClick = async (userId, currentStatus) => {
-            try {
-                const newStatus = currentStatus === "Active" ? "Inactive" : "Active"; // Đảo ngược trạng thái
-                const updatedData = { status: newStatus }; // Dữ liệu cập nhật
-    
-                const response = await updateUser(userId, updatedData); // Gọi API cập nhật trạng thái
-                if (response) {
-                    toast.success(`✅ Cập nhật trạng thái thành công!`);
-                    fetchData(); // Fetch lại dữ liệu để cập nhật giao diện
-                } else {
-                    toast.error("❌ Cập nhật trạng thái thất bại.");
-                }
-            } catch (error) {
-                console.error("❌ Lỗi khi cập nhật trạng thái:", error);
-                toast.error("❌ Lỗi khi cập nhật trạng thái.");
+    // Hàm xử lý khi nhấn vào Tag "Status"
+    const handleStatusClick = async (userId, currentStatus) => {
+        try {
+            const newStatus = currentStatus === "Active" ? "Inactive" : "Active"; // Đảo ngược trạng thái
+            const updatedData = { status: newStatus }; // Dữ liệu cập nhật
+
+            const response = await updateUser(userId, updatedData); // Gọi API cập nhật trạng thái
+            if (response) {
+                toast.success(`✅ Cập nhật trạng thái thành công!`);
+                fetchData(); // Fetch lại dữ liệu để cập nhật giao diện
+            } else {
+                toast.error("❌ Cập nhật trạng thái thất bại.");
             }
-        };
+        } catch (error) {
+            console.error("❌ Lỗi khi cập nhật trạng thái:", error);
+            toast.error("❌ Lỗi khi cập nhật trạng thái.");
+        }
+    };
 
     // Hàm xử lý phân trang
     const handlePageChange = (page: number, pageSize: number) => {
@@ -90,6 +85,48 @@ const Student = ({ type }: Props) => {
         }));
     };
 
+    const handleReload = () => {
+        setReload(!reload);
+    }
+
+
+
+    const LocalizedModal = () => {
+        const [open, setOpen] = useState(false);
+
+        const showModal = () => {
+            setOpen(true);
+        };
+
+        const hideModal = () => {
+            setOpen(false);
+        };
+
+        return (
+            <>
+                <Button type="primary" onClick={showModal}>
+                    Modal
+                </Button>
+                <Modal
+                    title="Modal"
+                    open={open}
+                    onOk={hideModal}
+                    onCancel={hideModal}
+                    okText="确认"
+                    cancelText="取消"
+                >
+                    <p>Bla bla ...</p>
+                    <p>Bla bla ...</p>
+                    <p>Bla bla ...</p>
+                </Modal>
+            </>
+        );
+    };
+
+    // Gọi API khi component được mount
+    useEffect(() => {
+        fetchData();
+    }, [reload]);
 
     return (
         <div className="w-full overflow-y-scroll">
@@ -100,7 +137,7 @@ const Student = ({ type }: Props) => {
             </div>
 
             <div className="flex justify-end mb-5">
-                <ModalCustomer type={"student"} />
+                <ModalCustomer type={"student"} reload={handleReload} />
             </div>
 
             <Table
@@ -150,7 +187,7 @@ const Student = ({ type }: Props) => {
                                     render: (_, record) => (
                                         <Space size="middle">
                                             <Button
-                                                className="bg-indigo-400"
+                                                className="text-white bg-indigo-400"
                                                 onClick={() => handleDetailClick(record.idUser)} // Gọi hàm khi nhấn nút Detail
                                             >
                                                 Detail
@@ -186,7 +223,7 @@ const Student = ({ type }: Props) => {
                 {selectedUser && (
                     <div>
                         <p><strong>ID:</strong> {selectedUser.idUser}</p>
-                        <p><strong>Full Name:</strong> {selectedUser.userName}</p>
+                        <p><strong>Full Name:</strong> {selectedUser.fullName}</p>
                         <p><strong>Email:</strong> {selectedUser.email}</p>
                         <p><strong>Status:</strong> {selectedUser.status}</p>
                         <p><strong>Role:</strong> {selectedUser.role}</p>
@@ -194,6 +231,9 @@ const Student = ({ type }: Props) => {
                     </div>
                 )}
             </Modal>
+
+
+         
         </div>
     );
 };
