@@ -1,13 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { AuthUser } from "@/stores/types";
 
-type AuthState = {
-    user: null;
-};
+import { jwtDecode } from "jwt-decode";
+import { checkTokenExpiry } from "@/utils/authUtils"; // Import hàm checkTokenExpiry
 
 const initialState = {
-    user: null,
+    user: checkTokenExpiry(),
 };
+
+console.log("Initial state:", initialState); // Debug initial state
 
 const authSlice = createSlice({
     name: "auth",
@@ -15,9 +15,15 @@ const authSlice = createSlice({
     reducers: {
         login: (state, action) => {
             state.user = action.payload;
+
+            localStorage.setItem('token', action.payload.token); // Lưu token vào localStorage
+            console.log("Logged in user:",JSON.stringify(action.payload)); // Debug
+            // localStorage.setItem('user', JSON.stringify(action.payload)); // Lưu user vào localStorage
         },
         logout: (state) => {
             state.user = null;
+            localStorage.removeItem('token'); // Xóa token khi đăng xuất
+            localStorage.removeItem('user'); // Xóa user khi đăng xuất
         },
     },
 });

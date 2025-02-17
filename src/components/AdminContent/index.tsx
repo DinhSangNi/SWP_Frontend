@@ -1,156 +1,105 @@
 import { Button, Space, Table, Tag } from "antd";
 import { PaginationType } from "@/stores/types";
-import { useState } from "react";
-import axiosInstance from "@/configs/axiosInstance";
-import {
-    courseEnrollmentsData,
-    coursesData,
-    teacherData,
-} from "@/services/fakeData";
+
+import { useEffect, useState } from "react";
+import { courseEnrollmentsData, coursesData } from "@/services/fakeData";
+import ModalCustomer from "../Modal";
+import { getAllUser } from "@/services/userService";
 
 type Props = {
     type: string;
 };
 
 const AdminContent = ({ type }: Props) => {
+
+    const [dataTeacher, setDataTeacher] = useState([]); // State lưu danh sách giáo viên
+    const [dataStudent, setDataStudent] = useState([]); // State lưu danh sách học sinh
+    const [loading, setLoading] = useState(false); // State loading
     const [pagination, setPagination] = useState<PaginationType>({
         currentPage: 1,
         pageSize: 10,
     });
 
-    // handle Api call to get user
-    // const fetchData = async () => {
-    //     try {
-    //         const response = await axiosInstance(
-    //             `/User/${role}/?page=${pagination.currentPage}&limit=${pagination.pageSize}`
-    //         );
-    //         setUser(response.data);
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // };
+    // Hàm fetch dữ liệu người dùng
+    const fetchData = async () => {
+        setLoading(true); // Bắt đầu loading
+        try {
+            const response = await getAllUser(); // Gọi API lấy danh sách người dùng
+            console.log("Response from server:", response);
 
-    // handle pagination
-    const handlePageChange = (page: any, pageSize: any) => {
-        setPagination((prev) => {
-            return {
-                ...prev,
-                currentPage: page,
-                pageSize: pageSize,
-            };
-        });
+            // Lọc danh sách giáo viên
+            const teachers = response.filter(user => user.role === "Teacher");
+            console.log("Teachers:", teachers);
+            setDataTeacher(teachers);
+
+            // Lọc danh sách học sinh
+            const students = response.filter(user => user.role === "Student");
+            console.log("Students:", students);
+            setDataStudent(students);
+
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        } finally {
+            setLoading(false); // Kết thúc loading
+        }
     };
 
-    // useEffect(() => {
-    //     fetchData();
-    // }, []);
+    // Gọi API khi component được mount
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    // Hàm xử lý phân trang
+    const handlePageChange = (page: number, pageSize: number) => {
+        setPagination((prev) => ({
+            ...prev,
+            currentPage: page,
+            pageSize: pageSize,
+        }));
+    };
+
+    // Xác định dataSource dựa trên type
+    const getDataSource = () => {
+        switch (type) {
+            case "Teacher":
+                return dataTeacher;
+            case "Student":
+                return dataStudent;
+            case "Courses":
+                return coursesData;
+            case "CoursesEnrollments":
+                return courseEnrollmentsData;
+            default:
+                return [];
+        }
+    };
 
     return (
         <div className="w-full overflow-y-scroll">
             <div className="w-full">
-                <div className="text-3xl py-10 font-bold">
+
+                <div className="py-10 text-3xl font-bold">
                     <h1>{type} Management</h1>
                 </div>
             </div>
+
+            <div className="flex justify-end mb-5">
+                <ModalCustomer />
+            </div>
+
             <Table
                 columns={
                     type === "CoursesEnrollments"
                         ? [
-                              {
-                                  title: "EnrollmentID",
-                                  dataIndex: "enrollmentId",
-                                  key: "enrollmentId",
-                              },
-                              {
-                                  title: "CourseID",
-                                  dataIndex: "courseId",
-                                  key: "courseId",
-                              },
-                              {
-                                  title: "StudentID",
-                                  dataIndex: "studentId",
-                                  key: "studentId",
-                              },
-                              {
-                                  title: "EnrollmentDate",
-                                  dataIndex: "enrollmentDate",
-                                  key: "enrollmentDate",
-                              },
-                              {
-                                  title: "Action",
-                                  key: "action",
-                                  render: () => (
-                                      <Space size="middle">
-                                          <Button
-                                              variant="solid"
-                                              color="orange"
-                                          >
-                                              Detail
-                                          </Button>
-                                          <Button
-                                              variant="solid"
-                                              color="danger"
-                                          >
-                                              Delete
-                                          </Button>
-                                      </Space>
-                                  ),
-                              },
-                          ]
+
+                            // Các cột cho CoursesEnrollments
+                        ]
                         : type === "Courses"
-                          ? [
-                                {
-                                    title: "CourseID",
-                                    dataIndex: "courseId",
-                                    key: "courseId",
-                                },
-                                {
-                                    title: "CourseName",
-                                    dataIndex: "courseName",
-                                    key: "courseName",
-                                },
-                                {
-                                    title: "Description",
-                                    dataIndex: "description",
-                                    key: "description",
-                                },
-                                {
-                                    title: "StartDate",
-                                    dataIndex: "startDate",
-                                    key: "startDate",
-                                },
-                                {
-                                    title: "EndDate",
-                                    dataIndex: "endDate",
-                                    key: "endDate",
-                                },
-                                {
-                                    title: "CreatedBy",
-                                    dataIndex: "createdBy",
-                                    key: "createdBy",
-                                },
-                                {
-                                    title: "Action",
-                                    key: "action",
-                                    render: () => (
-                                        <Space size="middle">
-                                            <Button
-                                                variant="solid"
-                                                color="orange"
-                                            >
-                                                Detail
-                                            </Button>
-                                            <Button
-                                                variant="solid"
-                                                color="danger"
-                                            >
-                                                Delete
-                                            </Button>
-                                        </Space>
-                                    ),
-                                },
+                            ? [
+                                // Các cột cho Courses
                             ]
-                          : [
+                            : [
+                                // Các cột cho Teacher/Student
                                 {
                                     title: "ID",
                                     dataIndex: "id",
@@ -176,17 +125,10 @@ const AdminContent = ({ type }: Props) => {
                                     key: "status",
                                     dataIndex: "status",
                                     render: (status) => (
-                                        <>
-                                            <Tag
-                                                color={
-                                                    status === "inActive"
-                                                        ? "red"
-                                                        : "green"
-                                                }
-                                            >
-                                                {status}
-                                            </Tag>
-                                        </>
+
+                                        <Tag color={status === "inActive" ? "red" : "green"}>
+                                            {status}
+                                        </Tag>
                                     ),
                                 },
                                 {
@@ -194,16 +136,11 @@ const AdminContent = ({ type }: Props) => {
                                     key: "action",
                                     render: () => (
                                         <Space size="middle">
-                                            <Button
-                                                variant="solid"
-                                                color="orange"
-                                            >
+
+                                            <Button variant="solid" color="orange">
                                                 Detail
                                             </Button>
-                                            <Button
-                                                variant="solid"
-                                                color="danger"
-                                            >
+                                            <Button variant="solid" color="danger">
                                                 Delete
                                             </Button>
                                         </Space>
@@ -211,25 +148,22 @@ const AdminContent = ({ type }: Props) => {
                                 },
                             ]
                 }
-                dataSource={
-                    type === "Courses"
-                        ? coursesData
-                        : type === "CoursesEnrollments"
-                          ? courseEnrollmentsData
-                          : teacherData
-                }
+
+                dataSource={getDataSource()} // Sử dụng hàm getDataSource để chọn dữ liệu phù hợp
+                loading={loading} // Hiển thị loading khi đang fetch dữ liệu
                 className="w-full"
                 pagination={{
                     current: pagination.currentPage,
                     pageSize: pagination.pageSize,
                     showSizeChanger: true,
                     pageSizeOptions: ["5", "10", "20"],
-                    onChange: (page, pageSize) =>
-                        handlePageChange(page, pageSize),
+
+                    onChange: handlePageChange,
                 }}
             />
         </div>
     );
 };
+
 
 export default AdminContent;

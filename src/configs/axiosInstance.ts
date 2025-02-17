@@ -1,4 +1,6 @@
 import axios from "axios";
+import { useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
 
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_BE_BASE_URL,
@@ -7,19 +9,7 @@ const axiosInstance = axios.create({
     },
 });
 
-axiosInstance.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem("authToken");
-        if (token) {
-            config.headers["Authorization"] = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
-
+// Đã xóa interceptor request
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
