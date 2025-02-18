@@ -1,130 +1,155 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
-import { Box, Button, CssBaseline, Divider, FormControl, FormLabel, TextField, Typography, Stack, styled, Link } from '@mui/material';
-import GoogleIcon from '@mui/icons-material/Google';
-import { loginAuth } from '@/services/authService';
-import { login } from '@/stores/authSlice';
-
-const Card = styled(Box)(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-    maxWidth: '450px',
-    padding: theme.spacing(4),
-    gap: theme.spacing(2),
-    margin: 'auto',
-    boxShadow: theme.shadows[3],
-    borderRadius: theme.shape.borderRadius,
-}));
-
-const SignInContainer = styled(Stack)(({ theme }) => ({
-    height: '100vh',
-    padding: theme.spacing(2),
-    justifyContent: 'center',
-    background: theme.palette.background.default,
-}));
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { loginAuth } from "@/services/authService";
+import { login } from "@/stores/authSlice";
+import { Button, Form, Input, message } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
 export default function SignIn() {
-    const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const [messageApi, contextHolder] = message.useMessage();
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const validateInputs = (data) => {
-        const newErrors = {};
-        if (!data.userName) newErrors.userName = 'Please enter your username.';
-        // if (!data.password || data.password.length <= 5) newErrors.password = 'Password must be at least 6 characters long.';
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        const record = {
-            userName: data.get("userName"),
-            password: data.get("password"),
-        };
-    
-        if (!validateInputs(record)) return;
-    
-        setLoading(true);
+    // API calling function
+    const handleLogin = async (credentials: any) => {
         try {
-            const response = await loginAuth(record);
-            if (response?.token) {
+            setLoading(true);
+            // Call API
+            const response = await loginAuth(credentials);
+
+            if (response) {
+                // Debug log
                 console.log("Login successful:", response);
-    
-                dispatch(login(response)); // Dispatch Redux action
-                localStorage.setItem("token", response.token); // Lưu token vào localStorage
-                console.log("Saved token in localStorage:", localStorage.getItem("token")); // Debug
-                localStorage.setItem("user", JSON.stringify(response)); // Lưu thông tin user vào localStorage
-                toast.success("Login successfully!");
-    
-                if (response.role === "Admin") {
-                    navigate("/dashboard");
-                } else {
-                    navigate("/");
-                }
-            } else {
-                console.error("No token received from server");
+                dispatch(login(response));
+                localStorage.setItem("token", response.token);
+                successMessage();
+                navigate("/");
             }
-        } catch (error) {
-            console.error("Login error:", error);
-            toast.error(error.response?.data?.message || "Login failed. Please try again.");
+        } catch (err) {
+            errorMessage();
+            console.error("Login error:", err);
         } finally {
             setLoading(false);
         }
     };
+
+    const successMessage = () => {
+        messageApi.success("Login successfully!");
+    };
+
+    const errorMessage = () => {
+        messageApi.error("Your credentials is correct!");
+    };
     return (
-        <SignInContainer>
-            <CssBaseline />
-            <Card>
-                <Typography variant="h4" gutterBottom>Sign in</Typography>
-                <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <FormControl>
-                        <FormLabel htmlFor="userName">Username</FormLabel>
-                        <TextField
-                            id="userName"
-                            name="userName"
-                            type="text"
-                            required
-                            fullWidth
-                            error={!!errors.userName}
-                            helperText={errors.userName}
-                        />
-                    </FormControl>
-                    <FormControl>
-                        <FormLabel htmlFor="password">Password</FormLabel>
-                        <TextField
-                            id="password"
+        <>
+            {contextHolder}
+            <div className=" flex flex-col justify-center px-[35rem] py-[5rem]">
+                <h1 className="text-[2rem] font-bold text-center mb-[3rem] text-[#6d28d2]">
+                    Login
+                </h1>
+                <div className="mb-[2rem]">
+                    <Form
+                        name="login-form"
+                        onFinish={handleLogin}
+                        layout="vertical"
+                    >
+                        <Form.Item
+                            name="username"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please enter your username!",
+                                },
+                            ]}
+                        >
+                            <Input
+                                className="py-3"
+                                prefix={<UserOutlined />}
+                                placeholder="Username"
+                            />
+                        </Form.Item>
+
+                        <Form.Item
                             name="password"
-                            type="password"
-                            required
-                            fullWidth
-                            error={!!errors.password}
-                            helperText={errors.password}
-                        />
-                    </FormControl>
-                    <Button type="submit" fullWidth variant="contained" disabled={loading}>
-                        {loading ? 'Loading...' : 'Sign in'}
-                    </Button>
-                    <Link href="#" variant="body2" sx={{ alignSelf: 'center' }}>
-                        Forgot your password?
-                    </Link>
-                </Box>
-                <Divider>or</Divider>
-                <Button fullWidth variant="outlined" startIcon={<GoogleIcon />} onClick={() => alert('Sign in with Google')}>
-                    Sign in with Google
-                </Button>
-                <Typography sx={{ textAlign: 'center' }}>
-                    Don&apos;t have an account?{' '}
-                    <Link href="/signup" variant="body2">
-                        Sign up
-                    </Link>
-                </Typography>
-            </Card>
-        </SignInContainer>
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please enter your password!",
+                                },
+                                {
+                                    min: 8,
+                                    message:
+                                        "Password has at least 8 characters!",
+                                },
+                            ]}
+                        >
+                            <Input.Password
+                                className="py-3"
+                                prefix={<LockOutlined />}
+                                placeholder="Password"
+                            />
+                        </Form.Item>
+
+                        <Form.Item>
+                            <div className="flex justify-between">
+                                <div className="mb-5">
+                                    <input type="checkbox" id="agree" />
+                                    <label
+                                        htmlFor="agree"
+                                        className="text-gray-900 ml-2 text-sm"
+                                    >
+                                        Remember me
+                                    </label>
+                                </div>
+                                <div>
+                                    <a
+                                        href="/forgot-password"
+                                        className="hover:underline text-black text-sm hover:text-primary-purple"
+                                    >
+                                        Forgot password?
+                                    </a>
+                                </div>
+                            </div>
+                            <div className="mb-1 w-full">
+                                <Button
+                                    className="py-6"
+                                    color="purple"
+                                    variant="solid"
+                                    type="primary"
+                                    htmlType="submit"
+                                    loading={loading}
+                                    block
+                                >
+                                    Login
+                                </Button>
+                            </div>
+                            <div className="mb-7 w-full">
+                                Don't have an account?{" "}
+                                <span>
+                                    <Link
+                                        className="font-bold hover:underline hover:text-primary-purple"
+                                        to="/signup"
+                                    >
+                                        Sign Up
+                                    </Link>
+                                </span>
+                            </div>
+                        </Form.Item>
+                    </Form>
+                </div>
+                <div className="flex items-center justify-center gap-1">
+                    <div className="border-t-[1px] border-[#ddd] border-solid w-full"></div>
+                    <span className="whitespace-nowrap text-[0.8rem] px-2">
+                        Or with
+                    </span>
+                    <div className="border-t-[1px] border-[#ddd] border-solid w-full"></div>
+                </div>
+                <div className="text-center mt-[1.5rem]">
+                    <span>Welcome to Course</span>
+                </div>
+            </div>
+        </>
     );
 }

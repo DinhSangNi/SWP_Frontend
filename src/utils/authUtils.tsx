@@ -1,7 +1,5 @@
 import { jwtDecode } from "jwt-decode";
 
-
-
 // check tg hết hạn và valid token
 export const checkTokenExpiry = () => {
     const token = localStorage.getItem("token");
