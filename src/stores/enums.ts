@@ -3,7 +3,7 @@ export const enum MenuItems {
     signup = "signup",
     logout = "logout",
     dashBoard = "dashboard",
-    profile = " profile",
+    profile = "profile",
     myCourses = "mycourses",
     teachers = "teachers",
     students = "students",

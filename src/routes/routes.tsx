@@ -9,6 +9,7 @@ import Course from "@/pages/Course/index.tsx";
 import Student from "@/pages/Admin/Students";
 import Teacher from "@/pages/Admin/Teacher";
 import Courses from "@/pages/Admin/Courses";
+import Profile from "@/pages/Profile";
 export const routes = [
     {
         path: "/",
@@ -19,9 +20,13 @@ export const routes = [
                 element: <Home />,
             },
             {
-                path:"/course",
-                element: <Course />
-            }
+                path: "/course",
+                element: <Course />,
+            },
+            {
+                path: "/profile",
+                element: <Profile />,
+            },
         ],
     },
     {
@@ -39,11 +44,11 @@ export const routes = [
             {
                 path: "teachers",
 
-                element: <Teacher  type="teacher"/>
+                element: <Teacher type="teacher" />,
             },
             {
                 path: "students",
-                element: <Student type="student"/>
+                element: <Student type="student" />,
             },
             {
                 path: "courses",
