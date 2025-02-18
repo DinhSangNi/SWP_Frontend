@@ -4,7 +4,7 @@ export default {
     theme: {
         extend: {
             colors: {
-                "tranparent-purple": "var(----tranparent-purple)",
+                "primary-purple": "#6d28d2",
                 // "gray-20": "#F8F4EB",
                 // "gray-50": "#EFE6E6",
                 // "gray-100": "#DFCCCC",
