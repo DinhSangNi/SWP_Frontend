@@ -58,7 +58,6 @@ const Header = ({ setLoading }: Props) => {
     const dispatch = useDispatch<AppDispatch>();
     const [messageApi, contextHolder] = message.useMessage();
 
-
     const userInfo = localStorage.getItem("user");
     const { userName } = JSON.parse(userInfo || "{}");
 
@@ -99,9 +98,12 @@ const Header = ({ setLoading }: Props) => {
             ),
             key: "0",
         },
-        {
+        user?.role === "Admin" && {
             label: (
-                <Link to={`/${MenuItems.dashBoard}/teachers`} className="px-4 font-bold">
+                <Link
+                    to={`/${MenuItems.dashBoard}/teachers`}
+                    className="px-4 font-bold"
+                >
                     Dashboard
                 </Link>
             ),
@@ -194,7 +196,6 @@ const Header = ({ setLoading }: Props) => {
                             ) : (
                                 <div>
                                     <Dropdown
-
                                         menu={{ items: userDropdownItems }}
                                         trigger={["click"]}
                                     >
@@ -203,10 +204,10 @@ const Header = ({ setLoading }: Props) => {
                                             onClick={(e) => e.preventDefault()}
                                         >
                                             <Space className="hover:text-[#6d28d2] text-black">
-
                                                 <div className="flex items-center justify-center gap-2">
                                                     <div className="font-bold px-4 py-2.5 bg-purple-200 rounded-full">
-                                                        {user.userName?.[0] || userName?.[0]}
+                                                        {user.userName?.[0] ||
+                                                            userName?.[0]}
                                                     </div>
                                                     <h2 className="cursor-default">
                                                         {userName}
@@ -266,7 +267,9 @@ const Header = ({ setLoading }: Props) => {
                                     variant="text"
                                     color="purple"
                                     className="px-1 py-2 rounded-full"
-                                    onClick={() => setIsMenuToggled(!isMenuToggled)}
+                                    onClick={() =>
+                                        setIsMenuToggled(!isMenuToggled)
+                                    }
                                 >
                                     <XMarkIcon className="w-6 h-6 font-bold text-gray-400" />
                                 </Button>
@@ -285,7 +288,8 @@ const Header = ({ setLoading }: Props) => {
                                     <div>
                                         <div className="flex justify-start gap-3 py-2 pl-4 bg-purple-300">
                                             <div className="px-4 py-2 font-bold bg-purple-200 rounded-full">
-                                                {user.userName?.[0] || userName?.[0]}
+                                                {user.userName?.[0] ||
+                                                    userName?.[0]}
                                             </div>
                                             <div>
                                                 <h2 className="font-bold">
