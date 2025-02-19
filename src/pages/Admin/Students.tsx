@@ -1,4 +1,4 @@
-import { Button, Space, Table, Tag, Modal } from "antd";
+import { Button, Space, Table, Tag, Modal, Tooltip } from "antd";
 import { PaginationType } from "@/stores/types";
 import { useEffect, useState } from "react";
 import ModalCustomer from "@/components/Modal";
@@ -13,11 +13,9 @@ const Student = ({ type }: Props) => {
     const [dataStudent, setDataStudent] = useState([]); // State lưu danh sách học sinh
     const [loading, setLoading] = useState(false); // State loading
     const [reload, setReload] = useState(false); // State để reload dữ liệu
-    
 
     const [detailModalVisible, setDetailModalVisible] = useState(false); // State để hiển thị modal chi tiết
     const [selectedUser, setSelectedUser] = useState(null); // State lưu thông tin chi tiết của người dùng
-
 
     const [pagination, setPagination] = useState<PaginationType>({
         currentPage: 1,
@@ -31,10 +29,9 @@ const Student = ({ type }: Props) => {
             const response = await getAllUser(); // Gọi API lấy danh sách người dùng
             // console.log("Response from server:", response);
 
-            const students = response.filter(user => user.role === "Student");
+            const students = response.filter((user) => user.role === "Student");
             console.log("Students:", students);
             setDataStudent(students);
-
         } catch (error) {
             console.error("Error fetching users:", error);
         } finally {
@@ -42,25 +39,23 @@ const Student = ({ type }: Props) => {
         }
     };
 
-
     // Hàm xử lý khi nhấn nút "Detail"
     const handleDetailClick = async (userId) => {
         try {
-            const userDetail = await getUserById(userId) // Gọi API lấy thông tin chi tiết
+            const userDetail = await getUserById(userId); // Gọi API lấy thông tin chi tiết
             setSelectedUser(userDetail); // Lưu thông tin chi tiết vào state
             setDetailModalVisible(true); // Hiển thị modal
-
         } catch (error) {
             console.error("Error fetching user details:", error);
             toast.error("Failed to fetch user details.");
         }
     };
 
-
     // Hàm xử lý khi nhấn vào Tag "Status"
     const handleStatusClick = async (userId, currentStatus) => {
         try {
-            const newStatus = currentStatus === "Active" ? "Inactive" : "Active"; // Đảo ngược trạng thái
+            const newStatus =
+                currentStatus === "Active" ? "Inactive" : "Active"; // Đảo ngược trạng thái
             const updatedData = { status: newStatus }; // Dữ liệu cập nhật
 
             const response = await updateUser(userId, updatedData); // Gọi API cập nhật trạng thái
@@ -87,9 +82,7 @@ const Student = ({ type }: Props) => {
 
     const handleReload = () => {
         setReload(!reload);
-    }
-
-
+    };
 
     const LocalizedModal = () => {
         const [open, setOpen] = useState(false);
@@ -132,7 +125,9 @@ const Student = ({ type }: Props) => {
         <div className="w-full overflow-y-scroll">
             <div className="w-full">
                 <div className="py-10 text-3xl font-bold">
-                    <h1>{type} Management</h1>
+                    <h1>
+                        {`${type[0].toUpperCase()}${type.slice(1)}`} Management
+                    </h1>
                 </div>
             </div>
 
@@ -144,13 +139,13 @@ const Student = ({ type }: Props) => {
                 columns={
                     type === "CoursesEnrollments"
                         ? [
-                            // Các cột cho CoursesEnrollments
-                        ]
+                              // Các cột cho CoursesEnrollments
+                          ]
                         : type === "Courses"
-                            ? [
+                          ? [
                                 // Các cột cho Courses
                             ]
-                            : [
+                          : [
                                 // Các cột cho Teacher/Student
                                 {
                                     title: "ID",
@@ -172,13 +167,36 @@ const Student = ({ type }: Props) => {
                                     key: "status",
                                     dataIndex: "status",
                                     render: (status, record) => (
-                                        <Tag
-                                            color={status === "Active" ? "green" : "red"}
-                                            onClick={() => handleStatusClick(record.idUser, status)} // Gọi hàm khi nhấn vào Tag
-                                            className="cursor-pointer"
+                                        <Tooltip
+                                            color={
+                                                status === "Active"
+                                                    ? "red"
+                                                    : "green"
+                                            }
+                                            placement="rightTop"
+                                            title={
+                                                status === "Active"
+                                                    ? "Lock"
+                                                    : "Unlock"
+                                            }
                                         >
-                                            {status}
-                                        </Tag>
+                                            <Tag
+                                                color={
+                                                    status === "Active"
+                                                        ? "green"
+                                                        : "red"
+                                                }
+                                                onClick={() =>
+                                                    handleStatusClick(
+                                                        record.idUser,
+                                                        status
+                                                    )
+                                                } // Gọi hàm khi nhấn vào Tag
+                                                className="cursor-pointer"
+                                            >
+                                                {status}
+                                            </Tag>
+                                        </Tooltip>
                                     ),
                                 },
                                 {
@@ -188,7 +206,11 @@ const Student = ({ type }: Props) => {
                                         <Space size="middle">
                                             <Button
                                                 className="text-white bg-indigo-400"
-                                                onClick={() => handleDetailClick(record.idUser)} // Gọi hàm khi nhấn nút Detail
+                                                onClick={() =>
+                                                    handleDetailClick(
+                                                        record.idUser
+                                                    )
+                                                } // Gọi hàm khi nhấn nút Detail
                                             >
                                                 Detail
                                             </Button>
@@ -212,7 +234,6 @@ const Student = ({ type }: Props) => {
                 }}
             />
 
-
             {/* Modal hiển thị thông tin chi tiết */}
             <Modal
                 title="User Details"
@@ -222,18 +243,25 @@ const Student = ({ type }: Props) => {
             >
                 {selectedUser && (
                     <div>
-                        <p><strong>ID:</strong> {selectedUser.idUser}</p>
-                        <p><strong>Full Name:</strong> {selectedUser.fullName}</p>
-                        <p><strong>Email:</strong> {selectedUser.email}</p>
-                        <p><strong>Status:</strong> {selectedUser.status}</p>
-                        <p><strong>Role:</strong> {selectedUser.role}</p>
+                        <p>
+                            <strong>ID:</strong> {selectedUser.idUser}
+                        </p>
+                        <p>
+                            <strong>Full Name:</strong> {selectedUser.fullName}
+                        </p>
+                        <p>
+                            <strong>Email:</strong> {selectedUser.email}
+                        </p>
+                        <p>
+                            <strong>Status:</strong> {selectedUser.status}
+                        </p>
+                        <p>
+                            <strong>Role:</strong> {selectedUser.role}
+                        </p>
                         {/* Thêm các trường thông tin khác nếu cần */}
                     </div>
                 )}
             </Modal>
-
-
-         
         </div>
     );
 };

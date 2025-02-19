@@ -28,10 +28,10 @@ export const routes = [
                 path: "/profile",
                 element: <Profile />,
             },
-            {
-                path: "/cart",
-                element: <Cart />,
-            },
+            // {
+            //     path: "/cart",
+            //     element: <Cart />,
+            // },
         ],
     },
     {

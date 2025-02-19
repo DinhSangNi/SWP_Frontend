@@ -19,21 +19,18 @@ const SideBar = () => {
         navigate(`/dashboard/${e.key}`);
     };
 
-
     const user = useSelector((state: RootState) => state.auth.user);
     console.log("user", user);
     const userInfo = localStorage.getItem("user");
     console.log("userInfo", JSON.parse(userInfo || "{}"));
-    const {userName} = JSON.parse(userInfo || "{}");
+    const { userName } = JSON.parse(userInfo || "{}");
     console.log("userName", userName);
-    
 
     // if(user.role !== 'Admin'){
     //      navigate('/');;
     // }
 
-//    console.log("role", user);
-    
+    //    console.log("role", user);
 
     return (
         <div className="flex flex-col w-full h-full gap-10 bg-purple-200 border-r-2 border-purple-300">
@@ -55,9 +52,12 @@ const SideBar = () => {
                         N
                     </div>
                     <div>
-
                         <h2 className="font-bold text-[1.3rem]">{userName}</h2>
-                        <p className="text-[0.9rem]">Administrator</p>
+                        <p className="text-[0.9rem]">
+                            {user?.role === "Admin"
+                                ? "Administrator"
+                                : user?.role}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -68,7 +68,7 @@ const SideBar = () => {
                 defaultSelectedKeys={["teacher"]}
                 defaultOpenKeys={["user"]}
                 selectedKeys={selectedItem}
-                className="bg-purple-200"
+                className="bg-purple-200 font-bold"
                 onClick={handleOnclickMenuItems}
             >
                 <Menu.SubMenu key="user" title="User">
@@ -87,7 +87,7 @@ const SideBar = () => {
                     onClick={() => navigate("/")}
                 >
                     <IoIosLogOut className="font-bold text-[1.2rem]" />
-                    <p className="">Go Home</p>
+                    <p className="font-bold">Go Home</p>
                 </Button>
             </div>
         </div>

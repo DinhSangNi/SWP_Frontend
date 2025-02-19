@@ -169,7 +169,7 @@ const Header = ({ setLoading }: Props) => {
                                     <GoBell className="text-[1.6rem]" />
                                 </Badge>
                             </div>
-                            <div>
+                            {/* <div>
                                 <PopoverCart>
                                     <Badge
                                         className="relative mt-1 cursor-pointer hover:text-purple-700"
@@ -180,7 +180,7 @@ const Header = ({ setLoading }: Props) => {
                                         <MdOutlineShoppingCart className="text-[1.6rem]" />
                                     </Badge>
                                 </PopoverCart>
-                            </div>
+                            </div> */}
                             {!user ? (
                                 <div className="flex items-center justify-center gap-x-[0.5rem]">
                                     <Link to="/login">
