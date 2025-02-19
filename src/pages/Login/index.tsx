@@ -79,7 +79,7 @@ export default function SignIn() {
                                     message: "Please enter your password!",
                                 },
                                 {
-                                    min: 8,
+                                    min: 5,
                                     message:
                                         "Password has at least 8 characters!",
                                 },

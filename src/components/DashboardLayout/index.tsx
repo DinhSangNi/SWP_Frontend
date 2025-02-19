@@ -7,7 +7,7 @@ const DashboardLayout = (props: Props) => {
     return (
         <div className="flex h-full w-full gap-5">
             {/* SIDEBAR */}
-            <div className="w-1/6 h-full">
+            <div className="w-1/5 h-full">
                 <SideBar />
             </div>
             {/* MAIN_CONTENT */}

@@ -1,4 +1,4 @@
-import { Button, Space, Table, Tag, Modal } from "antd";
+import { Button, Space, Table, Tag, Modal, Tooltip } from "antd";
 import { PaginationType } from "@/stores/types";
 import { useEffect, useState } from "react";
 import ModalCustomer from "@/components/Modal";
@@ -9,7 +9,7 @@ type Props = {
     type: string;
 };
 
-const Teacher = ({ type}: Props) => {
+const Teacher = ({ type }: Props) => {
     const [dataTeacher, setDataTeacher] = useState([]); // State lưu danh sách giáo viên
     const [loading, setLoading] = useState(false); // State loading
     const [detailModalVisible, setDetailModalVisible] = useState(false); // State để hiển thị modal chi tiết
@@ -25,7 +25,7 @@ const Teacher = ({ type}: Props) => {
         setLoading(true); // Bắt đầu loading
         try {
             const response = await getAllUser(); // Gọi API lấy danh sách người dùng
-            const teachers = response.filter(user => user.role === "Teacher");
+            const teachers = response.filter((user) => user.role === "Teacher");
             setDataTeacher(teachers);
             toast.success(`Fetched ${type} successfully!`);
         } catch (error) {
@@ -34,7 +34,6 @@ const Teacher = ({ type}: Props) => {
             setLoading(false); // Kết thúc loading
         }
     };
-
 
     // Hàm xử lý khi nhấn nút "Detail"
     const handleDetailClick = async (userId) => {
@@ -51,7 +50,8 @@ const Teacher = ({ type}: Props) => {
     // Hàm xử lý khi nhấn vào Tag "Status"
     const handleStatusClick = async (userId, currentStatus) => {
         try {
-            const newStatus = currentStatus === "Active" ? "Inactive" : "Active"; // Đảo ngược trạng thái
+            const newStatus =
+                currentStatus === "Active" ? "Inactive" : "Active"; // Đảo ngược trạng thái
             const updatedData = { status: newStatus }; // Dữ liệu cập nhật
 
             const response = await updateUser(userId, updatedData); // Gọi API cập nhật trạng thái
@@ -76,11 +76,10 @@ const Teacher = ({ type}: Props) => {
         }));
     };
 
-
     const handleReload = () => {
         setReload(!reload);
-    }
-    
+    };
+
     // Gọi API khi component được mount
     useEffect(() => {
         fetchData();
@@ -90,12 +89,14 @@ const Teacher = ({ type}: Props) => {
         <div className="w-full overflow-y-scroll">
             <div className="w-full">
                 <div className="py-10 text-3xl font-bold">
-                    <h1>{type} Management</h1>
+                    <h1>
+                        {`${type[0].toUpperCase()}${type.slice(1)}`} Management
+                    </h1>
                 </div>
             </div>
 
             <div className="flex justify-end mb-5">
-                <ModalCustomer type={'teacher'} reload={handleReload}/>
+                <ModalCustomer type={"teacher"} reload={handleReload} />
             </div>
 
             <Table
@@ -120,13 +121,23 @@ const Teacher = ({ type}: Props) => {
                         key: "status",
                         dataIndex: "status",
                         render: (status, record) => (
-                            <Tag
-                                color={status === "Active" ? "green" : "red"}
-                                onClick={() => handleStatusClick(record.idUser, status)} // Gọi hàm khi nhấn vào Tag
-                                className="cursor-pointer"
+                            <Tooltip
+                                color={status === "Active" ? "red" : "green"}
+                                placement="rightTop"
+                                title={status === "Active" ? "Lock" : "Unlock"}
                             >
-                                {status}
-                            </Tag>
+                                <Tag
+                                    color={
+                                        status === "Active" ? "green" : "red"
+                                    }
+                                    onClick={() =>
+                                        handleStatusClick(record.idUser, status)
+                                    } // Gọi hàm khi nhấn vào Tag
+                                    className="cursor-pointer"
+                                >
+                                    {status}
+                                </Tag>
+                            </Tooltip>
                         ),
                     },
                     {
@@ -136,7 +147,9 @@ const Teacher = ({ type}: Props) => {
                             <Space size="middle">
                                 <Button
                                     className="text-white bg-indigo-400"
-                                    onClick={() => handleDetailClick(record.idUser)} // Gọi hàm khi nhấn nút Detail
+                                    onClick={() =>
+                                        handleDetailClick(record.idUser)
+                                    } // Gọi hàm khi nhấn nút Detail
                                 >
                                     Detail
                                 </Button>
@@ -168,11 +181,21 @@ const Teacher = ({ type}: Props) => {
             >
                 {selectedUser && (
                     <div>
-                        <p><strong>ID:</strong> {selectedUser.idUser}</p>
-                        <p><strong>Full Name:</strong> {selectedUser.fullName}</p>
-                        <p><strong>Email:</strong> {selectedUser.email}</p>
-                        <p><strong>Status:</strong> {selectedUser.status}</p>
-                        <p><strong>Role:</strong> {selectedUser.role}</p>
+                        <p>
+                            <strong>ID:</strong> {selectedUser.idUser}
+                        </p>
+                        <p>
+                            <strong>Full Name:</strong> {selectedUser.fullName}
+                        </p>
+                        <p>
+                            <strong>Email:</strong> {selectedUser.email}
+                        </p>
+                        <p>
+                            <strong>Status:</strong> {selectedUser.status}
+                        </p>
+                        <p>
+                            <strong>Role:</strong> {selectedUser.role}
+                        </p>
                         {/* Thêm các trường thông tin khác nếu cần */}
                     </div>
                 )}

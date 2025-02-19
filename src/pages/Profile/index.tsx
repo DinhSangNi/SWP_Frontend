@@ -1,3 +1,8 @@
+import {
+    changePassword,
+    getUserProfile,
+    updateUserProfile,
+} from "@/services/profileService";
 import { getUserById } from "@/services/userService";
 import { RootState } from "@/stores/store";
 import {
@@ -11,32 +16,45 @@ import {
     message,
     Switch,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useForm } from "antd/es/form/Form";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const fakeUserData = {
-    fullName: "Test User",
-    userName: "testuser",
-    email: "testuser@gmail.com",
-    phoneNumber: "1234567890",
+type UserDetail = {
+    fullName?: string;
+    userName?: string;
+    role?: string;
+    status?: string;
+    email?: string;
+    phoneNumber?: string;
 };
 
-type Props = {};
-
-const Profile = (props: Props) => {
+const Profile = () => {
+    const [userDetail, setUserDetail] = useState<Partial<UserDetail>>({
+        fullName: "",
+        userName: "",
+        role: "",
+        status: "",
+        email: "",
+        phoneNumber: "",
+    });
     const [loading, setLoading] = useState<boolean>(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [isChangePassword, setIsChangePassword] = useState<boolean>(false);
     const [messageApi, contextHolder] = message.useMessage();
+
+    const [form] = useForm();
 
     const user = useSelector((state: RootState) => state.auth.user);
     const navigate = useNavigate();
 
     const fetchUserDetailData = async () => {
         try {
-            const response = await getUserById(user?.idUser);
-            console.log(response);
+            const response = await getUserProfile(user!.idUser);
+            if (response) {
+                setUserDetail(response);
+            }
         } catch (error) {
             console.log("error ", error);
         }
@@ -46,10 +64,13 @@ const Profile = (props: Props) => {
     const handleSave = async (credentials: any) => {
         try {
             setLoading(true);
-            messageApi.success("Updated Successfully!");
+            const response = await updateUserProfile(user!.idUser, credentials);
+            if (response) {
+                messageApi.success("Updated User Information Successfully!");
+            }
         } catch (error: any) {
             console.log("error ", error);
-            messageApi.error("Updated Failed!");
+            messageApi.error("Updated User Information Failed!");
         } finally {
             setLoading(false);
             setIsEdit(false);
@@ -76,7 +97,24 @@ const Profile = (props: Props) => {
         console.log("switch to ", checked);
     };
 
-    const handleChangePassword = (credentials: any) => {};
+    const handleChangePassword = async (credentials: any) => {
+        try {
+            setLoading(true);
+            const response = await changePassword(user!.idUser, {
+                currentPassword: credentials.currentPassword,
+                newPassword: credentials.newPassword,
+            });
+            if (response) {
+                messageApi.success("Updated User Information Successfully!");
+            }
+        } catch (error: any) {
+            console.log("error ", error);
+            messageApi.error("Updated Password Failed!");
+        } finally {
+            setLoading(false);
+            setIsChangePassword(false);
+        }
+    };
 
     const handleOnclickMenuItems: MenuProps["onClick"] = (e: any) => {
         navigate(`/${e.key}`);
@@ -85,6 +123,12 @@ const Profile = (props: Props) => {
     useEffect(() => {
         fetchUserDetailData();
     }, []);
+
+    useEffect(() => {
+        form.setFieldsValue(userDetail);
+    }, [userDetail]);
+
+    console.log("User detail: ", userDetail);
 
     return (
         <>
@@ -98,7 +142,7 @@ const Profile = (props: Props) => {
                                 <p>{user?.userName[0].toUpperCase()}</p>
                             </div>
                             <h1 className="font-bold text-2xl">
-                                {user?.userName}
+                                {userDetail?.userName}
                             </h1>
                         </div>
                         <Divider />
@@ -118,6 +162,7 @@ const Profile = (props: Props) => {
                 </div>
                 <div className="basis-2/3 border-[1px] border-gray-200 rounded-lg">
                     <Form
+                        form={form}
                         className="p-4 flex flex-col gap-5"
                         name="edit-detail-form"
                         onFinish={handleSave}
@@ -127,7 +172,7 @@ const Profile = (props: Props) => {
                             <Form.Item
                                 className="basis-1/2"
                                 label="Full Name"
-                                name="fullname"
+                                name="fullName"
                                 rules={[
                                     {
                                         required: true,
@@ -138,24 +183,24 @@ const Profile = (props: Props) => {
                                 <Input
                                     disabled={!isEdit}
                                     className="py-3"
-                                    placeholder={fakeUserData.fullName}
+                                    placeholder={userDetail?.fullName}
                                 />
                             </Form.Item>
                             <Form.Item
                                 className="basis-1/2"
-                                label="Username"
-                                name="username"
+                                label="UserName"
+                                name="userName"
                                 rules={[
                                     {
                                         required: true,
-                                        message: "Please enter your username!",
+                                        message: "Please enter your UserName!",
                                     },
                                 ]}
                             >
                                 <Input
-                                    disabled={!isEdit}
+                                    disabled
                                     className="py-3"
-                                    placeholder="Username"
+                                    placeholder={userDetail?.fullName}
                                 />
                             </Form.Item>
                         </div>
@@ -180,13 +225,13 @@ const Profile = (props: Props) => {
                                 <Input
                                     disabled={!isEdit}
                                     className="py-3"
-                                    placeholder="Email"
+                                    placeholder={userDetail?.email}
                                 />
                             </Form.Item>
                             <Form.Item
                                 className="basis-1/2"
                                 label="Phone Number"
-                                name="phonenumber"
+                                name="phoneNumber"
                                 rules={[
                                     {
                                         required: true,
@@ -203,23 +248,36 @@ const Profile = (props: Props) => {
                                 <Input
                                     disabled={!isEdit}
                                     className="py-3"
-                                    placeholder="Phone Number"
+                                    placeholder={userDetail?.phoneNumber}
                                 />
                             </Form.Item>
                         </div>
 
                         {isEdit ? (
-                            <Form.Item>
-                                <Button
-                                    className="font-bold"
-                                    color="purple"
-                                    variant="solid"
-                                    htmlType="submit"
-                                    loading={loading}
-                                >
-                                    Save
-                                </Button>
-                            </Form.Item>
+                            <div className="flex gap-4">
+                                <Form.Item>
+                                    <Button
+                                        className="font-bold"
+                                        color="purple"
+                                        variant="solid"
+                                        htmlType="submit"
+                                        loading={loading}
+                                    >
+                                        Save
+                                    </Button>
+                                </Form.Item>
+                                <Form.Item>
+                                    <Button
+                                        className="font-bold"
+                                        color="yellow"
+                                        variant="solid"
+                                        htmlType="button"
+                                        onClick={() => setIsEdit(false)}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </Form.Item>
+                            </div>
                         ) : (
                             <Button
                                 className="font-bold w-[3.9rem]"
@@ -254,6 +312,41 @@ const Profile = (props: Props) => {
                             <div className="flex justify-center gap-5">
                                 <Form.Item
                                     className="basis-1/2"
+                                    label="Current Password"
+                                    name="currentPassword"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your new password!",
+                                        },
+                                        {
+                                            min: 5,
+                                            message:
+                                                "The password has at least 8 characters!",
+                                        },
+                                    ]}
+                                >
+                                    <Input.Password
+                                        className="py-3"
+                                        placeholder="Current password"
+                                    />
+                                </Form.Item>
+                                <Form.Item className="basis-1/2 flex items-start mt-8">
+                                    <Button
+                                        className="font-bold"
+                                        color="purple"
+                                        variant="solid"
+                                        htmlType="submit"
+                                        loading={loading}
+                                    >
+                                        Change
+                                    </Button>
+                                </Form.Item>
+                            </div>
+                            <div className="flex justify-center gap-5">
+                                <Form.Item
+                                    className="basis-1/2"
                                     label="New Password"
                                     name="newPassword"
                                     rules={[
@@ -269,7 +362,7 @@ const Profile = (props: Props) => {
                                         },
                                     ]}
                                 >
-                                    <Input
+                                    <Input.Password
                                         className="py-3"
                                         placeholder="New password"
                                     />
@@ -287,23 +380,12 @@ const Profile = (props: Props) => {
                                         checkConfirmNewPassword,
                                     ]}
                                 >
-                                    <Input
+                                    <Input.Password
                                         className="py-3"
                                         placeholder="Confirm new password"
                                     />
                                 </Form.Item>
                             </div>
-                            <Form.Item>
-                                <Button
-                                    className="font-bold"
-                                    color="purple"
-                                    variant="solid"
-                                    htmlType="submit"
-                                    loading={loading}
-                                >
-                                    Change
-                                </Button>
-                            </Form.Item>
                         </Form>
                     )}
                 </div>
