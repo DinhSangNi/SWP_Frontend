@@ -3,7 +3,7 @@ import { Carousel } from "antd";
 import Target from "./components/Target";
 import Mission from "./components/Mission";
 import Report from "./components/Report";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 type Props = {};
 
 const contentStyle: React.CSSProperties = {
@@ -82,7 +82,13 @@ const Home = (props: Props) => {
             </Carousel>
 
             {/* COURSES SLIDER */}
-            <CourseCarousel />
+            <CourseCarousel
+                heading={
+                    <h1 className="text-[32px] font-bold">
+                        Students Are Viewing
+                    </h1>
+                }
+            />
             {/* Target  */}
             <Target />
             {/* Mission  */}

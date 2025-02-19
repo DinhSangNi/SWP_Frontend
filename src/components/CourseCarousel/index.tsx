@@ -1,10 +1,13 @@
 import { Button, Carousel, ConfigProvider } from "antd";
 import { Card, Rate } from "antd";
 import type { CarouselRef } from "antd/es/carousel";
-import { useRef } from "react";
+import { ReactNode, useRef } from "react";
 import { Link } from "react-router-dom"; // Import Link từ react-router-dom
 
-const CourseCarousel = () => {
+type props = {
+    heading: ReactNode;
+};
+const CourseCarousel = ({ heading }: props) => {
     const carouselRef = useRef<CarouselRef>(null);
 
     const handleNext = () => {
@@ -18,7 +21,7 @@ const CourseCarousel = () => {
     return (
         <div className="w-full mt-5">
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-[32px] font-bold">Students are viewing</h1>
+                {heading}
                 <div className="flex items-center gap-x-2">
                     <Button
                         onClick={handlePrev}
@@ -46,7 +49,7 @@ const CourseCarousel = () => {
                 {[...Array(12)].map((item, index) => (
                     <div
                         key={index}
-                        className="px-2 transition-transform duration-300 hover:scale-105"
+                        className="px-1 transition-transform duration-300 hover:scale-105"
                     >
                         {" "}
                         {/* Thêm hiệu ứng hover */}
@@ -104,7 +107,9 @@ const CourseCarousel = () => {
             </Carousel>
 
             <div className="flex items-center justify-center w-full mt-4 cursor-pointer">
-                See more
+                <Button color="purple" variant="text">
+                    See more
+                </Button>
             </div>
         </div>
     );

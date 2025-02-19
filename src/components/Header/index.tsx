@@ -11,6 +11,7 @@ import {
     message,
     Modal,
     Space,
+    Popover,
 } from "antd";
 import { use, useState } from "react";
 import { MdOutlineShoppingCart } from "react-icons/md";
@@ -22,6 +23,7 @@ import useMediaQuery from "@/hooks/useMediaQuery";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import { AnimatePresence, motion } from "framer-motion";
 import { MenuItems } from "@/stores/enums";
+import PopoverCart from "../PopoverCart";
 
 const { Item } = Menu;
 
@@ -140,7 +142,11 @@ const Header = ({ setLoading }: Props) => {
             <header className="w-full relative border-b-[1px] border-b-[#ddd] shadow-md">
                 <div className="w-11/12 mx-auto flex items-center justify-between pb-[0.5rem] gap-7 md:gap-4">
                     {/* LEFTSIDE */}
-                    <div className="flex gap-4 font-bold">
+                    <div
+                        className="flex gap-4 font-bold cursor-pointer hover:opacity-60"
+                        onClick={() => navigate("/")}
+                    >
+                        {/* LOGO IMG */}
                         <img
                             className="w-24 h-16"
                             src="https://frontends.udemycdn.com/frontends-homepage/staticx/udemy/images/v7/logo-udemy.svg"
@@ -156,7 +162,7 @@ const Header = ({ setLoading }: Props) => {
                         <div className="flex items-center justify-center gap-x-[1.8rem] font-bold">
                             <div>
                                 <Badge
-                                    className="relative mt-1 hover:text-purple-700"
+                                    className="relative mt-1 cursor-pointer hover:text-purple-700"
                                     count={1}
                                     size="default"
                                 >
@@ -164,13 +170,16 @@ const Header = ({ setLoading }: Props) => {
                                 </Badge>
                             </div>
                             <div>
-                                <Badge
-                                    className="relative mt-1 hover:text-purple-700"
-                                    count={1}
-                                    size="default"
-                                >
-                                    <MdOutlineShoppingCart className="text-[1.6rem]" />
-                                </Badge>
+                                <PopoverCart>
+                                    <Badge
+                                        className="relative mt-1 cursor-pointer hover:text-purple-700"
+                                        count={2}
+                                        size="default"
+                                        onClick={() => navigate("/cart")}
+                                    >
+                                        <MdOutlineShoppingCart className="text-[1.6rem]" />
+                                    </Badge>
+                                </PopoverCart>
                             </div>
                             {!user ? (
                                 <div className="flex items-center justify-center gap-x-[0.5rem]">
@@ -300,6 +309,7 @@ const Header = ({ setLoading }: Props) => {
                                                 </p>
                                             </div>
                                         </div>
+                                        {/* MENU */}
                                         <Menu
                                             className="font-bold bg-purple-200 border-none"
                                             onClick={handleOnclickMenuItems}
