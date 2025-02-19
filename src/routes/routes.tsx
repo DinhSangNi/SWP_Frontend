@@ -10,6 +10,7 @@ import Student from "@/pages/Admin/Students";
 import Teacher from "@/pages/Admin/Teacher";
 import Courses from "@/pages/Admin/Courses";
 import Profile from "@/pages/Profile";
+import Cart from "@/pages/Cart";
 export const routes = [
     {
         path: "/",
@@ -26,6 +27,10 @@ export const routes = [
             {
                 path: "/profile",
                 element: <Profile />,
+            },
+            {
+                path: "/cart",
+                element: <Cart />,
             },
         ],
     },
