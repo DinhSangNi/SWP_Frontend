@@ -15,7 +15,7 @@ const MainLayout = () => {
                 }
             >
                 <Header setLoading={setLoading} />
-                <main className="p-4">
+                <main className="py-8 px-[5rem]">
                     <Outlet />
                 </main>
                 <Footer />

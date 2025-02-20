@@ -16,7 +16,7 @@ const contentStyle: React.CSSProperties = {
 
 const Home = (props: Props) => {
     return (
-        <div className="w-full px-[4rem]">
+        <div className="w-full">
             {/* INTRODUCTION CAROUSEL */}
             <Carousel arrows infinite autoplaySpeed={3000}>
                 <div>

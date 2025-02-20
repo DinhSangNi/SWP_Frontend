@@ -1,55 +1,94 @@
-import { Input } from "antd";
+import { AutoComplete, Input } from "antd";
 import type { AutoCompleteProps } from "antd";
 import { IoMdSearch } from "react-icons/io";
-import { useState } from "react";
-
-type Props = {};
-
-// FAKE SEARCH APIS
-const getRandomInt = (max: number, min = 0) =>
-    Math.floor(Math.random() * (max - min + 1)) + min;
-
-const searchResult = (query: string) =>
-    new Array(getRandomInt(5))
-        .join(".")
-        .split(".")
-        .map((_, idx) => {
-            const category = `${query}${idx}`;
-            return {
-                value: category,
-                label: (
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                        }}
-                    >
-                        <span>
-                            Found {query} on{" "}
-                            <a
-                                href={`https://s.taobao.com/search?q=${query}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                {category}
-                            </a>
-                        </span>
-                        <span>{getRandomInt(200, 100)} results</span>
-                    </div>
-                ),
-            };
-        });
+import React, { useEffect, useState } from "react";
+import { searchCourse } from "@/services/courseService";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import { useNavigate } from "react-router-dom";
 
 const SearchForm = () => {
-    const handleSearch = (e: any) => {};
+    const [query, setQuery] = useState("");
+    const [options, setOptions] = useState<AutoCompleteProps["options"]>([]);
+
+    const navigate = useNavigate();
+
+    console.log("query: ", query);
+
+    const handleSelect = (value: string) => {
+        setOptions([]);
+        setQuery(value);
+        console.log("value: ", value);
+        navigate(`/search/?query=${encodeURIComponent(value)}`);
+    };
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setQuery(e.target.value);
+    };
+
+    const handleEnter = () => {
+        if (query.length !== 0) {
+            navigate(`/search/?query=${encodeURIComponent(query)}`);
+            console.log(encodeURIComponent(query));
+        }
+    };
+
+    useEffect(() => {
+        if (query.length === 0) {
+            setOptions([]);
+            return;
+        }
+
+        const fetchDataOnSearch = async () => {
+            try {
+                const response = await searchCourse(encodeURIComponent(query));
+                if (response) {
+                    const searchOptions = response.$values.map(
+                        (course: any) => {
+                            return {
+                                value: course.courseName,
+                                label: (
+                                    <div className="flex justify-start items-center gap-2 font-bold">
+                                        <MagnifyingGlassIcon className="h-4 w-4" />
+                                        <p>{course.courseName}</p>
+                                    </div>
+                                ),
+                            };
+                        }
+                    );
+
+                    setOptions(searchOptions);
+                }
+            } catch (error) {
+                console.log("error: ", error);
+                setOptions([]);
+            }
+        };
+
+        const debounceTimout = setTimeout(fetchDataOnSearch, 500);
+
+        return () => {
+            clearTimeout(debounceTimout);
+        };
+    }, [query]);
 
     return (
         <div className="w-full">
-            <Input
-                className="w-full rounded-3xl py-3 hover:border-[#6d28d2] focus-within:border-[#6d28d2]"
-                prefix={<IoMdSearch className="text-[1.5rem]" />}
-                onPressEnter={handleSearch}
-            ></Input>
+            <AutoComplete
+                className="w-full"
+                size="large"
+                options={options}
+                onSelect={handleSelect}
+            >
+                <Input
+                    allowClear
+                    className="w-full rounded-3xl hover:border-[#6d28d2] focus-within:border-[#6d28d2]"
+                    prefix={<IoMdSearch className="text-[1.5rem]" />}
+                    onChange={handleSearch}
+                    value={query}
+                    onPressEnter={handleEnter}
+                    size="large"
+                />
+            </AutoComplete>
         </div>
     );
 };
