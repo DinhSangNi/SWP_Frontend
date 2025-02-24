@@ -15,7 +15,7 @@ const MainLayout = () => {
                 }
             >
                 <Header setLoading={setLoading} />
-                <main className="p-4">
+                <main className="">
                     <Outlet />
                 </main>
                 <Footer />

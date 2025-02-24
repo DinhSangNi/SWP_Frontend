@@ -11,10 +11,8 @@ import {
     message,
     Modal,
     Space,
-    Popover,
 } from "antd";
-import { use, useState } from "react";
-import { MdOutlineShoppingCart } from "react-icons/md";
+import { useState } from "react";
 import { GoBell } from "react-icons/go";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,7 +21,6 @@ import useMediaQuery from "@/hooks/useMediaQuery";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import { AnimatePresence, motion } from "framer-motion";
 import { MenuItems } from "@/stores/enums";
-import PopoverCart from "../PopoverCart";
 
 const { Item } = Menu;
 
@@ -140,7 +137,7 @@ const Header = ({ setLoading }: Props) => {
         <>
             {contextHolder}
             <header className="w-full relative border-b-[1px] border-b-[#ddd] shadow-md">
-                <div className="w-11/12 mx-auto flex items-center justify-between pb-[0.5rem] gap-7 md:gap-4">
+                <div className="mx-8 flex items-center justify-between pb-[0.5rem] gap-7 md:gap-4">
                     {/* LEFTSIDE */}
                     <div
                         className="flex gap-4 font-bold cursor-pointer hover:opacity-60"
@@ -159,7 +156,7 @@ const Header = ({ setLoading }: Props) => {
                     </div>
                     {/* RIGHTSIDE */}
                     {isAboveMediumScreens ? (
-                        <div className="flex items-center justify-center gap-x-[1.8rem] font-bold">
+                        <div className="flex items-center justify-center gap-4 font-bold">
                             <div>
                                 <Badge
                                     className="relative mt-1 cursor-pointer hover:text-purple-700"
@@ -182,7 +179,7 @@ const Header = ({ setLoading }: Props) => {
                                 </PopoverCart>
                             </div> */}
                             {!user ? (
-                                <div className="flex items-center justify-center gap-x-[0.5rem]">
+                                <div className="flex items-center justify-center gap-4">
                                     <Link to="/login">
                                         <Button
                                             className="py-5 px-5 border-solid border-[1px] border-[#6d28d2] font-bold"
