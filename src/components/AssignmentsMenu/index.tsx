@@ -28,7 +28,9 @@ const AssignmentsMenu = ({ title, items }: Props) => {
                     >
                         <IoIosArrowDown />
                     </motion.div>
-                    <h1 className="text-xl">{title}</h1>
+                    <h1 className="text-xl">
+                        {title} <span>{items.length}</span>
+                    </h1>
                 </div>
                 <AnimatePresence>
                     {isCollapse && (

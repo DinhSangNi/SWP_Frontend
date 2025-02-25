@@ -72,7 +72,7 @@ const CourseCard = ({ course, onClick }: Props) => {
                             <div
                                 className={`${course.enrollmentStatus === "Confirmed" ? "text-green-500 border-green-500" : "text-red-500 border-red-500"} w-1/3 mx-auto text-xl font-bold p-3 border-[1px]`}
                             >
-                                <p className="md:text-[1.2rem] text-center">
+                                <p className="md:text-[1rem] text-center">
                                     {course.enrollmentStatus}
                                 </p>
                             </div>
@@ -80,7 +80,7 @@ const CourseCard = ({ course, onClick }: Props) => {
                         {/* ACTIONS */}
                         <div className="basis-1/3 flex flex-col justify-start items-start text-[1.4rem] text-right text-purple-600">
                             <Button
-                                className="px-1"
+                                className="px-2 font-bold"
                                 color="purple"
                                 variant="text"
                             >

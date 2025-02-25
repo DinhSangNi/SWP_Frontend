@@ -29,13 +29,12 @@ const authSlice = createSlice({
             state.user = action.payload;
 
             localStorage.setItem("token", action.payload.token); // Lưu token vào localStorage
-            console.log("Logged in user:", JSON.stringify(action.payload)); // Debug
             localStorage.setItem("user", JSON.stringify(action.payload)); // Lưu user vào localStorage
         },
         logout: (state) => {
             state.user = null;
-            // localStorage.removeItem("token"); // Xóa token khi đăng xuất
-            // localStorage.removeItem("user"); // Xóa user khi đăng xuất
+            localStorage.removeItem("token"); // Xóa token khi đăng xuất
+            localStorage.removeItem("user"); // Xóa user khi đăng xuất
         },
     },
 });

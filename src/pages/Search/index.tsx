@@ -35,7 +35,7 @@ const Search = () => {
     }, [decodedQuery]);
 
     return (
-        <div>
+        <div className="w-mainContent mx-auto">
             <h1 className="text-3xl font-bold">
                 {searchResults.length} results for {`"${query}"`}
             </h1>

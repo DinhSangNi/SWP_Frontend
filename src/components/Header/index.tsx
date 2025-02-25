@@ -13,12 +13,9 @@ import {
     Space,
 } from "antd";
 import { useState } from "react";
-
 import { CgProfile } from "react-icons/cg";
 import { HiOutlineAcademicCap } from "react-icons/hi";
 import { LuLogOut } from "react-icons/lu";
-// import { MdOutlineShoppingCart } from "react-icons/md";
-
 import { GoBell } from "react-icons/go";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -28,8 +25,6 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import { AnimatePresence, motion } from "framer-motion";
 import { MenuItems } from "@/stores/enums";
 import PopoverNotify from "../PopoverNotify";
-// import PopoverCart from "../PopoverCart";
-
 
 const { Item } = Menu;
 
@@ -155,10 +150,10 @@ const Header = ({ setLoading }: Props) => {
         <>
             {contextHolder}
             <header className="w-full relative border-b-[1px] border-b-[#ddd] shadow-md">
-                <div className="mx-8 flex items-center justify-between pb-[0.5rem] gap-7 md:gap-4">
+                <div className="flex items-center justify-evenly pb-[0.5rem]">
                     {/* LEFTSIDE */}
                     <div
-                        className="flex gap-4 font-bold cursor-pointer hover:opacity-60"
+                        className="font-bold cursor-pointer hover:opacity-60"
                         onClick={() => navigate("/")}
                     >
                         {/* LOGO IMG */}
@@ -169,40 +164,32 @@ const Header = ({ setLoading }: Props) => {
                         />
                     </div>
                     {/* SEARCHFORM */}
-                    <div className="grow">
+                    <div className="basis-4/5">
                         <SearchForm />
                     </div>
                     {/* RIGHTSIDE */}
                     {isAboveMediumScreens ? (
-                        <div className="flex items-center justify-center gap-4 font-bold">
-                            <div>
-                                <PopoverNotify>
-                                    <Badge
-                                        className="relative mt-1 cursor-pointer hover:text-purple-700"
-                                        count={0}
-                                        size="default"
-                                    >
-                                        <GoBell className="text-[1.6rem]" />
-                                    </Badge>
-                                </PopoverNotify>
-                            </div>
-                            {/* <div>
-                                <PopoverCart>
-                                    <Badge
-                                        className="relative mt-1 cursor-pointer hover:text-purple-700"
-                                        count={2}
-                                        size="default"
-                                        onClick={() => navigate("/cart")}
-                                    >
-                                        <MdOutlineShoppingCart className="text-[1.6rem]" />
-                                    </Badge>
-                                </PopoverCart>
-                            </div> */}
+                        <>
+                            {user && (
+                                // NOTIFICATIONS
+                                <div className="">
+                                    <PopoverNotify>
+                                        <Badge
+                                            className="relative mt-1 cursor-pointer hover:text-purple-700"
+                                            count={0}
+                                            size="default"
+                                        >
+                                            <GoBell className="text-[1.6rem]" />
+                                        </Badge>
+                                    </PopoverNotify>
+                                </div>
+                            )}
+                            {/* LOGIN SIGNUP BUTTONS */}
                             {!user ? (
-                                <div className="flex items-center justify-center gap-4">
+                                <>
                                     <Link to="/login">
                                         <Button
-                                            className="py-5 px-5 border-solid border-[1px] border-[#6d28d2] font-bold"
+                                            className=" py-5 px-5 border-solid border-[1px] border-[#6d28d2] font-bold"
                                             color="purple"
                                             variant="filled"
                                         >
@@ -211,16 +198,16 @@ const Header = ({ setLoading }: Props) => {
                                     </Link>
                                     <Link to="/signup">
                                         <Button
-                                            className="px-4 py-5 font-bold text-white"
+                                            className=" px-4 py-5 font-bold text-white"
                                             color="purple"
                                             variant="solid"
                                         >
                                             Sign up
                                         </Button>
                                     </Link>
-                                </div>
+                                </>
                             ) : (
-                                <div>
+                                <div className="">
                                     <Dropdown
                                         menu={{ items: userDropdownItems }}
                                         trigger={["click"]}
@@ -235,16 +222,13 @@ const Header = ({ setLoading }: Props) => {
                                                         {user.userName?.[0] ||
                                                             userName?.[0]}
                                                     </div>
-                                                    <h2 className="cursor-default">
-                                                        {userName}
-                                                    </h2>
                                                 </div>
                                             </Space>
                                         </a>
                                     </Dropdown>
                                 </div>
                             )}
-                        </div>
+                        </>
                     ) : (
                         <Button
                             className="px-2 py-4 border-none rounded-full bg-secondary-500"
