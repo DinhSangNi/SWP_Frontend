@@ -12,8 +12,6 @@ const SearchForm = () => {
 
     const navigate = useNavigate();
 
-    console.log("query: ", query);
-
     const handleSelect = (value: string) => {
         setOptions([]);
         setQuery(value);

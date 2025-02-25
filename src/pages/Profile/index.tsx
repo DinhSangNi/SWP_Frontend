@@ -17,7 +17,7 @@ import {
     Switch,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -49,17 +49,6 @@ const Profile = () => {
     const user = useSelector((state: RootState) => state.auth.user);
     const navigate = useNavigate();
 
-    const fetchUserDetailData = async () => {
-        try {
-            const response = await getUserProfile(user!.idUser);
-            if (response) {
-                setUserDetail(response);
-            }
-        } catch (error) {
-            console.log("error ", error);
-        }
-    };
-
     // Call API to update user detail information
     const handleSave = async (credentials: any) => {
         try {
@@ -81,8 +70,7 @@ const Profile = () => {
         setIsEdit(true);
     };
 
-    console.log("isEdit: ", isEdit);
-
+    // Check confirm password
     const checkConfirmNewPassword = ({ getFieldValue }: any) => ({
         validator(_: any, value: string) {
             if (!value || getFieldValue("newPassword") === value) {
@@ -94,9 +82,9 @@ const Profile = () => {
 
     const handleSwitchChange = (checked: boolean) => {
         setIsChangePassword(checked);
-        console.log("switch to ", checked);
     };
 
+    // Call API to change password
     const handleChangePassword = async (credentials: any) => {
         try {
             setLoading(true);
@@ -121,14 +109,24 @@ const Profile = () => {
     };
 
     useEffect(() => {
+        const fetchUserDetailData = async () => {
+            try {
+                const response = await getUserProfile(user!.idUser);
+                if (response) {
+                    setUserDetail(response);
+                }
+            } catch (error) {
+                console.log("error ", error);
+            }
+        };
+
+        // Fetch user detail information
         fetchUserDetailData();
     }, []);
 
     useEffect(() => {
         form.setFieldsValue(userDetail);
     }, [userDetail]);
-
-    console.log("User detail: ", userDetail);
 
     return (
         <>

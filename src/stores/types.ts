@@ -28,13 +28,13 @@ export type Student = {
 };
 
 export type Course = {
-    key: string;
+    $id: string;
     courseId: string;
     courseName: string;
     description: string;
     startDate: string;
     endDate: string;
-    createdBy: string;
+    enrollmentStatus: string;
 };
 
 export type PaginationType = {

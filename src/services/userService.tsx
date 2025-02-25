@@ -35,11 +35,11 @@ API.interceptors.response.use(
     }
 );
 
-// 🟢 API Lấy tất cả người dùng
+//  API Lấy tất cả người dùng
 export const getAllUser = async () => {
     try {
         const response = await API.get("/User/all-users");
-        // console.log("📌 getAllUser response:", response.data);
+        console.log("📌 Lấy all users thành công", response.data);
         return response.data;
     } catch (error) {
         console.error("❌ Lỗi khi lấy danh sách người dùng:", error);

@@ -38,7 +38,7 @@ API.interceptors.response.use(
 // Get all courses
 export const getAllCourses = async () => {
     try {
-        const response = await API.get("/Course/all-courses");
+        const response = await API.get("/Home/all-courses");
         console.log("✅ Get all courses successfully:", response.data);
         return response.data;
     } catch (error) {
@@ -98,6 +98,7 @@ export const getCourseById = async (courseId: string) => {
     }
 };
 
+// Search course
 export const searchCourse = async (query: string) => {
     try {
         const response = await API.get(`/Home/search/${query}`);
@@ -105,6 +106,18 @@ export const searchCourse = async (query: string) => {
             "✅ Search course by course name successfully:",
             response.data
         );
+        return response.data;
+    } catch (error) {
+        console.error("❌ Error when search course by course name:", error);
+        throw error;
+    }
+};
+
+// Get my courses
+export const getMyCources = async () => {
+    try {
+        const response = await API.get("/Course/my-courses");
+        console.log("✅ Get my course successfully:", response.data);
         return response.data;
     } catch (error) {
         console.error("❌ Error when search course by course name:", error);

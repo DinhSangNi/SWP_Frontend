@@ -29,7 +29,9 @@ const Student = ({ type }: Props) => {
             const response = await getAllUser(); // Gọi API lấy danh sách người dùng
             // console.log("Response from server:", response);
 
-            const students = response.filter((user) => user.role === "Student");
+            const students = response.$values.filter(
+                (user: any) => user.role === "Student"
+            );
             console.log("Students:", students);
             setDataStudent(students);
         } catch (error) {
@@ -40,7 +42,7 @@ const Student = ({ type }: Props) => {
     };
 
     // Hàm xử lý khi nhấn nút "Detail"
-    const handleDetailClick = async (userId) => {
+    const handleDetailClick = async (userId: string) => {
         try {
             const userDetail = await getUserById(userId); // Gọi API lấy thông tin chi tiết
             setSelectedUser(userDetail); // Lưu thông tin chi tiết vào state
@@ -52,7 +54,7 @@ const Student = ({ type }: Props) => {
     };
 
     // Hàm xử lý khi nhấn vào Tag "Status"
-    const handleStatusClick = async (userId, currentStatus) => {
+    const handleStatusClick = async (userId: string, currentStatus: string) => {
         try {
             const newStatus =
                 currentStatus === "Active" ? "Inactive" : "Active"; // Đảo ngược trạng thái
@@ -84,37 +86,37 @@ const Student = ({ type }: Props) => {
         setReload(!reload);
     };
 
-    const LocalizedModal = () => {
-        const [open, setOpen] = useState(false);
+    // const LocalizedModal = () => {
+    //     const [open, setOpen] = useState(false);
 
-        const showModal = () => {
-            setOpen(true);
-        };
+    //     const showModal = () => {
+    //         setOpen(true);
+    //     };
 
-        const hideModal = () => {
-            setOpen(false);
-        };
+    //     const hideModal = () => {
+    //         setOpen(false);
+    //     };
 
-        return (
-            <>
-                <Button type="primary" onClick={showModal}>
-                    Modal
-                </Button>
-                <Modal
-                    title="Modal"
-                    open={open}
-                    onOk={hideModal}
-                    onCancel={hideModal}
-                    okText="确认"
-                    cancelText="取消"
-                >
-                    <p>Bla bla ...</p>
-                    <p>Bla bla ...</p>
-                    <p>Bla bla ...</p>
-                </Modal>
-            </>
-        );
-    };
+    //     return (
+    //         <>
+    //             <Button type="primary" onClick={showModal}>
+    //                 Modal
+    //             </Button>
+    //             <Modal
+    //                 title="Modal"
+    //                 open={open}
+    //                 onOk={hideModal}
+    //                 onCancel={hideModal}
+    //                 okText="确认"
+    //                 cancelText="取消"
+    //             >
+    //                 <p>Bla bla ...</p>
+    //                 <p>Bla bla ...</p>
+    //                 <p>Bla bla ...</p>
+    //             </Modal>
+    //         </>
+    //     );
+    // };
 
     // Gọi API khi component được mount
     useEffect(() => {
