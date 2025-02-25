@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginAuth } from "@/services/authService";
@@ -42,6 +42,7 @@ export default function SignIn() {
     const errorMessage = () => {
         messageApi.error("Your credentials is correct!");
     };
+
     return (
         <>
             {contextHolder}
@@ -114,7 +115,7 @@ export default function SignIn() {
                             </div>
                             <div className="mb-1 w-full">
                                 <Button
-                                    className="py-6"
+                                    className="py-6 font-bold"
                                     color="purple"
                                     variant="solid"
                                     type="primary"
@@ -129,7 +130,7 @@ export default function SignIn() {
                                 Don't have an account?{" "}
                                 <span>
                                     <Link
-                                        className="font-bold hover:underline hover:text-primary-purple"
+                                        className="font-bold hover:underline hover:text-purple-500 text-primary-purple"
                                         to="/signup"
                                     >
                                         Sign Up

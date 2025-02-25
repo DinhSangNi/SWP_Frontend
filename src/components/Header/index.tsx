@@ -13,6 +13,12 @@ import {
     Space,
 } from "antd";
 import { useState } from "react";
+
+import { CgProfile } from "react-icons/cg";
+import { HiOutlineAcademicCap } from "react-icons/hi";
+import { LuLogOut } from "react-icons/lu";
+// import { MdOutlineShoppingCart } from "react-icons/md";
+
 import { GoBell } from "react-icons/go";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -21,6 +27,9 @@ import useMediaQuery from "@/hooks/useMediaQuery";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import { AnimatePresence, motion } from "framer-motion";
 import { MenuItems } from "@/stores/enums";
+import PopoverNotify from "../PopoverNotify";
+// import PopoverCart from "../PopoverCart";
+
 
 const { Item } = Menu;
 
@@ -91,8 +100,12 @@ const Header = ({ setLoading }: Props) => {
     const userDropdownItems = [
         {
             label: (
-                <Link to={`/${MenuItems.profile}`} className="px-4 font-bold">
-                    Profile
+                <Link
+                    to={`/${MenuItems.profile}`}
+                    className="flex justify-start items-center gap-2 px-4 font-bold"
+                >
+                    <CgProfile className="text-[1rem] text-black" />{" "}
+                    <p>Profile</p>
                 </Link>
             ),
             key: "0",
@@ -110,8 +123,12 @@ const Header = ({ setLoading }: Props) => {
         },
         {
             label: (
-                <Link to={`/${MenuItems.myCourses}`} className="px-4 font-bold">
-                    My Courses
+                <Link
+                    to={`/${MenuItems.myCourses}`}
+                    className="flex justify-start items-center gap-2 px-4 font-bold"
+                >
+                    <HiOutlineAcademicCap className="text-[1rem] text-black" />
+                    <p>My Courses</p>
                 </Link>
             ),
             key: "2",
@@ -123,9 +140,10 @@ const Header = ({ setLoading }: Props) => {
         {
             label: (
                 <button
-                    className="px-4 font-bold"
+                    className="flex justify-start items-center gap-2 px-4 font-bold"
                     onClick={() => setIsOpenModal(true)}
                 >
+                    <LuLogOut className="text-[1rem] font-bold" />
                     Logout
                 </button>
             ),
@@ -158,13 +176,15 @@ const Header = ({ setLoading }: Props) => {
                     {isAboveMediumScreens ? (
                         <div className="flex items-center justify-center gap-4 font-bold">
                             <div>
-                                <Badge
-                                    className="relative mt-1 cursor-pointer hover:text-purple-700"
-                                    count={1}
-                                    size="default"
-                                >
-                                    <GoBell className="text-[1.6rem]" />
-                                </Badge>
+                                <PopoverNotify>
+                                    <Badge
+                                        className="relative mt-1 cursor-pointer hover:text-purple-700"
+                                        count={0}
+                                        size="default"
+                                    >
+                                        <GoBell className="text-[1.6rem]" />
+                                    </Badge>
+                                </PopoverNotify>
                             </div>
                             {/* <div>
                                 <PopoverCart>
@@ -211,7 +231,7 @@ const Header = ({ setLoading }: Props) => {
                                         >
                                             <Space className="hover:text-[#6d28d2] text-black">
                                                 <div className="flex items-center justify-center gap-2">
-                                                    <div className="font-bold px-4 py-2.5 bg-purple-200 rounded-full">
+                                                    <div className="font-bold px-5 py-2.5 bg-purple-200 rounded-full">
                                                         {user.userName?.[0] ||
                                                             userName?.[0]}
                                                     </div>

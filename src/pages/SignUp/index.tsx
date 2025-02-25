@@ -137,7 +137,7 @@ export default function SignUp() {
                         <Form.Item>
                             <div className="mb-3 w-full">
                                 <Button
-                                    className="py-6"
+                                    className="py-6 font-bold"
                                     color="purple"
                                     variant="solid"
                                     type="primary"
@@ -148,11 +148,34 @@ export default function SignUp() {
                                     Sign Up
                                 </Button>
                             </div>
-                            <div className="mb-7 w-full">
+                            <div>
+                                <p className="text-[0.8rem] my-2">
+                                    By signing up, you agree to our{" "}
+                                    <span>
+                                        <Link
+                                            to=""
+                                            className="text-[#6d28d2] text-[0.8rem] underline hover:text-purple-900 "
+                                        >
+                                            Terms of Use
+                                        </Link>
+                                    </span>{" "}
+                                    and{" "}
+                                    <span>
+                                        <Link
+                                            to=""
+                                            className="text-[#6d28d2] text-[0.8rem] underline hover:text-purple-900 "
+                                        >
+                                            Privacy Policy
+                                        </Link>
+                                    </span>
+                                    .
+                                </p>
+                            </div>
+                            <div className="mb-7 w-full text-[1rem] text-center">
                                 Already have an account?{" "}
                                 <span>
                                     <Link
-                                        className="font-bold hover:underline hover:text-[#6d28d2]"
+                                        className="font-bold hover:underline text-[#6d28d2] hover:text-purple-500"
                                         to="/login"
                                     >
                                         Login here.

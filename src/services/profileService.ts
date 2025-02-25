@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Cấu hình Axios instance
-const API = axios.create({
+export const API = axios.create({
     baseURL: "https://coursesystem.azurewebsites.net",
     withCredentials: true, // Nếu API dùng cookies để auth
     headers: {
@@ -38,7 +38,7 @@ API.interceptors.response.use(
 // Get User Profile API
 export const getUserProfile = async (userId: string) => {
     try {
-        const response = await API.get(`/Profile/${userId}/get-profile`);
+        const response = await API.get(`/Profile/get-profile`);
         console.log(`✅ Get profile của người dùng ID ${userId} thành công`);
         return response.data;
     } catch (error) {

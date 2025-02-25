@@ -2,7 +2,12 @@ import { Button, Space, Table, Modal } from "antd";
 import { PaginationType } from "@/stores/types";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { deleteCourse, editCourse, getAllCourses, getCourseById} from "@/services/courseService";
+import {
+    deleteCourse,
+    editCourse,
+    getAllCourses,
+    getCourseById,
+} from "@/services/courseService";
 import ModalCreateCourse from "@/components/ModalCreateCourse";
 import ModalEditCourse from "@/components/ModalEditCourse";
 
@@ -31,7 +36,7 @@ const Courses = ({ type }: Props) => {
         try {
             const response = await getAllCourses();
             console.log("Response from server:", response);
-            setDataCourse(response);
+            setDataCourse(response.$values);
             toast.success(`Fetched ${type} successfully!`);
         } catch (error) {
             console.error("Error fetching courses:", error);
@@ -45,7 +50,7 @@ const Courses = ({ type }: Props) => {
         fetchData();
     }, [reload]);
 
-    const handleDetailClick = async (courseId) => {
+    const handleDetailClick = async (courseId: string) => {
         try {
             const courseDetail = await getCourseById(courseId);
             setSelectedCourse(courseDetail);
@@ -56,13 +61,15 @@ const Courses = ({ type }: Props) => {
         }
     };
 
-    const handleEditClick = (courseId) => {
-        const courseToEdit = dataCourse.find(course => course.courseId === courseId);
+    const handleEditClick = (courseId: string) => {
+        const courseToEdit = dataCourse.find(
+            (course) => course.courseId === courseId
+        );
         setSelectedCourse(courseToEdit);
         setEditModalVisible(true);
     };
 
-    const handleDelete = async (courseId) => {
+    const handleDelete = async (courseId: string) => {
         try {
             await deleteCourse(courseId);
             toast.success("Deleted course successfully!");
@@ -73,7 +80,7 @@ const Courses = ({ type }: Props) => {
         }
     };
 
-    const handleSaveEdit = async (updatedCourse) => {
+    const handleSaveEdit = async (updatedCourse: any) => {
         try {
             await editCourse(updatedCourse.courseId, updatedCourse);
             toast.success("Course updated successfully!");
@@ -129,20 +136,26 @@ const Courses = ({ type }: Props) => {
                             <Space size="middle">
                                 <Button
                                     className="text-white bg-indigo-400"
-                                    onClick={() => handleDetailClick(record.courseId)}
+                                    onClick={() =>
+                                        handleDetailClick(record.courseId)
+                                    }
                                 >
                                     Detail
                                 </Button>
                                 <Button
                                     className="text-white bg-yellow-400"
-                                    onClick={() => handleEditClick(record.courseId)}
+                                    onClick={() =>
+                                        handleEditClick(record.courseId)
+                                    }
                                 >
                                     Edit
                                 </Button>
                                 <Button
                                     type="primary"
                                     danger
-                                    onClick={() => handleDelete(record.courseId)}
+                                    onClick={() =>
+                                        handleDelete(record.courseId)
+                                    }
                                 >
                                     Delete
                                 </Button>
@@ -170,9 +183,17 @@ const Courses = ({ type }: Props) => {
             >
                 {selectedCourse && (
                     <div>
-                        <p><strong>ID:</strong> {selectedCourse.courseId || 0}</p>
-                        <p><strong>Course Name:</strong> {selectedCourse.courseName}</p>
-                        <p><strong>Description:</strong> {selectedCourse.description}</p>
+                        <p>
+                            <strong>ID:</strong> {selectedCourse.courseId || 0}
+                        </p>
+                        <p>
+                            <strong>Course Name:</strong>{" "}
+                            {selectedCourse.courseName}
+                        </p>
+                        <p>
+                            <strong>Description:</strong>{" "}
+                            {selectedCourse.description}
+                        </p>
                     </div>
                 )}
             </Modal>

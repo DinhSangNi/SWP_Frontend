@@ -10,7 +10,10 @@ import Student from "@/pages/Admin/Students";
 import Teacher from "@/pages/Admin/Teacher";
 import Courses from "@/pages/Admin/Courses";
 import Profile from "@/pages/Profile";
-import Cart from "@/pages/Cart";
+// import Cart from "@/pages/Cart";
+import MyCourses from "@/pages/MyCourses";
+import Search from "@/pages/Search";
+import CourseDetail from "@/pages/CourseDetail";
 export const routes = [
     {
         path: "/",
@@ -32,6 +35,18 @@ export const routes = [
             //     path: "/cart",
             //     element: <Cart />,
             // },
+            {
+                path: "/myCourses",
+                element: <MyCourses />,
+            },
+            {
+                path: "/myCourses/:id",
+                element: <CourseDetail />,
+            },
+            {
+                path: "/search",
+                element: <Search />,
+            },
         ],
     },
     {

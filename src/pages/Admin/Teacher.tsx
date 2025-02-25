@@ -25,7 +25,9 @@ const Teacher = ({ type }: Props) => {
         setLoading(true); // Bắt đầu loading
         try {
             const response = await getAllUser(); // Gọi API lấy danh sách người dùng
-            const teachers = response.filter((user) => user.role === "Teacher");
+            const teachers = response.$values.filter(
+                (user: any) => user.role === "Teacher"
+            );
             setDataTeacher(teachers);
             toast.success(`Fetched ${type} successfully!`);
         } catch (error) {
@@ -36,7 +38,7 @@ const Teacher = ({ type }: Props) => {
     };
 
     // Hàm xử lý khi nhấn nút "Detail"
-    const handleDetailClick = async (userId) => {
+    const handleDetailClick = async (userId: string) => {
         try {
             const userDetail = await getUserById(userId); // Gọi API lấy thông tin chi tiết
             setSelectedUser(userDetail); // Lưu thông tin chi tiết vào state
@@ -48,7 +50,7 @@ const Teacher = ({ type }: Props) => {
     };
 
     // Hàm xử lý khi nhấn vào Tag "Status"
-    const handleStatusClick = async (userId, currentStatus) => {
+    const handleStatusClick = async (userId: string, currentStatus: string) => {
         try {
             const newStatus =
                 currentStatus === "Active" ? "Inactive" : "Active"; // Đảo ngược trạng thái

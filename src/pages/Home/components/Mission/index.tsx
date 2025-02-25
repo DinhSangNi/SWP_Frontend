@@ -8,33 +8,33 @@ import { motion } from "framer-motion";
 const dataMission = [
     {
         id: 1,
-        title: "Sản phẩm",
-        content: "Tìm hiểu các khóa học chủ lực kết hợp công nghệ và sáng tạo",
+        title: "Products",
+        content: "Explore key technology and innovation courses.",
         icon: <SiGoogledocs size={60} />,
     },
     {
         id: 2,
-        title: "Con người",
-        content: "Khám phá giảng viên và văn hóa học tập tại Đại học FPT",
+        title: "Human",
+        content: "Explore the faculty and learning culture at FPT University",
         icon: <GoPeople size={60} />,
     },
     {
         id: 3,
-        title: "Trách nhiệm cộng đồng",
-        content: "Khám phá cảm hứng và đóng góp xã hội cùng chúng tôi",
+        title: "Community Responsibility",
+        content: "Explore inspiration and social contribution with us",
         icon: <IoBarChartOutline size={60} />,
     },
     {
         id: 4,
-        title: "Nâng Niu Bộ Não Việt",
-        content:
-            "Tham gia cùng chúng tôi trong hành trình nâng niu bộ não Việt",
+        title: "Cherish the Vietnamese Brain",
+        content: "Join us on our journey to nurture the Vietnamese brain.",
         icon: <LuBrain size={60} />,
     },
 ];
 
 const Mission = () => {
     return (
+
         <motion.div
             initial="hidden"
             whileInView="visible"

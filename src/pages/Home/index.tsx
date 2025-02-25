@@ -18,7 +18,7 @@ const Home = (props: Props) => {
     return (
         <div className="w-full">
             {/* INTRODUCTION CAROUSEL */}
-            <Carousel arrows infinite autoplaySpeed={3000}>
+            <Carousel arrows infinite autoplay autoplaySpeed={3000}>
                 <div>
                     <div style={contentStyle} className="relative">
                         <img
