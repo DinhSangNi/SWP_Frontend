@@ -16,3 +16,9 @@ body,
     width: 100%;
     font-family: "DM Sans", sans-serif;
 }
+
+@layer utilities {
+    .w-mainContent {
+        @apply w-[1100px]
+    }
+}
