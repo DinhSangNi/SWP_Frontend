@@ -28,6 +28,7 @@ const MainLayout = () => {
                         <Footer />
                     </>
                 )}
+
             </div>
         </>
     );

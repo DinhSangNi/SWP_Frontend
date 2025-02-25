@@ -3,7 +3,7 @@ import { Carousel } from "antd";
 import Target from "./components/Target";
 import Mission from "./components/Mission";
 import Report from "./components/Report";
-import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 type Props = {};
 
 const contentStyle: React.CSSProperties = {
@@ -26,7 +26,23 @@ const Home = (props: Props) => {
                             alt="example"
                             className="relative w-full"
                         />
-                        <div className="absolute w-[17rem] md:w-[30rem] shadow-lg rounded-sm bg-white text-xl text-black top-[2rem] left-[2rem] md:top-[4rem] md:left-[4rem]">
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, amount: 0.5 }}
+                            transition={{ duration: 0.5 }}
+                            variants={{
+                                hidden: {
+                                    opacity: 0,
+                                    x: -80,
+                                },
+                                visible: {
+                                    opacity: 1,
+                                    x: 0,
+                                },
+                            }}
+                            className="absolute w-[17rem] md:w-[30rem] shadow-2xl rounded-sm bg-white text-xl text-black top-[3rem] left-[3rem] md:top-[5rem] md:left-[5rem]"
+                        >
                             <div className="p-2 md:p-[2rem] flex flex-col items-start">
                                 <h2 className="text-[1rem] md:text-[2rem] font-bold md:mb-4">
                                     Learning that gets you
@@ -36,7 +52,7 @@ const Home = (props: Props) => {
                                     Get started with us.
                                 </p>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
                 <div>
@@ -44,19 +60,35 @@ const Home = (props: Props) => {
                         <img
                             src="https://img-c.udemycdn.com/notices/web_carousel_slide/image/db24b94e-d190-4d5a-b1dd-958f702cc8f5.jpg"
                             alt="example"
-                            className="w-full"
+                            className="relative w-full"
                         />
-                        <div className="absolute w-[30rem] shadow-lg rounded-sm bg-white text-xl text-black top-[4rem] left-[4rem]">
-                            <div className="p-[2rem] flex flex-col items-start">
-                                <h2 className="text-[2rem] font-bold mb-4">
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, amount: 0.5 }}
+                            transition={{ duration: 0.5 }}
+                            variants={{
+                                hidden: {
+                                    opacity: 0,
+                                    x: -80,
+                                },
+                                visible: {
+                                    opacity: 1,
+                                    x: 0,
+                                },
+                            }}
+                            className="absolute w-[17rem] md:w-[30rem] shadow-2xl rounded-sm bg-white text-xl text-black top-[3rem] left-[3rem] md:top-[5rem] md:left-[5rem]"
+                        >
+                            <div className="p-2 md:p-[2rem] flex flex-col items-start">
+                                <h2 className="text-[1rem] md:text-[2rem] font-bold md:mb-4">
                                     Learning that gets you
                                 </h2>
-                                <p className="text-[1.1rem] text-left">
+                                <p className="text-[13px] md:text-[1.1rem] text-left">
                                     Skills for your present (and your future).
                                     Get started with us.
                                 </p>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
                 <div>
@@ -64,39 +96,61 @@ const Home = (props: Props) => {
                         <img
                             src="https://img-c.udemycdn.com/notices/web_carousel_slide/image/db24b94e-d190-4d5a-b1dd-958f702cc8f5.jpg"
                             alt="example"
-                            className="w-full"
+                            className="relative w-full"
                         />
-                        <div className="absolute w-[30rem] shadow-lg rounded-sm bg-white text-xl text-black top-[4rem] left-[4rem]">
-                            <div className="p-[2rem] flex flex-col items-start">
-                                <h2 className="text-[2rem] font-bold mb-4">
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, amount: 0.5 }}
+                            transition={{ duration: 0.5 }}
+                            variants={{
+                                hidden: {
+                                    opacity: 0,
+                                    x: -80,
+                                },
+                                visible: {
+                                    opacity: 1,
+                                    x: 0,
+                                },
+                            }}
+                            className="absolute w-[17rem] md:w-[30rem] shadow-2xl rounded-sm bg-white text-xl text-black top-[3rem] left-[3rem] md:top-[5rem] md:left-[5rem]"
+                        >
+                            <div className="p-2 md:p-[2rem] flex flex-col items-start">
+                                <h2 className="text-[1rem] md:text-[2rem] font-bold md:mb-4">
                                     Learning that gets you
                                 </h2>
-                                <p className="text-[1.1rem] text-left">
+                                <p className="text-[13px] md:text-[1.1rem] text-left">
                                     Skills for your present (and your future).
                                     Get started with us.
                                 </p>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
             </Carousel>
 
             {/* COURSES SLIDER */}
-            <CourseCarousel
-                heading={
-                    <h1 className="text-[32px] font-bold">
-                        Students Are Viewing
-                    </h1>
-                }
-            />
+            <div className="w-mainContent mx-auto">
+                <CourseCarousel
+                    heading={
+                        <h1 className="text-[32px] font-bold">
+                            Students Are Viewing
+                        </h1>
+                    }
+                />
+            </div>
             {/* Target  */}
-            <Target />
+            <div className="w-mainContent mx-auto">
+                <Target />
+            </div>
             {/* Mission  */}
-            <Mission />
+            <div className="w-mainContent mx-auto">
+                <Mission />
+            </div>
             {/* Report  */}
-            <Report />
-
-            <div></div>
+            <div>
+                <Report />
+            </div>
         </div>
     );
 };
