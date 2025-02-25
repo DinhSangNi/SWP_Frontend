@@ -87,7 +87,7 @@ const CourseDetail = (props: Props) => {
     }, []);
     return (
         <>
-            <div className="relative w-full min-h-[300px] flex justify-center gap-5">
+            <div className="relative w-full min-h-[500px] flex justify-center gap-5">
                 {/* IMAGE */}
                 <div className="absolute w-2/5 right-5 top-10 flex justify-center items-center">
                     <div className="">

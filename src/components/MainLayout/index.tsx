@@ -22,13 +22,12 @@ const MainLayout = () => {
                 ) : (
                     <>
                         <Header setLoading={setLoading} />
-                        <main className="py-8 px-[5rem]">
+                        <main className="">
                             <Outlet />
                         </main>
                         <Footer />
                     </>
                 )}
-
             </div>
         </>
     );

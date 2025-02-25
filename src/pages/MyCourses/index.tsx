@@ -37,7 +37,7 @@ const MyCourses = (props: Props) => {
 
     return (
         <>
-            <div>
+            <div className="w-mainContent mx-auto mb-8">
                 {/* HEADING */}
                 <div className="text-3xl font-bold my-5">
                     <h1>My Courses</h1>
