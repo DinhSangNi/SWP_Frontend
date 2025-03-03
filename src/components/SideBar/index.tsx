@@ -38,9 +38,10 @@ const SideBar = () => {
             <div className="flex justify-center py-5 ">
                 <div className="w-5/6">
                     <img
-                        className="cursor-pointer"
+                        className="cursor-pointer hover:opacity-70"
                         src="https://frontends.udemycdn.com/frontends-homepage/staticx/udemy/images/v7/logo-udemy.svg"
                         alt="logo"
+                        onClick={() => navigate("/")}
                     />
                 </div>
             </div>

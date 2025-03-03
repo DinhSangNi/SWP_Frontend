@@ -1,4 +1,7 @@
-import { assignmentsResponse } from "@/pages/CourseDetail";
+import {
+    AssignmentResponse,
+    AssignmentSubmissions,
+} from "@/pages/MyCourseDetail";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
@@ -6,20 +9,29 @@ import { MdAssignmentLate } from "react-icons/md";
 
 type Props = {
     title: string;
-    items: assignmentsResponse[];
+    items: AssignmentResponse[];
+    completedAssignment: AssignmentResponse[];
+    onClick: (id: string) => void;
 };
 
-const AssignmentsMenu = ({ title, items }: Props) => {
+const AssignmentsMenu = ({
+    title,
+    items,
+    completedAssignment,
+    onClick,
+}: Props) => {
     const [isCollapse, setIsCollapse] = useState<boolean>(false);
+    const [selected, setSelected] = useState<string>("");
 
     const handleCollapse = () => {
         setIsCollapse(!isCollapse);
     };
+
     return (
         <>
             <div className="w-full">
                 <div
-                    className={`${isCollapse && "bg-gray-700"} hover:bg-gray-700 py-2 flex items-center gap-2 cursor-pointer`}
+                    className={`${isCollapse && "bg-gray-300"} hover:bg-gray-300 py-2 flex items-center gap-2 cursor-pointer`}
                     onClick={handleCollapse}
                 >
                     <motion.div
@@ -28,9 +40,10 @@ const AssignmentsMenu = ({ title, items }: Props) => {
                     >
                         <IoIosArrowDown />
                     </motion.div>
-                    <h1 className="text-xl">
-                        {title} <span>{items.length}</span>
-                    </h1>
+                    <div className="w-full flex items-center text-xl">
+                        <h1 className="">{title}</h1>
+                        <p>({items.length})</p>
+                    </div>
                 </div>
                 <AnimatePresence>
                     {isCollapse && (
@@ -39,6 +52,7 @@ const AssignmentsMenu = ({ title, items }: Props) => {
                             initial="hidden"
                             whileInView="visible"
                             exit={{ height: 0, opacity: 0 }}
+                            viewport={{ once: true }}
                             transition={{ duration: 0.3, ease: "easeInOut" }}
                             variants={{
                                 hidden: { height: 0, opacity: 0 },
@@ -51,7 +65,13 @@ const AssignmentsMenu = ({ title, items }: Props) => {
                         >
                             {items.map((item) => {
                                 return (
-                                    <div className="flex items-center justify-between py-2 px-6 hover:bg-purple-800 cursor-pointer">
+                                    <div
+                                        className={`${selected === item.assignmentId && "bg-purple-300"} flex items-center justify-between py-2 px-6 hover:bg-purple-300 cursor-pointer`}
+                                        onClick={() => {
+                                            setSelected(item.assignmentId);
+                                            onClick(item.assignmentId);
+                                        }}
+                                    >
                                         <div className="flex items-center gap-2">
                                             <span>
                                                 <MdAssignmentLate className="text-red-700" />
@@ -59,10 +79,18 @@ const AssignmentsMenu = ({ title, items }: Props) => {
                                             {item.title}
                                             <p></p>{" "}
                                         </div>
-                                        <span>
-                                            <p className="text-red-700">
-                                                Not Yet
-                                            </p>
+                                        <span className="font-bold">
+                                            {completedAssignment.includes(
+                                                item as AssignmentResponse
+                                            ) ? (
+                                                <p className="text-green-700">
+                                                    Done
+                                                </p>
+                                            ) : (
+                                                <p className="text-red-700">
+                                                    Not Yet
+                                                </p>
+                                            )}
                                         </span>
                                     </div>
                                 );

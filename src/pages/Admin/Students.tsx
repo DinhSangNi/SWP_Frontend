@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ModalCustomer from "@/components/Modal";
 import { getAllUser, getUserById, updateUser } from "@/services/userService";
 import { toast } from "react-toastify";
+import { ExclamationCircleIcon } from "@heroicons/react/16/solid";
 
 type Props = {
     type: string;
@@ -15,7 +16,10 @@ const Student = ({ type }: Props) => {
     const [reload, setReload] = useState(false); // State để reload dữ liệu
 
     const [detailModalVisible, setDetailModalVisible] = useState(false); // State để hiển thị modal chi tiết
-    const [selectedUser, setSelectedUser] = useState(null); // State lưu thông tin chi tiết của người dùng
+    const [selectedUser, setSelectedUser] = useState<any>(null); // State lưu thông tin chi tiết của người dùng
+    const [deleteModalVisible, setDeleteModalVisible] =
+        useState<boolean>(false);
+    const [deleteStudentId, setDeleteStudentId] = useState<any>(null);
 
     const [pagination, setPagination] = useState<PaginationType>({
         currentPage: 1,
@@ -52,6 +56,15 @@ const Student = ({ type }: Props) => {
             toast.error("Failed to fetch user details.");
         }
     };
+
+    // Handle Delete
+    // const handleDelete = async (userId: string) => {
+    //     try {
+
+    //     } catch (error) {
+
+    //     }
+    // }
 
     // Hàm xử lý khi nhấn vào Tag "Status"
     const handleStatusClick = async (userId: string, currentStatus: string) => {
@@ -168,7 +181,7 @@ const Student = ({ type }: Props) => {
                                     title: "Status",
                                     key: "status",
                                     dataIndex: "status",
-                                    render: (status, record) => (
+                                    render: (status, record: any) => (
                                         <Tooltip
                                             color={
                                                 status === "Active"
@@ -204,7 +217,7 @@ const Student = ({ type }: Props) => {
                                 {
                                     title: "Action",
                                     key: "action",
-                                    render: (_, record) => (
+                                    render: (_, record: any) => (
                                         <Space size="middle">
                                             <Button
                                                 className="text-white bg-indigo-400"
@@ -216,7 +229,16 @@ const Student = ({ type }: Props) => {
                                             >
                                                 Detail
                                             </Button>
-                                            <Button type="primary" danger>
+                                            <Button
+                                                type="primary"
+                                                danger
+                                                onClick={() => {
+                                                    setDeleteStudentId(
+                                                        record.idUser
+                                                    );
+                                                    setDeleteModalVisible(true);
+                                                }}
+                                            >
                                                 Delete
                                             </Button>
                                         </Space>
@@ -239,7 +261,7 @@ const Student = ({ type }: Props) => {
             {/* Modal hiển thị thông tin chi tiết */}
             <Modal
                 title="User Details"
-                visible={detailModalVisible}
+                open={detailModalVisible}
                 onCancel={() => setDetailModalVisible(false)}
                 footer={null}
             >
@@ -263,6 +285,21 @@ const Student = ({ type }: Props) => {
                         {/* Thêm các trường thông tin khác nếu cần */}
                     </div>
                 )}
+            </Modal>
+
+            {/* Modal show when click delete button */}
+            <Modal
+                title="Confirm"
+                open={deleteModalVisible}
+                onCancel={() => setDeleteModalVisible(false)}
+            >
+                <p className="flex gap-2">
+                    <ExclamationCircleIcon className="w-6 h-6 text-orange-400" />
+                    Are you sure you want to
+                    <span className="px-0 mx-0 font-bold">Delete</span> student
+                    who has id:{" "}
+                    <span>{deleteStudentId && deleteStudentId}</span>?
+                </p>
             </Modal>
         </div>
     );

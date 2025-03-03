@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 
 // Cấu hình Axios instance
 const API = axios.create({
@@ -22,32 +23,34 @@ API.interceptors.request.use(
 );
 
 // Middleware: Xử lý lỗi response, ví dụ tự động refresh token (nếu API hỗ trợ)
-API.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        if (error.response?.status === 401) {
-            console.warn(
-                "Token hết hạn hoặc không hợp lệ, có thể cần đăng nhập lại!"
-            );
-            // Gọi API refresh token nếu có
-        }
-        return Promise.reject(error.response?.data || error.message);
-    }
-);
+// API.interceptors.response.use(
+//     (response) => response,
+//     async (error) => {
+//         if (error.status === 401) {
+//             console.warn(
+//                 "Token hết hạn hoặc không hợp lệ, có thể cần đăng nhập lại!"
+//             );
+//             // Gọi API refresh token nếu có
+//             toast.error("Your token expired! Please re-authenticate!");
+
+//         }
+//         return Promise.reject(error.response?.data || error.message);
+//     }
+// );
 
 // Get all courses
 export const getAllCourses = async () => {
     try {
         const response = await API.get("/Home/all-courses");
         console.log("✅ Get all courses successfully:", response.data);
-        return response.data;
+        return response;
     } catch (error) {
         console.error("❌ Error when getting all courses:", error);
         throw error;
     }
 };
 
-// Tạo Khóa học
+// Create course
 export const createCourse = async (courseData: any) => {
     try {
         const response = await API.post("/Course/create", courseData);
@@ -91,7 +94,7 @@ export const getCourseById = async (courseId: string) => {
     try {
         const response = await API.get(`/Course/information/${courseId}`);
         console.log("✅ Get course by ID successfully:", response.data);
-        return response.data;
+        return response;
     } catch (error) {
         console.error("❌ Error when getting course by ID:", error);
         throw error;
@@ -117,8 +120,8 @@ export const searchCourse = async (query: string) => {
 export const getMyCources = async () => {
     try {
         const response = await API.get("/Course/my-courses");
-        console.log("✅ Get my course successfully:", response.data);
-        return response.data;
+        console.log("✅ Get my course successfully:", response);
+        return response;
     } catch (error) {
         console.error("❌ Error when search course by course name:", error);
         throw error;

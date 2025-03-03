@@ -8,13 +8,7 @@ const MainLayout = () => {
     const [loading, setLoading] = useState<boolean>(false);
     return (
         <>
-            <div
-            // className={
-            //     loading
-            //         ? `before:bg-white before:content-[''] before:w-full before:h-full before:absolute before:z-[100] before:opacity-80`
-            //         : ""
-            // }
-            >
+            <div>
                 {loading ? (
                     <div className="w-full h-screen">
                         <SpinnerLoading />

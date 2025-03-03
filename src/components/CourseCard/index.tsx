@@ -3,8 +3,8 @@ import { Button, Card } from "antd";
 import { Course } from "@/stores/types";
 
 type Props = {
-    course: Course;
-    onClick: () => void;
+    course?: Course;
+    onClick?: () => void;
 };
 
 const CourseCard = ({ course, onClick }: Props) => {
@@ -18,8 +18,8 @@ const CourseCard = ({ course, onClick }: Props) => {
                         <div className="basis-2/5">
                             <img
                                 className="w-full"
-                                alt="example"
-                                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                                src="https://i.ytimg.com/vi/gp5H0Vw39yw/maxresdefault.jpg"
+                                alt="Course Thumnail"
                             />
                         </div>
                         {/* SHORT INFORMATION */}
@@ -27,11 +27,11 @@ const CourseCard = ({ course, onClick }: Props) => {
                             <div>
                                 {/* COURSE NAME */}
                                 <h1 className="font-bold text-[1.3rem]">
-                                    {course.courseName}
+                                    {course!.courseName}
                                 </h1>
                                 {/* DESCRIPTION */}
                                 <p className="text-[0.8rem]">
-                                    {course.description}
+                                    {course!.description}
                                 </p>
                             </div>
                             {/* DATE */}
@@ -39,11 +39,11 @@ const CourseCard = ({ course, onClick }: Props) => {
                                 <p className="text-[0.8rem]">
                                     From{" "}
                                     <span className="font-bold">
-                                        {course.startDate}
+                                        {course!.startDate}
                                     </span>{" "}
                                     to{" "}
                                     <span className="font-bold">
-                                        {course.endDate}
+                                        {course!.endDate}
                                     </span>
                                 </p>
                             </div>
@@ -70,10 +70,10 @@ const CourseCard = ({ course, onClick }: Props) => {
                         {/* STATUS */}
                         <div className="basis-2/3 ">
                             <div
-                                className={`${course.enrollmentStatus === "Confirmed" ? "text-green-500 border-green-500" : "text-red-500 border-red-500"} w-1/3 mx-auto text-xl font-bold p-3 border-[1px]`}
+                                className={`${course!.enrollmentStatus === "Confirmed" ? "text-green-500 border-green-500" : "text-red-500 border-red-500"} w-1/3 mx-auto text-xl font-bold p-3 border-[1px]`}
                             >
                                 <p className="md:text-[1rem] text-center">
-                                    {course.enrollmentStatus}
+                                    {course!.enrollmentStatus}
                                 </p>
                             </div>
                         </div>

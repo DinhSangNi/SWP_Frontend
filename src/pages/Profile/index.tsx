@@ -60,6 +60,7 @@ const Profile = () => {
         } catch (error: any) {
             console.log("error ", error);
             messageApi.error("Updated User Information Failed!");
+            fetchUserDetailData();
         } finally {
             setLoading(false);
             setIsEdit(false);
@@ -108,18 +109,18 @@ const Profile = () => {
         navigate(`/${e.key}`);
     };
 
-    useEffect(() => {
-        const fetchUserDetailData = async () => {
-            try {
-                const response = await getUserProfile(user!.idUser);
-                if (response) {
-                    setUserDetail(response);
-                }
-            } catch (error) {
-                console.log("error ", error);
+    const fetchUserDetailData = async () => {
+        try {
+            const response = await getUserProfile(user!.idUser);
+            if (response) {
+                setUserDetail(response);
             }
-        };
+        } catch (error) {
+            console.log("error ", error);
+        }
+    };
 
+    useEffect(() => {
         // Fetch user detail information
         fetchUserDetailData();
     }, []);

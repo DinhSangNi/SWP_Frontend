@@ -1,3 +1,4 @@
+import CourseCarousel from "@/components/CourseCarousel";
 import { searchCourse } from "@/services/courseService";
 import { Card } from "antd";
 import { useEffect, useState } from "react";
@@ -35,7 +36,7 @@ const Search = () => {
     }, [decodedQuery]);
 
     return (
-        <div className="w-mainContent mx-auto">
+        <div className="w-mainContent mx-auto py-10">
             <h1 className="text-3xl font-bold">
                 {searchResults.length} results for {`"${query}"`}
             </h1>
@@ -66,6 +67,16 @@ const Search = () => {
                         </Card>
                     );
                 })}
+            </div>
+            {/* RECOMMEND COURSES */}
+            <div className="w-full mt-20">
+                <CourseCarousel
+                    heading={
+                        <h1 className="text-2xl font-bold">
+                            You also might like
+                        </h1>
+                    }
+                />
             </div>
         </div>
     );
