@@ -10,6 +10,7 @@ import {
 } from "@/services/courseService";
 import ModalCreateCourse from "@/components/ModalCreateCourse";
 import ModalEditCourse from "@/components/ModalEditCourse";
+import { ExclamationCircleIcon } from "@heroicons/react/16/solid";
 
 type Props = {
     type: string;
@@ -20,7 +21,10 @@ const Courses = ({ type }: Props) => {
     const [loading, setLoading] = useState(false);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
-    const [selectedCourse, setSelectedCourse] = useState(null);
+    const [deleteModalVisible, setDeleteModalVisible] =
+        useState<boolean>(false);
+    const [deleteCourseId, setDeleteCourseId] = useState<string | null>(null);
+    const [selectedCourse, setSelectedCourse] = useState<any>(null);
     const [reload, setReload] = useState(false);
     const [pagination, setPagination] = useState<PaginationType>({
         currentPage: 1,
@@ -36,7 +40,7 @@ const Courses = ({ type }: Props) => {
         try {
             const response = await getAllCourses();
             console.log("Response from server:", response);
-            setDataCourse(response.$values);
+            setDataCourse(response.data.$values);
             toast.success(`Fetched ${type} successfully!`);
         } catch (error) {
             console.error("Error fetching courses:", error);
@@ -53,7 +57,7 @@ const Courses = ({ type }: Props) => {
     const handleDetailClick = async (courseId: string) => {
         try {
             const courseDetail = await getCourseById(courseId);
-            setSelectedCourse(courseDetail);
+            setSelectedCourse(courseDetail.data);
             setDetailModalVisible(true);
         } catch (error) {
             console.error("Error fetching course details:", error);
@@ -63,9 +67,9 @@ const Courses = ({ type }: Props) => {
 
     const handleEditClick = (courseId: string) => {
         const courseToEdit = dataCourse.find(
-            (course) => course.courseId === courseId
+            (course: any) => course.courseId === courseId
         );
-        setSelectedCourse(courseToEdit);
+        setSelectedCourse(courseToEdit!);
         setEditModalVisible(true);
     };
 
@@ -132,7 +136,7 @@ const Courses = ({ type }: Props) => {
                     {
                         title: "Action",
                         key: "action",
-                        render: (_, record) => (
+                        render: (_, record: any) => (
                             <Space size="middle">
                                 <Button
                                     className="text-white bg-indigo-400"
@@ -153,9 +157,10 @@ const Courses = ({ type }: Props) => {
                                 <Button
                                     type="primary"
                                     danger
-                                    onClick={() =>
-                                        handleDelete(record.courseId)
-                                    }
+                                    onClick={() => {
+                                        setDeleteCourseId(record.courseId);
+                                        setDeleteModalVisible(true);
+                                    }}
                                 >
                                     Delete
                                 </Button>
@@ -204,6 +209,20 @@ const Courses = ({ type }: Props) => {
                 onSave={handleSaveEdit}
                 initialValues={selectedCourse}
             />
+            <Modal
+                title="Confirm"
+                open={deleteModalVisible}
+                onCancel={() => setDeleteModalVisible(false)}
+                onOk={() => handleDelete(deleteCourseId as string)}
+            >
+                <p className="flex gap-2">
+                    <ExclamationCircleIcon className="w-6 h-6 text-orange-400" />
+                    Are you sure you want to
+                    <span className="px-0 mx-0 font-bold">Delete</span> Course
+                    which has id:{" "}
+                    <span>{deleteCourseId && deleteCourseId}</span>?
+                </p>
+            </Modal>
         </div>
     );
 };

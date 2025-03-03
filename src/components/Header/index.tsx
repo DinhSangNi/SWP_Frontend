@@ -25,6 +25,9 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import { AnimatePresence, motion } from "framer-motion";
 import { MenuItems } from "@/stores/enums";
 import PopoverNotify from "../PopoverNotify";
+import { uppercaseFirstLetter } from "@/utils/formatUtils";
+// import { useNotification } from "@/hooks/useNotification";
+import { toast } from "react-toastify";
 
 const { Item } = Menu;
 
@@ -64,6 +67,8 @@ const Header = ({ setLoading }: Props) => {
     const userInfo = localStorage.getItem("user");
     const { userName } = JSON.parse(userInfo || "{}");
 
+    // const { setMessage } = useNotification();
+
     const handleLogout = async () => {
         try {
             setLoading(true);
@@ -73,7 +78,9 @@ const Header = ({ setLoading }: Props) => {
             if (response.status === 200) {
                 dispatch(logout());
                 localStorage.removeItem("token");
-                messageApi.success("Logout successfully!");
+                toast.success("Logout successfully!", {
+                    position: "top-center",
+                });
                 navigate("/");
             }
         } catch (error) {
@@ -150,7 +157,7 @@ const Header = ({ setLoading }: Props) => {
         <>
             {contextHolder}
             <header className="w-full relative border-b-[1px] border-b-[#ddd] shadow-md">
-                <div className="flex items-center justify-evenly pb-[0.5rem]">
+                <div className="w-full flex items-center justify-evenly pb-[0.5rem]">
                     {/* LEFTSIDE */}
                     <div
                         className="font-bold cursor-pointer hover:opacity-60"
@@ -218,9 +225,12 @@ const Header = ({ setLoading }: Props) => {
                                         >
                                             <Space className="hover:text-[#6d28d2] text-black">
                                                 <div className="flex items-center justify-center gap-2">
-                                                    <div className="font-bold px-5 py-2.5 bg-purple-200 rounded-full">
-                                                        {user.userName?.[0] ||
-                                                            userName?.[0]}
+                                                    <div className="font-bold px-4 py-2 bg-purple-300 rounded-full">
+                                                        {uppercaseFirstLetter(
+                                                            user
+                                                                .userName?.[0] ||
+                                                                userName?.[0]
+                                                        )}
                                                     </div>
                                                 </div>
                                             </Space>

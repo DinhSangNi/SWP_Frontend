@@ -67,10 +67,7 @@ export const changePassword = async (userId: string, updatedData: any) => {
 // Update User Profile API
 export const updateUserProfile = async (userId: string, updatedData: any) => {
     try {
-        const response = await API.put(
-            `/Profile/${userId}/update-profile`,
-            updatedData
-        );
+        const response = await API.put(`/Profile/update-profile`, updatedData);
         console.log(
             `✅ Cập nhật profile của người dùng ID ${userId} thành công`
         );
