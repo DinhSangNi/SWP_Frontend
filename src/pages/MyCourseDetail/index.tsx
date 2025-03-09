@@ -4,21 +4,52 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { PiSealWarningFill } from "react-icons/pi";
 import { MdDateRange } from "react-icons/md";
 import { MdLanguage } from "react-icons/md";
-import { Button, ConfigProvider, Image, message, Skeleton } from "antd";
+import {
+    Button,
+    ConfigProvider,
+    DatePicker,
+    Form,
+    Image,
+    Input,
+    message,
+    Modal,
+    Skeleton,
+    Space,
+    Table,
+    Tooltip,
+} from "antd";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import {
+    createNewAssignment,
+    deleteAssignment,
+    editAssignment,
+    editSubmission,
     getAssignmentByAssignmentId,
     getAssignmentByCourseId,
+    getAssignmentSubmission,
+    gradeSubmission,
     submitAssignment,
 } from "@/services/assignmentsService";
 import AssignmentsMenu from "@/components/AssignmentsMenu";
 import TextEditor from "@/components/TextEditor";
 import { formatDate } from "@/utils/dateUtils";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import CustomSkeleton from "@/components/CustomSkeleton";
 import { useSelector } from "react-redux";
 import { RootState } from "@/stores/store";
 import { toast } from "react-toastify";
+import { handleWhenTokenExpire } from "@/utils/authUtils";
+import { CiCirclePlus } from "react-icons/ci";
+import { useForm } from "antd/es/form/Form";
+import { BiDetail } from "react-icons/bi";
+import { AiOutlineDelete } from "react-icons/ai";
+import { FiEdit3 } from "react-icons/fi";
+import { ExclamationCircleIcon } from "@heroicons/react/16/solid";
+import { PaginationType } from "@/stores/types";
+import dayjs from "dayjs";
+import { FaEdit } from "react-icons/fa";
+import SpinnerLoading from "@/components/SpinnerLoading";
+import { IoIosArrowDropup } from "react-icons/io";
 
 interface courseResponse {
     $id: string;
@@ -32,6 +63,9 @@ interface courseResponse {
     description: string;
     endDate: string;
     startDate: string;
+    teacher: {
+        fullName: string;
+    };
 }
 
 export interface AssignmentResponse {
@@ -72,26 +106,56 @@ const MyCourseDetail = () => {
     const [loadingAssign, setLoadingAssign] = useState<boolean>(true);
     // Content of text editor
     const [content, setContent] = useState<string>("");
+    const [submissionContent, setSubmissionContent] = useState<string>("");
     const [assignment, setAssignment] = useState<AssignmentResponse | null>(
         null
     );
     const [messageApi, contextHolder] = message.useMessage();
+    const [reload, setReload] = useState<boolean>(false);
+    const [modalLoading, setModalLoading] = useState(false);
+    const [submissionsListLoading, setSubmissionsListLoading] =
+        useState<boolean>(false);
+    const [createModalVisible, setCreateModalVisible] =
+        useState<boolean>(false);
+    const [editModalVisible, setEditModalVisible] = useState<boolean>(false);
+    const [selectedAssignment, setSelectedAssignment] = useState<any>(null);
+    const [deleteModalVisible, setDeleteModalVisible] =
+        useState<boolean>(false);
+    const [isEditSubmission, setIsEditSubmission] = useState<boolean>(false);
 
-    // Get course id from URL
-    const { id } = useParams();
+    const [pagination, setPagination] = useState<PaginationType>({
+        currentPage: 1,
+        pageSize: 10,
+    });
+    const [submissions, setSubmissions] = useState<any[]>([]);
+    const [grade, setGrade] = useState<string>("");
+    const [openFeedbackBoxArray, setOpenFeedbackBoxArray] = useState<number[]>(
+        []
+    );
+    const [saveLoading, setSaveLoading] = useState<boolean>(false);
+    const [openSubmissionsList, setOpenSubmissionsList] =
+        useState<boolean>(false);
+    const [submissionOfStudent, setSubmissionOfStudent] = useState<any>(null);
+    const [isVisibleButton, setIsVisibleButton] = useState(false);
 
     // Get user
     const user = useSelector((state: RootState) => state.auth.user);
 
     const navigate = useNavigate();
+    const { courseId } = useParams();
+    const [form] = useForm();
+
+    const handleReload = () => {
+        setReload(!reload);
+    };
 
     // Fetch assignment
     const handleFetchAssginment = useCallback(async (assignmentId: string) => {
         try {
             setLoadingAssign(true);
             const response = await getAssignmentByAssignmentId(assignmentId);
-            console.log("response: ", response);
             if (response?.status === 200) {
+                console.log("response: ", response.data.assignmentSubmissions);
                 const assignmentSubmission =
                     response.data.assignmentSubmissions.$values.find(
                         (item: any) => {
@@ -99,9 +163,11 @@ const MyCourseDetail = () => {
                         }
                     );
                 if (assignmentSubmission) {
-                    setContent(assignmentSubmission.feedback);
+                    setSubmissionContent(assignmentSubmission.submissionLink);
+                    setSubmissionOfStudent(assignmentSubmission);
                 } else {
-                    setContent("");
+                    setSubmissionContent("");
+                    setSubmissionOfStudent(null);
                 }
                 setAssignment(response.data);
             }
@@ -121,11 +187,38 @@ const MyCourseDetail = () => {
                 content
             );
             if (response) {
-                messageApi.success("Submit successfully!");
+                toast.success("Submit successfully!");
+                handleReload();
             }
         } catch (error) {
             console.log("error: ", error);
             messageApi.error("Submit failed!");
+        }
+    };
+
+    const handleEditSubmission = async () => {
+        try {
+            if (Date.now() <= dayjs(selectedAssignment.dueDate).valueOf()) {
+                const response = await editSubmission(
+                    submissionOfStudent.submissionId,
+                    {
+                        submissionLink: submissionContent,
+                    }
+                );
+                if (response.status === 200) {
+                    toast.success("Save Successfully!");
+                    setIsEditSubmission(false);
+                }
+            } else {
+                toast.error("Save failed! Assignment is expired!");
+            }
+        } catch (error: any) {
+            console.log("error: ", error);
+            toast.error("Save Failed!");
+            if (error.status === 401) {
+                handleWhenTokenExpire();
+                navigate("/login");
+            }
         }
     };
 
@@ -135,7 +228,7 @@ const MyCourseDetail = () => {
         const fetchCourseDetail = async () => {
             try {
                 setLoading(true);
-                const response = await getCourseById(id!);
+                const response = await getCourseById(courseId!);
                 if (response.status === 200) {
                     setCourse(response.data);
                 }
@@ -158,20 +251,62 @@ const MyCourseDetail = () => {
     }, []);
 
     useEffect(() => {
+        if (selectedAssignment) {
+            form.setFieldsValue({
+                title: selectedAssignment.title,
+                description: selectedAssignment.description,
+                dueDate: dayjs(selectedAssignment.dueDate),
+            });
+        } else {
+            form.setFieldsValue({ title: "", description: "", dueDate: null });
+        }
+    }, [selectedAssignment]);
+
+    useEffect(() => {
         const fetchAssignments = async () => {
             try {
-                const response = await getAssignmentByCourseId(id!);
+                const response = await getAssignmentByCourseId(courseId!);
                 if (response) {
-                    setAssignments(response.$values);
+                    setAssignments(response.data.$values);
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.log("error: ", error);
+                if (error.status === 401) {
+                    handleWhenTokenExpire();
+                    navigate("/login");
+                }
             }
         };
 
         fetchAssignments();
-    }, []);
+    }, [reload]);
 
+    const handleSubmitCreateForm = async (credentials: any) => {
+        try {
+            setModalLoading(true);
+            const response = await createNewAssignment({
+                courseId: courseId,
+                title: credentials.title,
+                description: credentials.description,
+                dueDate: credentials.dueDate.format("YYYY-MM-DD"),
+            });
+            if (response.status === 201) {
+                toast.success("Create successfully !");
+                setCreateModalVisible(false);
+                handleReload();
+            }
+        } catch (error: any) {
+            console.log("error: ", error);
+            if (error.status === 401) {
+                handleWhenTokenExpire();
+                navigate("/login");
+            }
+        } finally {
+            setModalLoading(false);
+        }
+    };
+
+    // Resolve completed assignments of student
     useEffect(() => {
         if (assignments) {
             const newArr: Partial<AssignmentResponse>[] = [];
@@ -190,10 +325,181 @@ const MyCourseDetail = () => {
         }
     }, [assignments]);
 
+    // Hàm xử lý phân trang
+    const handlePageChange = (page: number, pageSize: number) => {
+        setPagination((prev: any) => ({
+            ...prev,
+            currentPage: page,
+            pageSize: pageSize,
+        }));
+    };
+
+    // Delete assignment function
+    const handleDeleteAssignment = async (assignmentId: number) => {
+        try {
+            const response = await deleteAssignment(assignmentId);
+            if (response.status === 204) {
+                toast.success("Delete sucessfully !");
+                handleReload();
+                setDeleteModalVisible(false);
+            }
+        } catch (error: any) {
+            console.log("error: ", error);
+            if (error.status === 401) {
+                handleWhenTokenExpire();
+                navigate("/login");
+            }
+        }
+    };
+
+    // Submit edit form function
+    const handelSubmitEditForm = async (credentials: any) => {
+        try {
+            setModalLoading(true);
+            const response = await editAssignment(
+                selectedAssignment!.assignmentId,
+                {
+                    title: credentials.title,
+                    description: credentials.description,
+                    dueDate: credentials.dueDate.format("YYYY-MM-DD"),
+                }
+            );
+            if (response.status === 200) {
+                toast.success("Edit successfully !");
+                handleReload();
+                setEditModalVisible(false);
+            }
+        } catch (error: any) {
+            console.log("error: ", error);
+            if (error.status === 401) {
+                handleWhenTokenExpire();
+                navigate("/login");
+            }
+        } finally {
+            setModalLoading(false);
+        }
+    };
+
+    // Open feedback box function
+    const handleOpenFeedBackBox = (submissionId: number) => {
+        if (openFeedbackBoxArray.includes(submissionId)) {
+            const arr = openFeedbackBoxArray.filter((index) => {
+                return index !== submissionId;
+            });
+            setOpenFeedbackBoxArray(arr);
+        } else {
+            setOpenFeedbackBoxArray((prev) => [...prev, submissionId]);
+        }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setGrade(e.target.value);
+    };
+
+    // Save grade and feedback function
+    const handleSaveGradeAndFeedback = async (submissionId: number) => {
+        try {
+            setSaveLoading(true);
+            const response = await gradeSubmission(submissionId, {
+                grade: grade,
+                feedback: content,
+            });
+            if (response.status === 200) {
+                toast.success("Save Successfully!");
+                fetchSubminssions();
+            }
+        } catch (error: any) {
+            console.log("error: ", error);
+            if (error.status === 401) {
+                handleWhenTokenExpire();
+                navigate("/login");
+            }
+        } finally {
+            setSaveLoading(false);
+        }
+    };
+
+    console.log("selected: ", selectedAssignment);
+    console.log("submissionOfStudent: ", submissionOfStudent);
+    console.log("openSubmissionsList: ", openSubmissionsList);
+
+    // Fetch submissions function
+    const fetchSubminssions = async () => {
+        setSubmissionsListLoading(true);
+        try {
+            const response = await getAssignmentSubmission(
+                selectedAssignment.assignmentId
+            );
+            if (response.status === 200) {
+                setSubmissions(response.data.$values);
+                return;
+            }
+        } catch (error: any) {
+            console.log("error: ", error);
+            setSubmissions([]);
+            if (error.status === 401) {
+                handleWhenTokenExpire();
+                navigate("/login");
+            }
+        } finally {
+            setSubmissionsListLoading(false);
+        }
+    };
+
+    // Fetch submission from DB
+    useEffect(() => {
+        if (selectedAssignment && openSubmissionsList) {
+            fetchSubminssions();
+        }
+    }, [selectedAssignment]);
+
+    // Check scrollY of window to make scroll to top button visible or invisisble
+    useEffect(() => {
+        const scrollPage = () => {
+            if (window.scrollY > 300) {
+                setIsVisibleButton(true);
+            } else {
+                setIsVisibleButton(false);
+            }
+        };
+
+        window.addEventListener("scroll", scrollPage);
+
+        return () => {
+            window.removeEventListener("scroll", scrollPage);
+        };
+    }, []);
+
+    // Scroll to top function
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
     return (
         <>
             {contextHolder}
-            <div className=" w-mainContent mx-auto min-h-[500px] bg-gray-100 px-10 pb-10">
+            <div className=" w-mainContent mx-auto min-h-[500px] bg-gray-100 px-10 pb-10 relative">
+                <AnimatePresence>
+                    {isVisibleButton && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3, ease: "linear" }}
+                            id="back-to-top"
+                            className="fixed right-5 bottom-5"
+                        >
+                            <Button
+                                color="purple"
+                                variant="text"
+                                className="px-1 py-7"
+                                onClick={scrollToTop}
+                            >
+                                <IoIosArrowDropup className="text-purple-500 text-5xl" />
+                            </Button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
                 <div className="flex justify-between">
                     {/* IMAGE */}
                     <div className="basis-2/5 flex justify-center py-4 my-3">
@@ -282,18 +588,182 @@ const MyCourseDetail = () => {
                 {/* ASSIGNMENTS MENU */}
                 {!loading ? (
                     <div className="">
-                        <AssignmentsMenu
-                            title="Assigments"
-                            items={assignments!}
-                            completedAssignment={completedAssignment}
-                            onClick={handleFetchAssginment}
-                        />
+                        {user?.role === "Student" ? (
+                            <AssignmentsMenu
+                                title="Assigments"
+                                items={assignments!}
+                                completedAssignment={completedAssignment}
+                                onClick={handleFetchAssginment}
+                                setSelectedAssignment={setSelectedAssignment}
+                            />
+                        ) : (
+                            user?.role === "Teacher" && (
+                                <div className="w-full">
+                                    <div className="w-full flex justify-between items-center mb-5">
+                                        <h1 className="text-2xl font-bold">
+                                            Assignments{" "}
+                                            <span>({assignments?.length})</span>
+                                        </h1>
+                                        <button
+                                            className="p-1 transition-colors duration-300 hover:bg-purple-200"
+                                            onClick={() =>
+                                                setCreateModalVisible(true)
+                                            }
+                                        >
+                                            <CiCirclePlus className="text-[2rem]" />
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <div className="w-full">
+                                            <Table
+                                                rowClassName={(record) =>
+                                                    record.assignmentId ===
+                                                    selectedAssignment?.assignmentId
+                                                        ? "bg-purple-200"
+                                                        : ""
+                                                }
+                                                rowHoverable={false}
+                                                scroll={{
+                                                    y: 380,
+                                                }}
+                                                columns={[
+                                                    {
+                                                        title: "ID",
+                                                        dataIndex:
+                                                            "assignmentId",
+                                                        key: "assignmentId",
+                                                        width: "10%",
+                                                    },
+                                                    {
+                                                        title: "Course ID",
+                                                        dataIndex: "courseId",
+                                                        key: "courseId",
+                                                        width: "10%",
+                                                    },
+                                                    {
+                                                        title: "Title",
+                                                        dataIndex: "title",
+                                                        key: "title",
+                                                    },
+                                                    {
+                                                        title: "Description",
+                                                        dataIndex:
+                                                            "description",
+                                                        key: "description",
+                                                    },
+                                                    {
+                                                        title: "Due Date",
+                                                        dataIndex: "dueDate",
+                                                        key: "dueDate",
+                                                    },
+                                                    {
+                                                        title: "Action",
+                                                        dataIndex: "action",
+                                                        key: "action",
+                                                        render: (
+                                                            _: any,
+                                                            record: any
+                                                        ) => {
+                                                            return (
+                                                                <Space size="middle">
+                                                                    {/* Detail button */}
+                                                                    <Tooltip
+                                                                        title="Detail"
+                                                                        placement="top"
+                                                                    >
+                                                                        <Button
+                                                                            variant="solid"
+                                                                            color="purple"
+                                                                            className="text-white px-2"
+                                                                            onClick={() => {
+                                                                                setOpenSubmissionsList(
+                                                                                    true
+                                                                                );
+                                                                                setSelectedAssignment(
+                                                                                    record
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            <BiDetail className="text-[1rem]" />
+                                                                        </Button>
+                                                                    </Tooltip>
+
+                                                                    {/* Edit button */}
+                                                                    <Tooltip
+                                                                        title="Edit"
+                                                                        placement="top"
+                                                                    >
+                                                                        <Button
+                                                                            color="yellow"
+                                                                            variant="solid"
+                                                                            className="text-white bg-yellow-400 px-2"
+                                                                            onClick={() => {
+                                                                                setEditModalVisible(
+                                                                                    true
+                                                                                );
+                                                                                setSelectedAssignment(
+                                                                                    record
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            <FiEdit3 className="text-[1rem]" />
+                                                                        </Button>
+                                                                    </Tooltip>
+
+                                                                    {/* Delete button */}
+                                                                    <Tooltip
+                                                                        title="Delete"
+                                                                        placement="top"
+                                                                    >
+                                                                        <Button
+                                                                            type="primary"
+                                                                            danger
+                                                                            className="px-2"
+                                                                            onClick={() => {
+                                                                                setSelectedAssignment(
+                                                                                    record
+                                                                                );
+                                                                                setDeleteModalVisible(
+                                                                                    true
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            <AiOutlineDelete className="text-[1rem]" />
+                                                                        </Button>
+                                                                    </Tooltip>
+                                                                </Space>
+                                                            );
+                                                        },
+                                                    },
+                                                ]}
+                                                dataSource={assignments!} // Sử dụng hàm getDataSource để chọn dữ liệu phù hợp
+                                                loading={loading} // Hiển thị loading khi đang fetch dữ liệu
+                                                className="w-full"
+                                                pagination={{
+                                                    current:
+                                                        pagination.currentPage,
+                                                    pageSize:
+                                                        pagination.pageSize,
+                                                    showSizeChanger: true,
+                                                    pageSizeOptions: [
+                                                        "5",
+                                                        "10",
+                                                        "20",
+                                                    ],
+                                                    onChange: handlePageChange,
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        )}
                     </div>
                 ) : (
                     <CustomSkeleton className="w-[150px] h-7" />
                 )}
                 {/* ASSIGNMENT TEXTBOX */}
-                {assignment && (
+                {assignment && user?.role === "Student" && (
                     <motion.div
                         initial="hidden"
                         whileInView="visible"
@@ -315,8 +785,9 @@ const MyCourseDetail = () => {
                                         <h1 className="font-bold text-[1.1rem]">
                                             Title: {assignment.title}
                                         </h1>
-                                        <p className="text-[0.9rem]">
-                                            Topic: {assignment.description}{" "}
+                                        <p className="text-[0.9rem] mb-3">
+                                            Description:{" "}
+                                            {assignment.description}{" "}
                                             {!assignment.description
                                                 .trim()
                                                 [
@@ -324,6 +795,22 @@ const MyCourseDetail = () => {
                                                         .length - 1
                                                 ].includes("?") && "?"}
                                         </p>
+                                        <div>
+                                            <p>
+                                                Submission date:{" "}
+                                                <span>
+                                                    {dayjs(
+                                                        submissionOfStudent.submissionDate
+                                                    ).format("DD/MM/YYYY")}
+                                                </span>
+                                            </p>
+                                            <p>
+                                                Grade:{" "}
+                                                <span>
+                                                    {submissionOfStudent.grade}
+                                                </span>
+                                            </p>
+                                        </div>
                                     </div>
                                     <p>
                                         Due to:{" "}
@@ -344,23 +831,409 @@ const MyCourseDetail = () => {
                         )}
                         <div className="py-10">
                             <TextEditor
-                                content={content}
-                                onContentChange={setContent}
+                                readOnly={!isEditSubmission}
+                                content={submissionContent}
+                                onContentChange={setSubmissionContent}
                             />
                         </div>
-                        {/* <CustomSkeleton /> */}
                         <div className="w-full text-end">
-                            <Button
-                                color="purple"
-                                variant="solid"
-                                className="font-bold"
-                                onClick={handleSubmitAssignment}
-                            >
-                                Submit
-                            </Button>
+                            {!submissionOfStudent || isEditSubmission ? (
+                                <>
+                                    {isEditSubmission ? (
+                                        <>
+                                            <Button
+                                                color="yellow"
+                                                variant="solid"
+                                                className="font-bold mr-3"
+                                                onClick={() =>
+                                                    setIsEditSubmission(false)
+                                                }
+                                            >
+                                                Cancel
+                                            </Button>
+                                            <Button
+                                                color="purple"
+                                                variant="solid"
+                                                className="font-bold"
+                                                onClick={handleEditSubmission}
+                                            >
+                                                Save
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <Button
+                                            color="purple"
+                                            variant="solid"
+                                            className="font-bold"
+                                            onClick={handleSubmitAssignment}
+                                        >
+                                            Submit
+                                        </Button>
+                                    )}
+                                </>
+                            ) : (
+                                <Button
+                                    color="purple"
+                                    variant="solid"
+                                    className="font-bold"
+                                    onClick={() => setIsEditSubmission(true)}
+                                >
+                                    Edit
+                                </Button>
+                            )}
                         </div>
+                        {/* Feedback of Teacher */}
+                        {user?.role === "Student" && submissionOfStudent && (
+                            <div className="">
+                                <div>Feedback of teacher: </div>
+                                <div className="min-h-[150px] border-[1px] border-gray-300 ">
+                                    <div className="w-full mt-3 px-3 text-gray-600 flex justify-between border-b-[1px] border-gray-300">
+                                        <div className="mb-3 flex gap-1">
+                                            <p className="font-bold text-black">
+                                                {course?.teacher?.fullName}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="w-full px-8">
+                                        <div
+                                            className=""
+                                            dangerouslySetInnerHTML={{
+                                                __html: submissionOfStudent?.feedback,
+                                            }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </motion.div>
                 )}
+
+                {/* Submissions List */}
+                {openSubmissionsList ? (
+                    !submissionsListLoading ? (
+                        <div>
+                            <h1 className="py-5 font-bold text-xl">
+                                Submissions of students
+                            </h1>
+                            <div className="w-full">
+                                {submissions.map((submission: any) => {
+                                    return (
+                                        <div
+                                            key={submission.submissionId}
+                                            className="w-full flex flex-col gap-4 mb-5"
+                                        >
+                                            <div className="min-h-[250px] border-[1px] border-gray-300 bg-white">
+                                                <div className="w-full mt-3 px-3 text-gray-600 flex justify-between border-b-[1px] border-gray-300">
+                                                    <div className="mb-3 flex gap-1">
+                                                        <p className="font-bold text-black">
+                                                            {
+                                                                submission.studentName
+                                                            }
+                                                        </p>
+                                                        <p>
+                                                            on{" "}
+                                                            <span>
+                                                                {dayjs(
+                                                                    submission.submissionDate
+                                                                ).format(
+                                                                    "YYYY-MM-DD HH:mm:ss"
+                                                                )}
+                                                            </span>
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex gap-4">
+                                                        <div className="flex items-start gap-2">
+                                                            <div
+                                                                className="flex items-start gap-2 transition-opacity duration-300 hover:opacity-60 cursor-pointer"
+                                                                onClick={() =>
+                                                                    handleOpenFeedBackBox(
+                                                                        submission.submissionId
+                                                                    )
+                                                                }
+                                                            >
+                                                                <span className="">
+                                                                    <FaEdit className="text-[1.2rem]" />
+                                                                </span>
+                                                                <p>
+                                                                    Grade
+                                                                    {submission.grade && (
+                                                                        <span>
+                                                                            :{" "}
+                                                                            {
+                                                                                submission.grade
+                                                                            }
+                                                                        </span>
+                                                                    )}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="w-full px-5">
+                                                    {submission.submissionLink}
+                                                </div>
+                                                <div className="w-full justify-end"></div>
+                                            </div>
+                                            <AnimatePresence>
+                                                {openFeedbackBoxArray.includes(
+                                                    submission.submissionId
+                                                ) && (
+                                                    <motion.div
+                                                        initial={{
+                                                            y: -100,
+                                                            opacity: 0,
+                                                        }}
+                                                        whileInView={{
+                                                            y: 0,
+                                                            opacity: [
+                                                                0, 0, 0.5, 1,
+                                                            ],
+                                                        }}
+                                                        exit={{
+                                                            y: -100,
+                                                            opacity: 0,
+                                                        }}
+                                                        transition={{
+                                                            duration: 0.4,
+                                                            ease: "linear",
+                                                        }}
+                                                        viewport={{
+                                                            once: true,
+                                                        }}
+                                                        className="min-h-[250px] w-4/5 border-[1px] border-gray-300 bg-white self-end"
+                                                    >
+                                                        <div className="w-full mt-3 px-3 text-gray-600 flex justify-between border-b-[1px] border-gray-300">
+                                                            <div className="mb-3 flex gap-1">
+                                                                <p className="font-bold text-black">
+                                                                    {
+                                                                        user?.userName
+                                                                    }
+                                                                </p>
+                                                                <p>
+                                                                    on{" "}
+                                                                    <span>
+                                                                        {dayjs(
+                                                                            Date.now()
+                                                                        ).format(
+                                                                            "YYYY-MM-DD HH:mm:ss"
+                                                                        )}
+                                                                    </span>
+                                                                </p>
+                                                            </div>
+                                                            <div className="flex gap-4">
+                                                                <p className="flex items-start gap-2 transition-opacity duration-300 hover:opacity-60 cursor-pointer"></p>
+                                                                <p className="flex items-start gap-2">
+                                                                    <p>
+                                                                        Grade:{" "}
+                                                                    </p>
+                                                                    <Input
+                                                                        value={
+                                                                            grade.length >
+                                                                            0
+                                                                                ? grade
+                                                                                : submission.grade
+                                                                        }
+                                                                        type="number"
+                                                                        className="p-0 px-2 w-[60px]"
+                                                                        onChange={
+                                                                            handleChange
+                                                                        }
+                                                                    />
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="w-full h-[130px] px-3 my-3">
+                                                            <TextEditor
+                                                                content={
+                                                                    content.length >
+                                                                    0
+                                                                        ? content
+                                                                        : submission.feedback
+                                                                }
+                                                                onContentChange={
+                                                                    setContent
+                                                                }
+                                                                className="h-[100px]"
+                                                            />
+                                                        </div>
+                                                        <div className="w-full mt-5 px-3 flex justify-end">
+                                                            <Button
+                                                                loading={
+                                                                    saveLoading
+                                                                }
+                                                                variant="solid"
+                                                                color="purple"
+                                                                onClick={() =>
+                                                                    handleSaveGradeAndFeedback(
+                                                                        submission.submissionId
+                                                                    )
+                                                                }
+                                                            >
+                                                                Save
+                                                            </Button>
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ) : (
+                        <SpinnerLoading />
+                    )
+                ) : (
+                    <></>
+                )}
+
+                {/* Modal create new assignment */}
+                <Modal
+                    title={<h1 className="text-2xl">Create new assignment</h1>}
+                    open={createModalVisible}
+                    onCancel={() => setCreateModalVisible(false)}
+                    footer={null}
+                >
+                    <Form
+                        form={form}
+                        layout="vertical"
+                        onFinish={handleSubmitCreateForm}
+                    >
+                        <Form.Item
+                            label="Title"
+                            name="title"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please enter title !",
+                                },
+                            ]}
+                        >
+                            <Input placeholder="Enter assignment title" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Description"
+                            name="description"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please enter description !",
+                                },
+                            ]}
+                        >
+                            <Input.TextArea
+                                rows={5}
+                                placeholder="Enter assignment description"
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Due Date"
+                            name="dueDate"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please enter due date !",
+                                },
+                            ]}
+                        >
+                            <DatePicker />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button
+                                loading={modalLoading}
+                                variant="solid"
+                                type="primary"
+                                htmlType="submit"
+                            >
+                                Create
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Modal>
+
+                {/* Modal edit new assignment */}
+                <Modal
+                    title={<h1 className="text-2xl">Edit new assignment</h1>}
+                    open={editModalVisible}
+                    onCancel={() => {
+                        setEditModalVisible(false);
+                        setSelectedAssignment(null);
+                    }}
+                    footer={null}
+                >
+                    <Form
+                        form={form}
+                        layout="vertical"
+                        onFinish={handelSubmitEditForm}
+                    >
+                        <Form.Item
+                            label="Title"
+                            name="title"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please enter title !",
+                                },
+                            ]}
+                        >
+                            <Input placeholder="Enter assignment title" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Description"
+                            name="description"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please enter description !",
+                                },
+                            ]}
+                        >
+                            <Input.TextArea
+                                rows={5}
+                                placeholder="Enter assignment description"
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Due Date"
+                            name="dueDate"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please enter due date !",
+                                },
+                            ]}
+                        >
+                            <DatePicker />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button
+                                loading={modalLoading}
+                                variant="solid"
+                                type="primary"
+                                htmlType="submit"
+                            >
+                                Save
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Modal>
+
+                {/* Modal confirm delete  */}
+                <Modal
+                    open={deleteModalVisible}
+                    onCancel={() => setDeleteModalVisible(false)}
+                    okText="Confirm"
+                    onOk={() =>
+                        handleDeleteAssignment(
+                            selectedAssignment.assignmentId as number
+                        )
+                    }
+                >
+                    <p className="flex gap-2">
+                        <ExclamationCircleIcon className="w-6 h-6 text-orange-400" />
+                        Are you sure ?
+                    </p>
+                </Modal>
             </div>
         </>
     );

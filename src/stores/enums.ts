@@ -8,5 +8,7 @@ export const enum MenuItems {
     teachers = "teachers",
     students = "students",
     courses = "courses",
-    coursesEnrollments = "coursesenrollments",
+    coursesEnrollments = "courses-enrollments",
+    adminPanel = "admin-panel",
+    assignments = "assignments",
 }

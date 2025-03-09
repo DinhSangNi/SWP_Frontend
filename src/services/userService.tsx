@@ -22,29 +22,24 @@ API.interceptors.request.use(
 );
 
 // Middleware: Xử lý lỗi response, ví dụ tự động refresh token (nếu API hỗ trợ)
-API.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        if (error.response?.status === 401) {
-            console.warn(
-                "Token hết hạn hoặc không hợp lệ, có thể cần đăng nhập lại!"
-            );
-            // Gọi API refresh token nếu có
-        }
-        return Promise.reject(error.response?.data || error.message);
-    }
-);
+// API.interceptors.response.use(
+//     (response) => response,
+//     async (error) => {
+//         if (error.response?.status === 401) {
+//             console.warn(
+//                 "Token hết hạn hoặc không hợp lệ, có thể cần đăng nhập lại!"
+//             );
+//             // Gọi API refresh token nếu có
+//         }
+//         return Promise.reject(error.response?.data || error.message);
+//     }
+// );
 
 //  API Lấy tất cả người dùng
 export const getAllUser = async () => {
-    try {
-        const response = await API.get("/User/all-users");
-        console.log("📌 Lấy all users thành công", response.data);
-        return response.data;
-    } catch (error) {
-        console.error("❌ Lỗi khi lấy danh sách người dùng:", error);
-        throw error;
-    }
+    const response = await API.get("/User/all-users");
+    // console.log("📌 Lấy all users thành công", response);
+    return response;
 };
 
 // API lấy chi tiết người dùng

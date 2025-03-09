@@ -27,6 +27,7 @@ import { MenuItems } from "@/stores/enums";
 import PopoverNotify from "../PopoverNotify";
 import { uppercaseFirstLetter } from "@/utils/formatUtils";
 // import { useNotification } from "@/hooks/useNotification";
+import { MdOutlineSpaceDashboard } from "react-icons/md";
 import { toast } from "react-toastify";
 
 const { Item } = Menu;
@@ -116,9 +117,10 @@ const Header = ({ setLoading }: Props) => {
             label: (
                 <Link
                     to={`/${MenuItems.dashBoard}/teachers`}
-                    className="px-4 font-bold"
+                    className="flex justify-start items-center gap-2 px-4 font-bold"
                 >
-                    Dashboard
+                    <MdOutlineSpaceDashboard className="text-[1rem] text-black" />
+                    <p>Admin Panel</p>
                 </Link>
             ),
             key: "1",
@@ -326,7 +328,7 @@ const Header = ({ setLoading }: Props) => {
                                             onClick={handleOnclickMenuItems}
                                         >
                                             <Item key={MenuItems.dashBoard}>
-                                                Dashboard
+                                                Admin Panel
                                             </Item>
                                             <Item key={MenuItems.profile}>
                                                 Profile

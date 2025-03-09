@@ -12,6 +12,7 @@ type Props = {
     items: AssignmentResponse[];
     completedAssignment: AssignmentResponse[];
     onClick: (id: string) => void;
+    setSelectedAssignment: (assignment: any) => void;
 };
 
 const AssignmentsMenu = ({
@@ -19,6 +20,7 @@ const AssignmentsMenu = ({
     items,
     completedAssignment,
     onClick,
+    setSelectedAssignment,
 }: Props) => {
     const [isCollapse, setIsCollapse] = useState<boolean>(false);
     const [selected, setSelected] = useState<string>("");
@@ -42,7 +44,7 @@ const AssignmentsMenu = ({
                     </motion.div>
                     <div className="w-full flex items-center text-xl">
                         <h1 className="">{title}</h1>
-                        <p>({items.length})</p>
+                        <p>({items?.length})</p>
                     </div>
                 </div>
                 <AnimatePresence>
@@ -70,6 +72,7 @@ const AssignmentsMenu = ({
                                         onClick={() => {
                                             setSelected(item.assignmentId);
                                             onClick(item.assignmentId);
+                                            setSelectedAssignment(item);
                                         }}
                                     >
                                         <div className="flex items-center gap-2">

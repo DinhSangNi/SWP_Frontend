@@ -26,12 +26,6 @@ const SideBar = () => {
     const { userName } = JSON.parse(userInfo || "{}");
     console.log("userName", userName);
 
-    // if(user.role !== 'Admin'){
-    //      navigate('/');;
-    // }
-
-    //    console.log("role", user);
-
     return (
         <div className="flex flex-col w-full h-full gap-10 bg-purple-200 border-r-2 border-purple-300">
             {/* LOGO */}
