@@ -6,7 +6,12 @@ import { searchCourse } from "@/services/courseService";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 
-const SearchForm = () => {
+type Props = {
+    placeHolder?: string;
+    autoComplete?: boolean;
+};
+
+const SearchForm = ({ placeHolder, autoComplete = true }: Props) => {
     const [query, setQuery] = useState("");
     const [options, setOptions] = useState<AutoCompleteProps["options"]>([]);
 
@@ -71,12 +76,25 @@ const SearchForm = () => {
 
     return (
         <div className="w-full">
-            <AutoComplete
-                className="w-full"
-                size="large"
-                options={options}
-                onSelect={handleSelect}
-            >
+            {autoComplete ? (
+                <AutoComplete
+                    className="w-full"
+                    size="large"
+                    options={options}
+                    onSelect={handleSelect}
+                >
+                    <Input
+                        allowClear
+                        className="w-full rounded-3xl hover:border-[#6d28d2] focus-within:border-[#6d28d2]"
+                        prefix={<IoMdSearch className="text-[1.5rem]" />}
+                        onChange={handleSearch}
+                        value={query}
+                        onPressEnter={handleEnter}
+                        placeholder={placeHolder}
+                        size="large"
+                    />
+                </AutoComplete>
+            ) : (
                 <Input
                     allowClear
                     className="w-full rounded-3xl hover:border-[#6d28d2] focus-within:border-[#6d28d2]"
@@ -84,9 +102,10 @@ const SearchForm = () => {
                     onChange={handleSearch}
                     value={query}
                     onPressEnter={handleEnter}
+                    placeholder={placeHolder}
                     size="large"
                 />
-            </AutoComplete>
+            )}
         </div>
     );
 };

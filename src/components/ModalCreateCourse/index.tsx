@@ -1,11 +1,25 @@
 import { useState, useEffect } from "react";
-import { Button, Flex, Modal, Form, Input, DatePicker, Checkbox } from "antd";
+import {
+    Button,
+    Flex,
+    Modal,
+    Form,
+    Input,
+    DatePicker,
+    Checkbox,
+    Tooltip,
+} from "antd";
 import { CiCirclePlus } from "react-icons/ci";
 import { toast } from "react-toastify";
-import { createCourse, editCourse } from "@/services/courseService";
+import {
+    createCourse,
+    editCourse,
+    getCourseById,
+} from "@/services/courseService";
+import dayjs from "dayjs";
 
 type Props = {
-    courseId: string;
+    courseId?: string;
     type: string;
     reload: () => void;
 };
@@ -21,16 +35,16 @@ const ModalCreateCourse = ({ reload, type, courseId }: Props) => {
         if (type === "edit" && courseId) {
             const fetchCourse = async () => {
                 try {
-                    const courseData = await editCourse(courseId);
+                    const courseData = await getCourseById(courseId);
                     form.setFieldsValue({
-                        courseName: courseData.courseName,
-                        description: courseData.description,
+                        courseName: courseData.data.courseName,
+                        description: courseData.data.description,
                         dates: [
-                            courseData.startDate
-                                ? moment(courseData.startDate)
+                            courseData.data.startDate
+                                ? dayjs(courseData.data.startDate)
                                 : null,
-                            courseData.endDate
-                                ? moment(courseData.endDate)
+                            courseData.data.endDate
+                                ? dayjs(courseData.data.endDate)
                                 : null,
                         ],
                     });
@@ -79,9 +93,14 @@ const ModalCreateCourse = ({ reload, type, courseId }: Props) => {
     return (
         <div>
             <Flex vertical gap="middle" align="flex-start">
-                <Button type="primary" onClick={() => setOpenResponsive(true)}>
-                    <CiCirclePlus size={30} />
-                </Button>
+                <Tooltip title="Create">
+                    <Button
+                        type="primary"
+                        onClick={() => setOpenResponsive(true)}
+                    >
+                        <CiCirclePlus size={30} />
+                    </Button>
+                </Tooltip>
                 <Modal
                     title={type === "create" ? "Create Course" : "Edit Course"}
                     centered

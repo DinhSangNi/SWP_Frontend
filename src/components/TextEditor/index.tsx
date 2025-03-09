@@ -5,7 +5,9 @@ import "react-quill/dist/quill.snow.css";
 
 type Props = {
     content?: string;
-    onContentChange: (content: any) => void;
+    readOnly?: boolean;
+    className?: string;
+    onContentChange?: (content: any) => void;
 };
 
 const modules = {
@@ -22,7 +24,12 @@ const modules = {
     ],
 };
 
-const TextEditor = ({ content, onContentChange }: Props) => {
+const TextEditor = ({
+    content,
+    onContentChange,
+    className,
+    readOnly,
+}: Props) => {
     const [editorValue, setEditorValue] = useState<string>(content || "");
 
     const handleChange = (value: string) => {
@@ -44,6 +51,8 @@ const TextEditor = ({ content, onContentChange }: Props) => {
         <>
             <div className="w-full">
                 <ReactQuill
+                    className={className}
+                    readOnly={readOnly}
                     placeholder="Do something here."
                     theme="snow"
                     value={editorValue}

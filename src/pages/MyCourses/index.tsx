@@ -1,12 +1,18 @@
 import SpinnerLoading from "@/components/SpinnerLoading";
 import CourseCard from "@/components/CourseCard";
-import { getAllCourses, getMyCources } from "@/services/courseService";
+import {
+    getAllCourses,
+    getAllCoursesOfATeacher,
+    getMyCources,
+} from "@/services/courseService";
 import { Course } from "@/stores/types";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CourseCarousel from "@/components/CourseCarousel";
 import { CourseType } from "../Home";
+import { useSelector } from "react-redux";
+import { RootState } from "@/stores/store";
 
 const MyCourses = () => {
     const [loading, setLoading] = useState(false);
@@ -14,12 +20,35 @@ const MyCourses = () => {
     const [courses, setCourses] = useState<CourseType[] | null>(null);
     const navigate = useNavigate();
 
-    const handleOnclick = (courseId: string, enrollmentStatus: string) => {
+    const user = useSelector((state: RootState) => state.auth.user);
+
+    const handleDetail = (courseId: string) => {
         navigate(`/myCourses/${courseId}`);
     };
 
     useEffect(() => {
-        // Fetch my coures
+        const fetchMyCourseTeacher = async () => {
+            try {
+                setLoading(true);
+                const response = await getAllCoursesOfATeacher(
+                    user?.idUser as string
+                );
+                if (response.status === 200) {
+                    setMyCourses(response.data.$values);
+                }
+            } catch (error: any) {
+                console.log("error: ", error);
+                if (error.status === 401) {
+                    toast.error("Your token expired! Please re-authenticate!", {
+                        position: "top-center",
+                    });
+                    navigate("/login");
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+        // Fetch my coures (student)
         const fetchMyCourses = async () => {
             try {
                 setLoading(true);
@@ -52,7 +81,11 @@ const MyCourses = () => {
             }
         };
 
-        fetchMyCourses();
+        if (user?.role === "Student") {
+            fetchMyCourses();
+        } else {
+            fetchMyCourseTeacher();
+        }
         fetchAllCourse();
     }, []);
 
@@ -72,10 +105,7 @@ const MyCourses = () => {
                                 <CourseCard
                                     course={course}
                                     onClick={() =>
-                                        handleOnclick(
-                                            course.courseId,
-                                            course.enrollmentStatus
-                                        )
+                                        handleDetail(course.courseId)
                                     }
                                 />
                             );
@@ -87,16 +117,18 @@ const MyCourses = () => {
                     </div>
                 )}
                 {/* COURSES CAROUSEL */}
-                <div className="w-full mt-10">
-                    <CourseCarousel
-                        heading={
-                            <h1 className="text-2xl font-bold">
-                                You also might like
-                            </h1>
-                        }
-                        items={courses}
-                    />
-                </div>
+                {user?.role === "Student" && (
+                    <div className="w-full mt-10">
+                        <CourseCarousel
+                            heading={
+                                <h1 className="text-2xl font-bold">
+                                    You also might like
+                                </h1>
+                            }
+                            items={courses}
+                        />
+                    </div>
+                )}
             </div>
         </>
     );

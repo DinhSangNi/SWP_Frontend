@@ -127,3 +127,52 @@ export const getMyCources = async () => {
         throw error;
     }
 };
+
+// Get Courses Enrollments
+export const getCourseEnrollments = async (status: string) => {
+    const response = await API.get(
+        `Course/students-courses?enrollmentStatus=${status}`
+    );
+
+    return response;
+};
+
+// Confirm Course Enrollment
+export const confirmCourseEnrollment = async (
+    courseId: number | string,
+    studentId: string | number
+) => {
+    const response = await API.post(
+        `/Course/confirm-enrollment/${courseId}/${studentId}`
+    );
+    return response;
+};
+
+// Assign a teacher to a course
+export const assignTeacherToCourse = async (
+    courseId: number,
+    teacherId: number
+) => {
+    const response = await API.post(
+        `/Course/assign-teacher/${courseId}?teacherId=${teacherId}`
+    );
+    return response;
+};
+
+// Unassign a teacher to a course
+export const unassignTeacherToCourse = async (courseId: number) => {
+    const response = await API.delete(`/Course/remove-teacher/${courseId}`);
+    return response;
+};
+
+// Show list of students in a course
+export const showStudentsListInACourse = async (courseId: number) => {
+    const response = await API.get(`/Course/confirmed-students/${courseId}`);
+    return response;
+};
+
+// Get courses of a teacher
+export const getAllCoursesOfATeacher = async (teacherId: number | string) => {
+    const response = await API.get(`/Course/teacher-courses/${teacherId}`);
+    return response;
+};

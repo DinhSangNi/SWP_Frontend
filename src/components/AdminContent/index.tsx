@@ -11,9 +11,8 @@ type Props = {
 };
 
 const AdminContent = ({ type }: Props) => {
+    const [dataList, setDataList] = useState(null); // State which store users array
 
-    const [dataTeacher, setDataTeacher] = useState([]); // State lưu danh sách giáo viên
-    const [dataStudent, setDataStudent] = useState([]); // State lưu danh sách học sinh
     const [loading, setLoading] = useState(false); // State loading
     const [pagination, setPagination] = useState<PaginationType>({
         currentPage: 1,
@@ -22,25 +21,14 @@ const AdminContent = ({ type }: Props) => {
 
     // Hàm fetch dữ liệu người dùng
     const fetchData = async () => {
-        setLoading(true); // Bắt đầu loading
         try {
-            const response = await getAllUser(); // Gọi API lấy danh sách người dùng
-            console.log("Response from server:", response);
-
-            // Lọc danh sách giáo viên
-            const teachers = response.filter(user => user.role === "Teacher");
-            console.log("Teachers:", teachers);
-            setDataTeacher(teachers);
-
-            // Lọc danh sách học sinh
-            const students = response.filter(user => user.role === "Student");
-            console.log("Students:", students);
-            setDataStudent(students);
-
+            setLoading(true);
+            const response = await getAllUser();
+            if (response.status === 200) {
+            }
         } catch (error) {
-            console.error("Error fetching users:", error);
         } finally {
-            setLoading(false); // Kết thúc loading
+            setLoading(false);
         }
     };
 
@@ -59,10 +47,10 @@ const AdminContent = ({ type }: Props) => {
     };
 
     // Xác định dataSource dựa trên type
-    const getDataSource = () => {
+    const getDataSourceByType = (users: any) => {
         switch (type) {
             case "Teacher":
-                return dataTeacher;
+                return;
             case "Student":
                 return dataStudent;
             case "Courses":
@@ -77,7 +65,6 @@ const AdminContent = ({ type }: Props) => {
     return (
         <div className="w-full overflow-y-scroll">
             <div className="w-full">
-
                 <div className="py-10 text-3xl font-bold">
                     <h1>{type} Management</h1>
                 </div>
@@ -91,14 +78,13 @@ const AdminContent = ({ type }: Props) => {
                 columns={
                     type === "CoursesEnrollments"
                         ? [
-
-                            // Các cột cho CoursesEnrollments
-                        ]
+                              // Các cột cho CoursesEnrollments
+                          ]
                         : type === "Courses"
-                            ? [
+                          ? [
                                 // Các cột cho Courses
                             ]
-                            : [
+                          : [
                                 // Các cột cho Teacher/Student
                                 {
                                     title: "ID",
@@ -125,8 +111,13 @@ const AdminContent = ({ type }: Props) => {
                                     key: "status",
                                     dataIndex: "status",
                                     render: (status) => (
-
-                                        <Tag color={status === "inActive" ? "red" : "green"}>
+                                        <Tag
+                                            color={
+                                                status === "inActive"
+                                                    ? "red"
+                                                    : "green"
+                                            }
+                                        >
                                             {status}
                                         </Tag>
                                     ),
@@ -136,11 +127,16 @@ const AdminContent = ({ type }: Props) => {
                                     key: "action",
                                     render: () => (
                                         <Space size="middle">
-
-                                            <Button variant="solid" color="orange">
+                                            <Button
+                                                variant="solid"
+                                                color="orange"
+                                            >
                                                 Detail
                                             </Button>
-                                            <Button variant="solid" color="danger">
+                                            <Button
+                                                variant="solid"
+                                                color="danger"
+                                            >
                                                 Delete
                                             </Button>
                                         </Space>
@@ -148,7 +144,6 @@ const AdminContent = ({ type }: Props) => {
                                 },
                             ]
                 }
-
                 dataSource={getDataSource()} // Sử dụng hàm getDataSource để chọn dữ liệu phù hợp
                 loading={loading} // Hiển thị loading khi đang fetch dữ liệu
                 className="w-full"
@@ -164,6 +159,5 @@ const AdminContent = ({ type }: Props) => {
         </div>
     );
 };
-
 
 export default AdminContent;

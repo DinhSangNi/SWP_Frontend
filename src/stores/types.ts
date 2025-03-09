@@ -8,10 +8,10 @@ export type AuthUser = {
     status?: string;
 };
 
-export type Teacher = {
+export type TeacherType = {
     key?: string;
-    id: string;
-    fullname: string;
+    $id: string;
+    fullName: string;
     email: string;
     phoneNumber: string;
     status: string;

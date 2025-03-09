@@ -3,8 +3,6 @@ import Login from "@/pages/Login/index.tsx";
 import SignUp from "@/pages/SignUp/index.tsx";
 import MainLayout from "@/components/MainLayout";
 import DashboardLayout from "@/components/DashboardLayout";
-import AdminContent from "@/components/AdminContent";
-
 import Course from "@/pages/Course/index.tsx";
 import Student from "@/pages/Admin/Students";
 import Teacher from "@/pages/Admin/Teacher";
@@ -17,6 +15,9 @@ import TestTailwind from "@/pages/TestTailwind";
 import ForgotPassword from "@/pages/ForgotPassword";
 import CourseDetail from "@/pages/CourseDetail";
 import AllCourses from "@/pages/AllCourses";
+import CoursesEnrollments from "@/pages/Admin/CoursesEnrollments";
+import Assignments from "@/pages/Admin/Assignments";
+import AssignmentSubmissions from "@/pages/Admin/AssignmentSubmissions";
 export const routes = [
     {
         path: "/",
@@ -43,7 +44,7 @@ export const routes = [
                 element: <MyCourses />,
             },
             {
-                path: "/myCourses/:id",
+                path: "/myCourses/:courseId",
                 element: <MyCourseDetail />,
             },
             {
@@ -85,9 +86,18 @@ export const routes = [
                 path: "courses",
                 element: <Courses type="Courses" />,
             },
+
             {
-                path: "coursesEnrollments",
-                element: <AdminContent type="CoursesEnrollments" />,
+                path: "courses-enrollments",
+                element: <CoursesEnrollments />,
+            },
+            {
+                path: "courses/:courseId/assignments",
+                element: <Assignments />,
+            },
+            {
+                path: "courses/:courseId/assignments/:assignmentId/submissions",
+                element: <AssignmentSubmissions />,
             },
         ],
     },

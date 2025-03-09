@@ -1,4 +1,6 @@
 import { jwtDecode } from "jwt-decode";
+import { persistor } from "@/stores/store";
+import { toast } from "react-toastify";
 
 // check tg hết hạn và valid token
 export const checkTokenExpiry = () => {
@@ -23,4 +25,11 @@ export const checkTokenExpiry = () => {
         localStorage.removeItem("token");
         return null;
     }
+};
+
+export const handleWhenTokenExpire = () => {
+    toast.error("Your token expired! Please re-authenticate!");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    persistor.purge();
 };
