@@ -47,6 +47,7 @@ const CoursesEnrollments = () => {
             const response = await confirmCourseEnrollment(courseId, studentId);
             if (response.status === 200) {
                 toast.success("Approved Successfully!");
+                fetchCoursesEnrollments();
             }
         } catch (error: any) {
             console.log("error: ", error);
@@ -55,7 +56,7 @@ const CoursesEnrollments = () => {
                 navigate("/login");
             }
         } finally {
-            setConfirmLoading(true);
+            setConfirmLoading(false);
         }
     };
 

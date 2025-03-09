@@ -1,7 +1,13 @@
-import { getAllCourses, getCourseById } from "@/services/courseService";
-import { useEffect, useState, useRef } from "react";
+import {
+    enrollCourse,
+    getAllCourses,
+    getCourseById,
+} from "@/services/courseService";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { PiSealWarningFill } from "react-icons/pi";
+import { Button, ConfigProvider, Image, Skeleton } from "antd";
+import { IoCheckmarkOutline } from "react-icons/io5";
+import { useEffect, useState, useRef } from "react";
 import { MdDateRange, MdLanguage } from "react-icons/md";
 import { Image, Skeleton, List } from "antd";
 import { FaBullhorn } from "react-icons/fa";
@@ -9,16 +15,18 @@ import { toast } from "react-toastify";
 import CourseCarousel from "@/components/CourseCarousel";
 import { CourseType } from "../Home";
 import CustomSkeleton from "@/components/CustomSkeleton";
+import { handleWhenTokenExpire } from "@/utils/authUtils";
 import { motion } from "motion/react";
 import announcemmentsApi from "@/services/announcements";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Announcement, CourseResponse } from "./interface";
 
 
-
 const CourseDetail = () => {
-    const [course, setCourse] = useState<CourseResponse | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [enrollLoading, setEnrollLoading] = useState<boolean>(false);
+    const [couresCarouselLoading, setCourseCarouselLoading] =
+        useState<boolean>(false);
     const [carouselLoading, setCarouselLoading] = useState(false);
     const [courses, setCourses] = useState<CourseType[] | null>(null);
     const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -34,6 +42,27 @@ const CourseDetail = () => {
 
     const { id } = useParams();
     const navigate = useNavigate();
+
+    const handleEnrollCourse = async () => {
+        try {
+            setEnrollLoading(true);
+            const response = await enrollCourse(id!);
+            if (response.status === 200 || response.status === 201) {
+                toast.success(
+                    "Enroll Successfully! Please waiting for admin to confirm."
+                );
+            }
+        } catch (error: any) {
+            console.log("error: ", error);
+            toast.error("Enroll failed!");
+            if (error.status === 401) {
+                handleWhenTokenExpire();
+                navigate("/login");
+            }
+        } finally {
+            setEnrollLoading(false);
+        }
+    };
 
     useEffect(() => {
         const fetchCourseDetail = async () => {
@@ -218,7 +247,20 @@ const CourseDetail = () => {
                                             />
                                         </InfiniteScroll>
                                     </div>
+                                    <div>
+                                        <Button
+                                            variant="solid"
+                                            color="purple"
+                                            loading={enrollLoading}
+                                            className="px-5 py-3 font-bold rounded-sm"
+                                            onClick={handleEnrollCourse}
+                                        >
+                                            Enroll
+                                        </Button>
+                                    </div>
+                                </>
                                 </motion.div>
+
                             )}
                         </motion.div>
                     )}
