@@ -1,15 +1,20 @@
-import { getAllCourses, getCourseById } from "@/services/courseService";
+import {
+    enrollCourse,
+    getAllCourses,
+    getCourseById,
+} from "@/services/courseService";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { PiSealWarningFill } from "react-icons/pi";
 import { MdDateRange } from "react-icons/md";
 import { MdLanguage } from "react-icons/md";
-import { ConfigProvider, Image, Skeleton } from "antd";
+import { Button, ConfigProvider, Image, Skeleton } from "antd";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 import CourseCarousel from "@/components/CourseCarousel";
 import { CourseType } from "../Home";
 import CustomSkeleton from "@/components/CustomSkeleton";
+import { handleWhenTokenExpire } from "@/utils/authUtils";
 
 interface courseResponse {
     $id: string;
@@ -28,6 +33,7 @@ interface courseResponse {
 const CourseDetail = () => {
     const [course, setCourse] = useState<courseResponse | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [enrollLoading, setEnrollLoading] = useState<boolean>(false);
     const [couresCarouselLoading, setCourseCarouselLoading] =
         useState<boolean>(false);
     const [courses, setCourses] = useState<CourseType[] | null>(null);
@@ -36,6 +42,27 @@ const CourseDetail = () => {
     const { id } = useParams();
 
     const navigate = useNavigate();
+
+    const handleEnrollCourse = async () => {
+        try {
+            setEnrollLoading(true);
+            const response = await enrollCourse(id!);
+            if (response.status === 200 || response.status === 201) {
+                toast.success(
+                    "Enroll Successfully! Please waiting for admin to confirm."
+                );
+            }
+        } catch (error: any) {
+            console.log("error: ", error);
+            toast.error("Enroll failed!");
+            if (error.status === 401) {
+                handleWhenTokenExpire();
+                navigate("/login");
+            }
+        } finally {
+            setEnrollLoading(false);
+        }
+    };
 
     useEffect(() => {
         const fetchCourseDetail = async () => {
@@ -160,6 +187,17 @@ const CourseDetail = () => {
                                             You need to complete all assignments
                                             on time to pass the course.
                                         </p>
+                                    </div>
+                                    <div>
+                                        <Button
+                                            variant="solid"
+                                            color="purple"
+                                            loading={enrollLoading}
+                                            className="px-5 py-3 font-bold rounded-sm"
+                                            onClick={handleEnrollCourse}
+                                        >
+                                            Enroll
+                                        </Button>
                                     </div>
                                 </>
                             )}

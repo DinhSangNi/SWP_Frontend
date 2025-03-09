@@ -137,6 +137,11 @@ export const getCourseEnrollments = async (status: string) => {
     return response;
 };
 
+export const enrollCourse = async (coureId: number | string) => {
+    const response = await API.post(`Course/enroll/${coureId}`);
+    return response;
+};
+
 // Confirm Course Enrollment
 export const confirmCourseEnrollment = async (
     courseId: number | string,

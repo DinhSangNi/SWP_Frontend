@@ -31,6 +31,7 @@ const Student = ({ type }: Props) => {
     const [dataStudent, setDataStudent] = useState([]); // State lưu danh sách học sinh
     const [loading, setLoading] = useState(false); // State loading
     const [reload, setReload] = useState(false); // State để reload dữ liệu
+    const [enrollLoading, setEnrollLoading] = useState<boolean>(false);
 
     const [detailModalVisible, setDetailModalVisible] = useState(false); // State để hiển thị modal chi tiết
     const [selectedUser, setSelectedUser] = useState<any>(null); // State lưu thông tin chi tiết của người dùng
@@ -204,6 +205,7 @@ const Student = ({ type }: Props) => {
             maskClosable: true,
             onOk: async () => {
                 try {
+                    setEnrollLoading(true);
                     const response = await confirmCourseEnrollment(
                         courseId,
                         studentId
@@ -218,6 +220,8 @@ const Student = ({ type }: Props) => {
                         handleWhenTokenExpire();
                         navigate("/login");
                     }
+                } finally {
+                    setEnrollLoading(false);
                 }
             },
         });
@@ -324,6 +328,7 @@ const Student = ({ type }: Props) => {
                                                 <Button
                                                     variant="solid"
                                                     color="green"
+                                                    loading={enrollLoading}
                                                     onClick={() =>
                                                         handleConfirmPendingStudent(
                                                             record.courseId,
