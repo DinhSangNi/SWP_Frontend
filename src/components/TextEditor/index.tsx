@@ -49,17 +49,15 @@ const TextEditor = ({
 
     return (
         <>
-            <div className="w-full">
-                <ReactQuill
-                    className={className}
-                    readOnly={readOnly}
-                    placeholder="Do something here."
-                    theme="snow"
-                    value={editorValue}
-                    onChange={handleChange}
-                    modules={modules}
-                />
-            </div>
+            <ReactQuill
+                className={className}
+                readOnly={readOnly}
+                placeholder="Do something here."
+                theme="snow"
+                value={editorValue}
+                onChange={handleChange}
+                modules={modules}
+            />
         </>
     );
 };

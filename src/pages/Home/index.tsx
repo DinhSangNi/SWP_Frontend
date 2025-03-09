@@ -1,5 +1,5 @@
 import CourseCarousel from "@/components/CourseCarousel";
-import { Button, Carousel } from "antd";
+import { Button, Carousel, Form, Input } from "antd";
 import Target from "./components/Target";
 import Mission from "./components/Mission";
 import Report from "./components/Report";
@@ -7,6 +7,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { IoIosArrowDropup } from "react-icons/io";
 import { useEffect, useState } from "react";
 import { getAllCourses } from "@/services/courseService";
+import { IoIosArrowRoundForward } from "react-icons/io";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { handleWhenTokenExpire } from "@/utils/authUtils";
+import { submitQnA } from "@/services/q&aService";
 
 export type CourseType = {
     $id: string;
@@ -29,6 +34,8 @@ const Home = () => {
     const [courses, setCourses] = useState<CourseType[] | null>(null);
     const [isVisibleButton, setIsVisibleButton] = useState(false);
     const [carouselLoading, setCarouselLoading] = useState<boolean>(false);
+
+    const navigate = useNavigate();
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -68,6 +75,25 @@ const Home = () => {
 
         fetchAllCourses();
     }, []);
+
+    const handleSubmitQnA = async (credentials: any) => {
+        try {
+            const response = await submitQnA({
+                title: credentials.title,
+                content: credentials.content,
+            });
+            if (response.status === 200 || response.status === 201) {
+                toast.success("Submit successfully !");
+            }
+        } catch (error: any) {
+            console.log("error: ", error);
+            toast.error("Submit failed !");
+            if (error.status === 401) {
+                handleWhenTokenExpire();
+                navigate("/login");
+            }
+        }
+    };
 
     return (
         <>
@@ -207,6 +233,64 @@ const Home = () => {
                 {/* Report  */}
                 <div>
                     <Report />
+                </div>
+                {/* Q&A */}
+                <div className="w-mainContent mx-auto my-7 flex justify-between gap-10">
+                    <div className="w-1/2">
+                        <h1 className="text-3xl font-bold mb-3">Q&A</h1>
+                        <p className="text-[1.2rem]">
+                            Have any questions? Let us know.
+                        </p>
+                        <div className="mx-5 my-7">
+                            <Form layout="vertical" onFinish={handleSubmitQnA}>
+                                <Form.Item
+                                    label={<p className="text-xl">Title:</p>}
+                                    name="title"
+                                >
+                                    <Input
+                                        placeholder="Enter title"
+                                        className="hover:border-purple-400 focus-within:border-purple-400 focus-within:shadow-none"
+                                    />
+                                </Form.Item>
+                                <Form.Item
+                                    label={<p className="text-xl">Content:</p>}
+                                    name="content"
+                                >
+                                    <Input
+                                        placeholder="Enter content"
+                                        className="hover:border-purple-400 focus-within:border-purple-400 focus-within:shadow-none"
+                                    />
+                                </Form.Item>
+                                <Form.Item>
+                                    <Button
+                                        className="font-bold"
+                                        variant="outlined"
+                                        color="purple"
+                                        htmlType="submit"
+                                    >
+                                        Submit
+                                    </Button>
+                                </Form.Item>
+                            </Form>
+                            <Link
+                                to="/Qna"
+                                className="flex gap-1 transition-all duration-300 underline hover:text-purple-400"
+                            >
+                                <p className="underline">
+                                    See other questions here
+                                </p>
+                                <span>
+                                    <IoIosArrowRoundForward className="text-[1.5rem]" />
+                                </span>
+                            </Link>
+                        </div>
+                    </div>
+                    <div className="w-1/2">
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/7757/7757194.png"
+                            alt=""
+                        />
+                    </div>
                 </div>
             </div>
             <AnimatePresence>

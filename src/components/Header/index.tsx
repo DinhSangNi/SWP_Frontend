@@ -158,7 +158,7 @@ const Header = ({ setLoading }: Props) => {
     return (
         <>
             {contextHolder}
-            <header className="w-full relative border-b-[1px] border-b-[#ddd] shadow-md">
+            <header className="w-full relative border-b-[1px] border-b-[#ddd] shadow-md bg-white">
                 <div className="w-full flex items-center justify-evenly pb-[0.5rem]">
                     {/* LEFTSIDE */}
                     <div

@@ -18,6 +18,8 @@ import AllCourses from "@/pages/AllCourses";
 import CoursesEnrollments from "@/pages/Admin/CoursesEnrollments";
 import Assignments from "@/pages/Admin/Assignments";
 import AssignmentSubmissions from "@/pages/Admin/AssignmentSubmissions";
+import QnA from "@/pages/QnA";
+import QnADetail from "@/pages/QnA/QnADetail";
 export const routes = [
     {
         path: "/",
@@ -54,6 +56,14 @@ export const routes = [
             {
                 path: "/search",
                 element: <Search />,
+            },
+            {
+                path: "/QnA",
+                element: <QnA />,
+            },
+            {
+                path: "/QnA/:id",
+                element: <QnADetail />,
             },
         ],
     },

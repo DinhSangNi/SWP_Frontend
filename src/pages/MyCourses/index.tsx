@@ -104,7 +104,7 @@ const MyCourses = () => {
                             return (
                                 <CourseCard
                                     course={course}
-                                    onClick={() =>
+                                    onClickDetail={() =>
                                         handleDetail(course.courseId)
                                     }
                                 />
