@@ -17,6 +17,7 @@ import TestTailwind from "@/pages/TestTailwind";
 import ForgotPassword from "@/pages/ForgotPassword";
 import CourseDetail from "@/pages/CourseDetail";
 import AllCourses from "@/pages/AllCourses";
+import Announcements from "@/pages/Admin/Announcements";
 export const routes = [
     {
         path: "/",
@@ -89,6 +90,10 @@ export const routes = [
                 path: "coursesEnrollments",
                 element: <AdminContent type="CoursesEnrollments" />,
             },
+            {
+                path: "announcements",
+                element: <Announcements type="Announcements"/>
+            }
         ],
     },
 

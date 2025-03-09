@@ -1,20 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import API from '@/utils/axiosInstance';
 
 
 const announcemmentsApi = {
     getAnnouncemmentsByIdCourse: async (courseId: string) => {
-        return await API.get(`Announcements/course/${courseId}`)
+        return await API.get(`/Announcements/course/${courseId}`)
+    },
+
+    getAnnouncemmentsAll: async () => {
+        return await API.get(`/Announcements/announcements/all`)
     },
 
     createAnnouncemments: async (request: any) => {
-        return await API.post(`Announcements/create-announcement`, request)
+        return await API.post(`/Announcements/create-announcement`, request)
     },
 
     editAnnouncemments: async (announcementId: string, request: any) => {
-        return await API.put(`Announcements/update/${announcementId}`, request)
+        return await API.put(`/Announcements/update/${announcementId}`, request)
     },
 
-    deleteAnnouncemmentsByIdCourse: async (announcementId: string) => {
+    deleteAnnouncemmentsByIdCourse: async (announcementId: number) => {
         return await API.delete(`Announcements/delete/${announcementId}`)
     },
 

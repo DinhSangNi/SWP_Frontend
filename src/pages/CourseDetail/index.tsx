@@ -14,8 +14,6 @@ import announcemmentsApi from "@/services/announcements";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Announcement, CourseResponse } from "./interface";
 
-
-
 const CourseDetail = () => {
     const [course, setCourse] = useState<CourseResponse | null>(null);
     const [loading, setLoading] = useState(true);

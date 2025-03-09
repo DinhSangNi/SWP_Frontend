@@ -10,6 +10,7 @@ import {
 } from "@/services/courseService";
 import ModalCreateCourse from "@/components/ModalCreateCourse";
 import ModalEditCourse from "@/components/ModalEditCourse";
+import ModalCreateAnnouncement from "@/components/ModalCreateAnnouncemments";
 import { ExclamationCircleIcon } from "@heroicons/react/16/solid";
 
 type Props = {
@@ -23,8 +24,11 @@ const Courses = ({ type }: Props) => {
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] =
         useState<boolean>(false);
+    const [announcementModalVisible, setAnnouncementModalVisible] = 
+        useState<boolean>(false);
     const [deleteCourseId, setDeleteCourseId] = useState<string | null>(null);
     const [selectedCourse, setSelectedCourse] = useState<any>(null);
+    const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
     const [reload, setReload] = useState(false);
     const [pagination, setPagination] = useState<PaginationType>({
         currentPage: 1,
@@ -71,6 +75,11 @@ const Courses = ({ type }: Props) => {
         );
         setSelectedCourse(courseToEdit!);
         setEditModalVisible(true);
+    };
+
+    const handleCreateAnnouncementClick = (courseId: string) => {
+        setSelectedCourseId(courseId);
+        setAnnouncementModalVisible(true);
     };
 
     const handleDelete = async (courseId: string) => {
@@ -164,6 +173,14 @@ const Courses = ({ type }: Props) => {
                                 >
                                     Delete
                                 </Button>
+                                <Button
+                                    className="text-white bg-green-500"
+                                    onClick={() =>
+                                        handleCreateAnnouncementClick(record.courseId)
+                                    }
+                                >
+                                    Create Announcements
+                                </Button>
                             </Space>
                         ),
                     },
@@ -209,6 +226,7 @@ const Courses = ({ type }: Props) => {
                 onSave={handleSaveEdit}
                 initialValues={selectedCourse}
             />
+            
             <Modal
                 title="Confirm"
                 open={deleteModalVisible}
@@ -223,6 +241,16 @@ const Courses = ({ type }: Props) => {
                     <span>{deleteCourseId && deleteCourseId}</span>?
                 </p>
             </Modal>
+
+            <ModalCreateAnnouncement 
+                courseId={selectedCourseId}
+                visible={announcementModalVisible}
+                onCancel={() => setAnnouncementModalVisible(false)}
+                onSuccess={() => {
+                    setAnnouncementModalVisible(false);
+                    handleReload();
+                }}
+            />
         </div>
     );
 };

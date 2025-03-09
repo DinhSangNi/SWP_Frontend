@@ -9,4 +9,5 @@ export const enum MenuItems {
     students = "students",
     courses = "courses",
     coursesEnrollments = "coursesenrollments",
+    announcements = "announcements"
 }
