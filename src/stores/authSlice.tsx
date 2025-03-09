@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { checkTokenExpiry } from "@/utils/authUtils"; // Import hàm checkTokenExpiry
+
 
 type AuthUser = {
     idUser: string;

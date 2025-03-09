@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 
 const API = axios.create({
@@ -11,16 +12,13 @@ const API = axios.create({
 export const loginAuth = async (userData: any) => {
     try {
         const response = await API.post("/Auth/login", userData);
-        console.log("Response from server:", response.data);
         return response.data;
     } catch (error: any) {
-        console.error("Login error:", error.response?.data || error.message);
         throw error.response?.data || error.message;
     }
 };
 
 export const signup = async (userData: any) => {
-    console.log("Sending data to server:", userData);
     const { FullName, username, email, password, phonenumber } = userData;
     try {
         const response = await API.post("/Auth/register", {
@@ -30,13 +28,8 @@ export const signup = async (userData: any) => {
             password,
             phonenumber,
         });
-        console.log("Response from server:", response.data);
         return response.data;
     } catch (error: any) {
-        console.error(
-            "Error from server:",
-            error.response?.data || error.message
-        );
         throw error.response?.data || error.message;
     }
 };
@@ -46,7 +39,6 @@ export const forgotPassword = async (email: string) => {
         Email: email,
     });
     if (response) {
-        console.log("Response from server:", response.data);
         return response.data;
     }
 };
@@ -62,7 +54,6 @@ export const resetPassword = async (
         newPassword: newPassword,
     });
     if (response) {
-        console.log("Response from server:", response.data);
         return response.data;
     }
 };
