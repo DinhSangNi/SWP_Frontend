@@ -8,7 +8,7 @@ const MainLayout = () => {
     const [loading, setLoading] = useState<boolean>(false);
     return (
         <>
-            <div>
+            <div className="bg-gray-200">
                 {loading ? (
                     <div className="w-full h-screen">
                         <SpinnerLoading />
@@ -16,7 +16,7 @@ const MainLayout = () => {
                 ) : (
                     <>
                         <Header setLoading={setLoading} />
-                        <main className="">
+                        <main>
                             <Outlet />
                         </main>
                         <Footer />
