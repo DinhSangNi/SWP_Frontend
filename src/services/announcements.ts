@@ -3,7 +3,10 @@ import API from '@/utils/axiosInstance';
 
 const announcemmentsApi = {
     getAnnouncemmentsByIdCourse: async (courseId: string) => {
-        return await API.get(`Announcements/course/${courseId}`)
+        return await API.get(`/Announcements/course/${courseId}`)
+    },
+    getAnnouncemmentsAll: async () => {
+        return await API.get(`/Announcements/announcements/all`)
     },
 
     createAnnouncemments: async (request: any) => {
@@ -11,10 +14,10 @@ const announcemmentsApi = {
     },
 
     editAnnouncemments: async (announcementId: string, request: any) => {
-        return await API.put(`Announcements/update/${announcementId}`, request)
+        return await API.put(`/Announcements/update/${announcementId}`, request)
     },
 
-    deleteAnnouncemmentsByIdCourse: async (announcementId: string) => {
+    deleteAnnouncemments: async (announcementId: string) => {
         return await API.delete(`Announcements/delete/${announcementId}`)
     },
 
