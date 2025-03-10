@@ -241,7 +241,7 @@ const Home = () => {
                         <p className="text-[1.2rem]">
                             Have any questions? Let us know.
                         </p>
-                        <div className="mx-5 my-7">
+                        <div className="my-7">
                             <Form layout="vertical" onFinish={handleSubmitQnA}>
                                 <Form.Item
                                     label={<p className="text-xl">Title:</p>}

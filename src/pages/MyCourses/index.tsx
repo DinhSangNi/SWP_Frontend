@@ -13,6 +13,7 @@ import CourseCarousel from "@/components/CourseCarousel";
 import { CourseType } from "../Home";
 import { useSelector } from "react-redux";
 import { RootState } from "@/stores/store";
+import { handleWhenTokenExpire } from "@/utils/authUtils";
 
 const MyCourses = () => {
     const [loading, setLoading] = useState(false);
@@ -39,9 +40,7 @@ const MyCourses = () => {
             } catch (error: any) {
                 console.log("error: ", error);
                 if (error.status === 401) {
-                    toast.error("Your token expired! Please re-authenticate!", {
-                        position: "top-center",
-                    });
+                    handleWhenTokenExpire();
                     navigate("/login");
                 }
             } finally {
@@ -59,9 +58,7 @@ const MyCourses = () => {
             } catch (error: any) {
                 console.log("error: ", error);
                 if (error.status === 401) {
-                    toast.error("Your token expired! Please re-authenticate!", {
-                        position: "top-center",
-                    });
+                    handleWhenTokenExpire();
                     navigate("/login");
                 }
             } finally {
@@ -99,17 +96,23 @@ const MyCourses = () => {
                 {/* CONTENTS */}
                 {!loading ? (
                     <div>
-                        {myCourses.map((course) => {
-                            console.log("courseId: ", course.courseId);
-                            return (
-                                <CourseCard
-                                    course={course}
-                                    onClickDetail={() =>
-                                        handleDetail(course.courseId)
-                                    }
-                                />
-                            );
-                        })}
+                        {myCourses.length > 0 ? (
+                            myCourses.map((course) => {
+                                console.log("courseId: ", course.courseId);
+                                return (
+                                    <CourseCard
+                                        course={course}
+                                        onClickDetail={() =>
+                                            handleDetail(course.courseId)
+                                        }
+                                    />
+                                );
+                            })
+                        ) : (
+                            <p className="w-full text-center text-xl text-gray-600">
+                                No data. You have not registered any course.
+                            </p>
+                        )}
                     </div>
                 ) : (
                     <div>

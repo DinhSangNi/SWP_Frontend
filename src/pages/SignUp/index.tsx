@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import { signup } from "@/services/authService";
 import { Button, Form, Input, message } from "antd";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function SignUp() {
     const [loading, setLoading] = useState(false);
-    const [messageApi, contextHolder] = message.useMessage();
     const navigate = useNavigate();
 
     const handleRegister = async (credentials: any) => {
@@ -23,28 +23,19 @@ export default function SignUp() {
             const response = await signup(userData);
 
             if (response) {
-                successMessage();
+                toast.success("Sign up successfully!");
                 navigate("/login");
             }
         } catch (err) {
-            errorMessage();
+            toast.error("Sign up failed!");
             console.error("Registration error:", err);
         } finally {
             setLoading(false);
         }
     };
 
-    const successMessage = () => {
-        messageApi.success("Register successfully!");
-    };
-
-    const errorMessage = () => {
-        messageApi.error("Register failed!");
-    };
-
     return (
         <>
-            {contextHolder}
             <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-primary-purple to-transparent">
                 <div className=" flex flex-col justify-center items-start text-[#6d28d2] bg-white p-8 shadow-lg rounded-lg">
                     <h1 className="text-[2rem] font-bold text-center w-full mb-3">
