@@ -36,7 +36,7 @@ export const signup = async (userData: any) => {
 
 export const forgotPassword = async (email: string) => {
     const response = await API.post("/Auth/forgot-password", {
-        Email: email,
+        usernameOrEmail: email,
     });
     if (response) {
         return response.data;
@@ -49,7 +49,7 @@ export const resetPassword = async (
     newPassword: string
 ) => {
     const response = await API.put("/Auth/reset-password", {
-        Email: email,
+        usernameOrEmail: email,
         verificationCode: verificationCode,
         newPassword: newPassword,
     });
