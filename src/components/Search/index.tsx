@@ -20,7 +20,6 @@ const SearchForm = ({ placeHolder, autoComplete = true }: Props) => {
     const handleSelect = (value: string) => {
         setOptions([]);
         setQuery(value);
-        console.log("value: ", value);
         navigate(`/search/?query=${encodeURIComponent(value)}`);
     };
 
