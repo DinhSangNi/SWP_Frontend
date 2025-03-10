@@ -5,18 +5,17 @@ import {
 } from "@/services/courseService";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { PiSealWarningFill } from "react-icons/pi";
-import { Button, ConfigProvider, Image, Skeleton } from "antd";
+import { Button, ConfigProvider, Image, Skeleton, List } from "antd";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import { useEffect, useState, useRef } from "react";
 import { MdDateRange, MdLanguage } from "react-icons/md";
-import { Image, Skeleton, List } from "antd";
 import { FaBullhorn } from "react-icons/fa";
 import { toast } from "react-toastify";
 import CourseCarousel from "@/components/CourseCarousel";
 import { CourseType } from "../Home";
 import CustomSkeleton from "@/components/CustomSkeleton";
 import { handleWhenTokenExpire } from "@/utils/authUtils";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import announcemmentsApi from "@/services/announcements";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Announcement, CourseResponse } from "./interface";
@@ -29,6 +28,7 @@ const CourseDetail = () => {
         useState<boolean>(false);
     const [carouselLoading, setCarouselLoading] = useState(false);
     const [courses, setCourses] = useState<CourseType[] | null>(null);
+    const [course, setCourse] = useState<CourseResponse | null>(null);
     const [announcements, setAnnouncements] = useState<Announcement[]>([]);
     const [showAnnouncements, setShowAnnouncements] = useState(false);
     const [visibleAnnouncements, setVisibleAnnouncements] = useState<Announcement[]>([]);
@@ -249,8 +249,7 @@ const CourseDetail = () => {
                                     </div>
                                     <div>
                                         <Button
-                                            variant="solid"
-                                            color="purple"
+                                            type="primary"
                                             loading={enrollLoading}
                                             className="px-5 py-3 font-bold rounded-sm"
                                             onClick={handleEnrollCourse}
@@ -258,9 +257,7 @@ const CourseDetail = () => {
                                             Enroll
                                         </Button>
                                     </div>
-                                </>
                                 </motion.div>
-
                             )}
                         </motion.div>
                     )}

@@ -11,4 +11,5 @@ export const enum MenuItems {
     coursesEnrollments = "courses-enrollments",
     adminPanel = "admin-panel",
     assignments = "assignments",
+    announcements = "announcements"
 }
