@@ -76,9 +76,10 @@ const Header = ({ setLoading }: Props) => {
             setIsOpenModal(false);
             const response = await axiosInstance.post("/Auth/logout", {});
 
-            if (response.status === 200) {
+            if (response.status === 200 || response.status == 201) {
                 dispatch(logout());
                 localStorage.removeItem("token");
+                localStorage.removeItem("user");
                 toast.success("Logout successfully!", {
                     position: "top-center",
                 });
