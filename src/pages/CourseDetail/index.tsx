@@ -15,7 +15,7 @@ import CourseCarousel from "@/components/CourseCarousel";
 import { CourseType } from "../Home";
 import CustomSkeleton from "@/components/CustomSkeleton";
 import { handleWhenTokenExpire } from "@/utils/authUtils";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import announcemmentsApi from "@/services/announcements";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Announcement, CourseResponse } from "./interface";
@@ -28,6 +28,7 @@ const CourseDetail = () => {
         useState<boolean>(false);
     const [carouselLoading, setCarouselLoading] = useState(false);
     const [courses, setCourses] = useState<CourseType[] | null>(null);
+    const [course, setCourse] = useState<CourseResponse | null>(null);
     const [announcements, setAnnouncements] = useState<Announcement[]>([]);
     const [showAnnouncements, setShowAnnouncements] = useState(false);
     const [visibleAnnouncements, setVisibleAnnouncements] = useState<

@@ -63,7 +63,7 @@ const SideBar = () => {
                 defaultSelectedKeys={["teacher"]}
                 defaultOpenKeys={["user"]}
                 selectedKeys={selectedItem}
-                className="bg-purple-200 font-bold"
+                className="font-bold bg-purple-200"
                 onClick={handleOnclickMenuItems}
             >
                 <Menu.SubMenu key="user" title="User">
@@ -73,6 +73,9 @@ const SideBar = () => {
                 <Menu.Item key={MenuItems.courses}>Courses</Menu.Item>
                 <Menu.Item key={MenuItems.coursesEnrollments}>
                     Courses Enrollments
+                </Menu.Item>
+                <Menu.Item key={MenuItems.announcements}>
+                    Announcements
                 </Menu.Item>
             </Menu>
 
