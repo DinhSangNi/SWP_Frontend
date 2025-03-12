@@ -5,8 +5,8 @@ import {
 } from "@/services/courseService";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { PiSealWarningFill } from "react-icons/pi";
-import { Button, ConfigProvider, Image, Skeleton, List } from "antd";
-// import { IoCheckmarkOutline } from "react-icons/io5";
+import { Button, ConfigProvider, Image, List, Skeleton } from "antd";
+import { IoCheckmarkOutline } from "react-icons/io5";
 import { useEffect, useState, useRef } from "react";
 import { MdDateRange, MdLanguage } from "react-icons/md";
 import { FaBullhorn } from "react-icons/fa";
