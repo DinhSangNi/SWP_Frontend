@@ -89,3 +89,10 @@ export const editSubmission = async (submissionId: number, values: any) => {
     );
     return response;
 };
+
+export const getStudentsNotSubmitted = async (assignmentId: string) => {
+    const response = await API.get(
+        `/Assignment/students-missing-submissions/${assignmentId}`
+    );
+    return response;
+};

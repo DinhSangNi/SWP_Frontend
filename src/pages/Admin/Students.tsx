@@ -26,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 import {
     confirmCourseEnrollment,
     getCourseEnrollments,
+    getStudentsNotEnrolled,
 } from "@/services/courseService";
 import { handleWhenTokenExpire } from "@/utils/authUtils";
 import { useForm } from "antd/es/form/Form";
@@ -51,7 +52,8 @@ const Student = ({ type }: Props) => {
         useState<boolean>(false);
     const [deleteStudentId, setDeleteStudentId] = useState<any>(null);
     const [valueRadio, setValueRadio] = useState("all");
-    const [pendingStudents, setPendingStudents] = useState<[]>([]);
+    const [filteredStudents, setFilterdStudents] = useState<any[]>([]);
+    const [studentsNotEnrolled, setStudentsNotEnrolled] = useState<any[]>([]);
 
     const [pagination, setPagination] = useState<PaginationType>({
         currentPage: 1,
@@ -59,7 +61,7 @@ const Student = ({ type }: Props) => {
     });
 
     const [query, setQuery] = useState<string>("");
-    const [searchedData, setSearchedData] = useState([]);
+    const [searchedData, setSearchedData] = useState<any[]>([]);
 
     const [form] = useForm();
 
@@ -183,7 +185,7 @@ const Student = ({ type }: Props) => {
     };
 
     const handleShowSearchResults = () => {
-        let searchedTeachersList = [];
+        let searchedTeachersList: any[] = [];
         if (valueRadio === "all") {
             searchedTeachersList = dataStudent.filter((student: any) => {
                 return (
@@ -192,7 +194,7 @@ const Student = ({ type }: Props) => {
                 );
             });
         } else {
-            searchedTeachersList = pendingStudents.filter((student: any) => {
+            searchedTeachersList = filteredStudents.filter((student: any) => {
                 return (
                     student.studentName?.includes(query.trim()) ||
                     student.courseName?.includes(query.trim()) ||
@@ -202,19 +204,14 @@ const Student = ({ type }: Props) => {
             });
         }
 
-        console.log("searchedTeachersList", searchedTeachersList);
-
         setSearchedData(searchedTeachersList);
     };
 
     useEffect(() => {
         if (query.length === 0) {
-            console.log("reload");
             setSearchedData([]);
             return;
         }
-
-        console.log("query: ", query);
 
         const debounceLimit = setTimeout(handleShowSearchResults, 300);
 
@@ -230,7 +227,25 @@ const Student = ({ type }: Props) => {
             setLoading(true);
             const response = await getCourseEnrollments("Pending");
             if (response.status === 200) {
-                setPendingStudents(response.data.$values);
+                setFilterdStudents(response.data.$values);
+            }
+        } catch (error: any) {
+            console.log("error: ", error);
+            if (error.status === 401) {
+                handleWhenTokenExpire();
+                navigate("/login");
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchStudentsNotEnrolled = async () => {
+        try {
+            setLoading(true);
+            const res = await getStudentsNotEnrolled();
+            if (res.status === 200 || res.status === 201) {
+                setFilterdStudents(res.data.$values);
             }
         } catch (error: any) {
             console.log("error: ", error);
@@ -246,6 +261,8 @@ const Student = ({ type }: Props) => {
     useEffect(() => {
         if (valueRadio === "pending") {
             fetchPendingStudents();
+        } else if (valueRadio === "notEnrolled") {
+            fetchStudentsNotEnrolled();
         }
     }, [valueRadio]);
 
@@ -329,6 +346,10 @@ const Student = ({ type }: Props) => {
                             {
                                 value: "unActive",
                                 label: "Unactive",
+                            },
+                            {
+                                value: "notEnrolled",
+                                label: "Not Enrolled",
                             },
                         ]}
                         value={valueRadio}
@@ -525,7 +546,7 @@ const Student = ({ type }: Props) => {
                         searchedData.length > 0 || query.length > 0
                             ? searchedData
                             : valueRadio === "pending"
-                              ? pendingStudents
+                              ? filteredStudents
                               : dataStudent
                     }
                     loading={loading}
