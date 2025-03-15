@@ -77,6 +77,9 @@ const SideBar = () => {
                 <Menu.Item key={MenuItems.announcements}>
                     Announcements
                 </Menu.Item>
+                <Menu.Item key={MenuItems.schedule}>
+                    Schedule
+                </Menu.Item>
             </Menu>
 
             <div className="flex flex-col justify-end h-full">
