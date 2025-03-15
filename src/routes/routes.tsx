@@ -24,6 +24,7 @@ import Announcements from "@/pages/Admin/Announcements";
 import path from "path";
 import AnnouncementsUser from "@/pages/AnnouncementsUser";
 import Test from "@/pages/TestTailwind/Test";
+import Schedule from "@/pages/Admin/Schedule";
 export const routes = [
     {
         path: "/",
@@ -119,8 +120,12 @@ export const routes = [
             },
             {
                 path: "announcements",
-                element: <Announcements />,
+                element: <Announcements type="Announcement" />
             },
+            {
+                path: "schedule",
+                element: <Schedule type="Schedule" />
+            }
         ],
     },
 

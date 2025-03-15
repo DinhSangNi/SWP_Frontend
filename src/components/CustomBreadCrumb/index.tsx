@@ -7,6 +7,7 @@ type Props = {
 };
 
 const CustomBreadCrumb = ({ className }: Props) => {
+
     const location = useLocation();
     const pathNames = location.pathname
         .split("/")
