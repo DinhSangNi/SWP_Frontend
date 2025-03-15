@@ -8,11 +8,17 @@ import {
     Input,
     Radio,
     RadioChangeEvent,
+    Form,
 } from "antd";
 import { PaginationType } from "@/stores/types";
 import { useEffect, useState } from "react";
 import ModalCustomer from "@/components/Modal";
-import { getAllUser, getUserById, updateUser } from "@/services/userService";
+import {
+    getAllUser,
+    getUserById,
+    updateUser,
+    updateUserById,
+} from "@/services/userService";
 import { toast } from "react-toastify";
 import { ExclamationCircleIcon } from "@heroicons/react/16/solid";
 import { IoMdSearch } from "react-icons/io";
@@ -22,6 +28,10 @@ import {
     getCourseEnrollments,
 } from "@/services/courseService";
 import { handleWhenTokenExpire } from "@/utils/authUtils";
+import { useForm } from "antd/es/form/Form";
+import { BiDetail } from "react-icons/bi";
+import { FiEdit3 } from "react-icons/fi";
+import { AiOutlineDelete } from "react-icons/ai";
 
 type Props = {
     type: string;
@@ -30,10 +40,12 @@ type Props = {
 const Student = ({ type }: Props) => {
     const [dataStudent, setDataStudent] = useState([]); // State lưu danh sách học sinh
     const [loading, setLoading] = useState(false); // State loading
+    const [editLoading, setEditLoading] = useState<boolean>(false);
     const [reload, setReload] = useState(false); // State để reload dữ liệu
     const [enrollLoading, setEnrollLoading] = useState<boolean>(false);
 
     const [detailModalVisible, setDetailModalVisible] = useState(false); // State để hiển thị modal chi tiết
+    const [editModalVisible, setEditModalVisible] = useState<boolean>(false);
     const [selectedUser, setSelectedUser] = useState<any>(null); // State lưu thông tin chi tiết của người dùng
     const [deleteModalVisible, setDeleteModalVisible] =
         useState<boolean>(false);
@@ -49,6 +61,8 @@ const Student = ({ type }: Props) => {
     const [query, setQuery] = useState<string>("");
     const [searchedData, setSearchedData] = useState([]);
 
+    const [form] = useForm();
+
     const navigate = useNavigate();
 
     // Hàm fetch dữ liệu người dùng
@@ -58,9 +72,14 @@ const Student = ({ type }: Props) => {
             const response = await getAllUser(); // Gọi API lấy danh sách người dùng
             // console.log("Response from server:", response);
 
-            const students = response.data.$values.filter(
+            let students = response.data.$values.filter(
                 (user: any) => user.role === "Student"
             );
+            if (valueRadio === "unActive") {
+                students = students.filter((student: any) => {
+                    return student.status !== "Active";
+                });
+            }
             setDataStudent(students);
         } catch (error: any) {
             console.log("error: ", error);
@@ -80,6 +99,44 @@ const Student = ({ type }: Props) => {
         } catch (error) {
             console.error("Error fetching user details:", error);
             toast.error("Failed to fetch user details.");
+        }
+    };
+
+    const handleLoadStudentInform = async (userId: string) => {
+        try {
+            const userDetail = await getUserById(userId);
+            form.setFieldsValue({
+                fullName: userDetail.fullName,
+                email: userDetail.email,
+                phoneNumber: userDetail.phoneNumber,
+            });
+        } catch (error: any) {
+            console.error("Error fetching users:", error);
+        }
+    };
+
+    const handleSave = async (credentials: any) => {
+        try {
+            setEditLoading(true);
+            const res = await updateUserById(selectedUser.idUser, {
+                fullName: credentials.fullName,
+                email: credentials.email,
+                phoneNumber: credentials.phoneNumber,
+            });
+            if (res) {
+                toast.success("Save successfully !");
+                setEditModalVisible(false);
+                fetchData();
+            }
+        } catch (error: any) {
+            console.error("Error fetching users:", error);
+            toast.error("Save failed !");
+            if (error.status === 401) {
+                handleWhenTokenExpire();
+                navigate("/login");
+            }
+        } finally {
+            setEditLoading(false);
         }
     };
 
@@ -119,13 +176,11 @@ const Student = ({ type }: Props) => {
     // Gọi API khi component được mount
     useEffect(() => {
         fetchData();
-    }, [reload]);
+    }, [reload, valueRadio]);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setQuery(e.target.value);
     };
-
-    console.log("valueRadio", valueRadio);
 
     const handleShowSearchResults = () => {
         let searchedTeachersList = [];
@@ -271,6 +326,10 @@ const Student = ({ type }: Props) => {
                                 value: "pending",
                                 label: "Pending",
                             },
+                            {
+                                value: "unActive",
+                                label: "Unactive",
+                            },
                         ]}
                         value={valueRadio}
                         onChange={handleRadioChange}
@@ -401,30 +460,62 @@ const Student = ({ type }: Props) => {
                                         key: "action",
                                         render: (_, record: any) => (
                                             <Space size="middle">
-                                                <Button
-                                                    className="text-white bg-indigo-400"
-                                                    onClick={() =>
-                                                        handleDetailClick(
-                                                            record.idUser
-                                                        )
-                                                    } // Gọi hàm khi nhấn nút Detail
+                                                <Tooltip
+                                                    title="Detail"
+                                                    placement="top"
                                                 >
-                                                    Detail
-                                                </Button>
-                                                <Button
-                                                    type="primary"
-                                                    danger
-                                                    onClick={() => {
-                                                        setDeleteStudentId(
-                                                            record.idUser
-                                                        );
-                                                        setDeleteModalVisible(
-                                                            true
-                                                        );
-                                                    }}
+                                                    <Button
+                                                        className="text-white bg-indigo-400"
+                                                        onClick={() =>
+                                                            handleDetailClick(
+                                                                record.idUser
+                                                            )
+                                                        } // Gọi hàm khi nhấn nút Detail
+                                                    >
+                                                        <BiDetail className="text-[1rem]" />
+                                                    </Button>
+                                                </Tooltip>
+                                                <Tooltip
+                                                    title="Edit"
+                                                    placement="top"
                                                 >
-                                                    Delete
-                                                </Button>
+                                                    <Button
+                                                        color="yellow"
+                                                        variant="solid"
+                                                        onClick={() => {
+                                                            setEditModalVisible(
+                                                                true
+                                                            );
+                                                            setSelectedUser(
+                                                                record
+                                                            );
+                                                            handleLoadStudentInform(
+                                                                record.idUser
+                                                            );
+                                                        }}
+                                                    >
+                                                        <FiEdit3 className="text-[1rem]" />
+                                                    </Button>
+                                                </Tooltip>
+                                                <Tooltip
+                                                    title="Delete"
+                                                    placement="top"
+                                                >
+                                                    <Button
+                                                        type="primary"
+                                                        danger
+                                                        onClick={() => {
+                                                            setDeleteStudentId(
+                                                                record.idUser
+                                                            );
+                                                            setDeleteModalVisible(
+                                                                true
+                                                            );
+                                                        }}
+                                                    >
+                                                        <AiOutlineDelete className="text-[1rem]" />
+                                                    </Button>
+                                                </Tooltip>
                                             </Space>
                                         ),
                                     },
@@ -491,6 +582,71 @@ const Student = ({ type }: Props) => {
                     who has id:{" "}
                     <span>{deleteStudentId && deleteStudentId}</span>?
                 </p>
+            </Modal>
+
+            {/* Edit modal */}
+            <Modal
+                title={
+                    <div className="text-2xl font-bold">
+                        List of courses assigned
+                    </div>
+                }
+                open={editModalVisible}
+                onCancel={() => setEditModalVisible(false)}
+                width={"500px"}
+                footer={null}
+            >
+                {/* <p className="w-full mb-5">Select a teacher</p> */}
+                <div className="w-full my-5">
+                    <Form form={form} onFinish={handleSave} layout="vertical">
+                        <Form.Item
+                            label="Full Name"
+                            name="fullName"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please input your full name !",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Email"
+                            name="email"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please input your email !",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Phone Number"
+                            name="phoneNumber"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please input your phone number !",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item className="w-full flex justify-end">
+                            <Button
+                                loading={editLoading}
+                                htmlType="submit"
+                                variant="solid"
+                                color="primary"
+                            >
+                                Save
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </div>
             </Modal>
         </div>
     );

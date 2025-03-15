@@ -2,18 +2,20 @@ import { Breadcrumb } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import { isNumber } from "@/utils/formatUtils";
 
-type Props = {};
+type Props = {
+    className?: string;
+};
 
-const CustomBreadCrumb = () => {
+const CustomBreadCrumb = ({ className }: Props) => {
+
     const location = useLocation();
     const pathNames = location.pathname
         .split("/")
         .filter((name) => name !== "");
 
-    console.log("pathNames: ", pathNames);
     return (
         <>
-            <Breadcrumb>
+            <Breadcrumb className={className}>
                 {/* <Breadcrumb.Item>
                     <Link to={"/"}>Home</Link>
                 </Breadcrumb.Item> */}

@@ -6,29 +6,34 @@ import announcementsApi from "@/services/announcements";
 import { ExclamationCircleIcon } from "@heroicons/react/16/solid";
 
 type Props = {
-    type: string;
+    type?: string;
 };
 
 const Announcements = ({ type }: Props) => {
     const [dataAnnouncements, setDataAnnouncements] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
+    const [deleteModalVisible, setDeleteModalVisible] =
+        useState<boolean>(false);
+    const [createModalVisible, setCreateModalVisible] =
+        useState<boolean>(false);
     const [editModalVisible, setEditModalVisible] = useState<boolean>(false);
-    const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
-    const [editAnnouncement, setEditAnnouncement] = useState<{ announcementID: string; title: string; content: string } | null>(null);
+    const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<
+        string | null
+    >(null);
+    const [editAnnouncement, setEditAnnouncement] = useState<any>(null);
+
     const [reload, setReload] = useState(false);
     const [pagination, setPagination] = useState<PaginationType>({
         currentPage: 1,
         pageSize: 10,
     });
-
     const [editForm] = Form.useForm();
 
     const fetchData = async () => {
         setLoading(true);
         try {
             const response = await announcementsApi.getAnnouncemmentsAll();
-            console.log(response)
+            console.log(response);
             setDataAnnouncements(response.data.$values);
             toast.success(`Fetched ${type} successfully!`);
         } catch {
@@ -42,7 +47,6 @@ const Announcements = ({ type }: Props) => {
         fetchData();
     }, [reload]);
 
-
     const handleEdit = async (values: { title: string; content: string }) => {
         try {
             if (!editAnnouncement) {
@@ -54,7 +58,10 @@ const Announcements = ({ type }: Props) => {
                 title: values.title,
                 content: values.content,
             };
-            await announcementsApi.editAnnouncemments(editAnnouncement.announcementID, updatedAnnouncement);
+            await announcementsApi.editAnnouncemments(
+                editAnnouncement.announcementID,
+                updatedAnnouncement
+            );
             toast.success("Updated announcement successfully!");
             setEditModalVisible(false);
             editForm.resetFields();
@@ -124,6 +131,7 @@ const Announcements = ({ type }: Props) => {
                                     type="primary"
                                     danger
                                     onClick={() => {
+                                        
                                         setDeleteAnnouncementId(record.announcementID);
                                         setDeleteModalVisible(true);
                                     }}
@@ -159,7 +167,6 @@ const Announcements = ({ type }: Props) => {
                 </p>
             </Modal>
 
-
             <Modal
                 title="Edit Announcement"
                 open={editModalVisible}
@@ -173,14 +180,24 @@ const Announcements = ({ type }: Props) => {
                     <Form.Item
                         name="title"
                         label="Title"
-                        rules={[{ required: true, message: "Please input the title!" }]}
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please input the title!",
+                            },
+                        ]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item
                         name="content"
                         label="Content"
-                        rules={[{ required: true, message: "Please input the content!" }]}
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please input the content!",
+                            },
+                        ]}
                     >
                         <Input.TextArea rows={4} />
                     </Form.Item>

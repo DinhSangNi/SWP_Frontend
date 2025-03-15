@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "@/stores/store";
 import { ToastContainer } from "react-toastify";
+import UnlockAudio from "./components/UnlockAudio";
 
 const App = () => {
     return (

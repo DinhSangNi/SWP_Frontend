@@ -22,17 +22,23 @@ export default function SignIn() {
             if (response) {
                 // Debug log
                 console.log("Login successful:", response);
-                dispatch(login(response));
-                localStorage.setItem("token", response.token);
+                dispatch(login(response.data));
+                localStorage.setItem("token", response.data.token);
                 toast.success("Login successfully!", {
                     position: "top-center",
                 });
                 navigate("/");
             }
-        } catch (err) {
-            toast.error("Your credentials is correct!", {
-                position: "top-center",
-            });
+        } catch (err: any) {
+            if (err.status === 403) {
+                toast.error("Your account is banned!", {
+                    position: "top-center",
+                });
+            } else {
+                toast.error("Your credentials is correct!", {
+                    position: "top-center",
+                });
+            }
             console.error("Login error:", err);
         } finally {
             setLoading(false);

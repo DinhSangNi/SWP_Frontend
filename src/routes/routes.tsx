@@ -22,6 +22,8 @@ import QnA from "@/pages/QnA";
 import QnADetail from "@/pages/QnA/QnADetail";
 import Announcements from "@/pages/Admin/Announcements";
 import path from "path";
+import AnnouncementsUser from "@/pages/AnnouncementsUser";
+import Test from "@/pages/TestTailwind/Test";
 import Schedule from "@/pages/Admin/Schedule";
 export const routes = [
     {
@@ -67,6 +69,10 @@ export const routes = [
             {
                 path: "/QnA/:id",
                 element: <QnADetail />,
+            },
+            {
+                path: "/announcements-user",
+                element: <AnnouncementsUser />,
             },
         ],
     },
@@ -126,5 +132,9 @@ export const routes = [
     {
         path: "test-tailwind",
         element: <TestTailwind />,
+    },
+    {
+        path: "test",
+        element: <Test />,
     },
 ];

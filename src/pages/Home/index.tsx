@@ -84,6 +84,7 @@ const Home = () => {
             });
             if (response.status === 200 || response.status === 201) {
                 toast.success("Submit successfully !");
+                navigate("/QnA");
             }
         } catch (error: any) {
             console.log("error: ", error);
@@ -273,7 +274,7 @@ const Home = () => {
                                 </Form.Item>
                             </Form>
                             <Link
-                                to="/Qna"
+                                to="/QnA"
                                 className="flex gap-1 transition-all duration-300 underline hover:text-purple-400"
                             >
                                 <p className="underline">
