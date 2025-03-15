@@ -4,7 +4,7 @@ import { isNumber } from "@/utils/formatUtils";
 
 type Props = {};
 
-const CustomBreadCrumb = (props: Props) => {
+const CustomBreadCrumb = () => {
     const location = useLocation();
     const pathNames = location.pathname
         .split("/")

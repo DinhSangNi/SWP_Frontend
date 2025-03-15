@@ -13,16 +13,15 @@ const Announcements = ({ type }: Props) => {
     const [dataAnnouncements, setDataAnnouncements] = useState([]);
     const [loading, setLoading] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
-    const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
     const [editModalVisible, setEditModalVisible] = useState<boolean>(false);
     const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
-    const [editAnnouncement, setEditAnnouncement] = useState<any>(null);
+    const [editAnnouncement, setEditAnnouncement] = useState<{ announcementID: string; title: string; content: string } | null>(null);
     const [reload, setReload] = useState(false);
     const [pagination, setPagination] = useState<PaginationType>({
         currentPage: 1,
         pageSize: 10,
     });
-    const [form] = Form.useForm();
+
     const [editForm] = Form.useForm();
 
     const fetchData = async () => {
@@ -32,8 +31,7 @@ const Announcements = ({ type }: Props) => {
             console.log(response)
             setDataAnnouncements(response.data.$values);
             toast.success(`Fetched ${type} successfully!`);
-        } catch (error) {
-            console.error("Error fetching announcements:", error);
+        } catch {
             toast.error(`Failed to fetch ${type}.`);
         } finally {
             setLoading(false);
@@ -45,9 +43,12 @@ const Announcements = ({ type }: Props) => {
     }, [reload]);
 
 
-    const handleEdit = async (values: any) => {
-        console.log(editAnnouncement)
+    const handleEdit = async (values: { title: string; content: string }) => {
         try {
+            if (!editAnnouncement) {
+                toast.error("No announcement selected for editing.");
+                return;
+            }
             const updatedAnnouncement = {
                 ...editAnnouncement,
                 title: values.title,
@@ -65,6 +66,7 @@ const Announcements = ({ type }: Props) => {
     };
 
     const handleDelete = async (announcementId: string) => {
+        console.log(announcementId)
         try {
             await announcementsApi.deleteAnnouncemments(announcementId);
             toast.success("Deleted announcement successfully!");
@@ -77,7 +79,7 @@ const Announcements = ({ type }: Props) => {
         }
     };
 
-    const openEditModal = (record: any) => {
+    const openEditModal = (record: { announcementID: string; title: string; content: string }) => {
         setEditAnnouncement(record);
         editForm.setFieldsValue({
             title: record.title,
@@ -110,7 +112,7 @@ const Announcements = ({ type }: Props) => {
                     {
                         title: "Action",
                         key: "action",
-                        render: (_, record: any) => (
+                        render: (_, record: { announcementID: string; title: string; content: string }) => (
                             <Space size="middle">
                                 <Button
                                     type="primary"
@@ -122,7 +124,7 @@ const Announcements = ({ type }: Props) => {
                                     type="primary"
                                     danger
                                     onClick={() => {
-                                        setDeleteAnnouncementId(record.announcementId);
+                                        setDeleteAnnouncementId(record.announcementID);
                                         setDeleteModalVisible(true);
                                     }}
                                 >
@@ -148,7 +150,7 @@ const Announcements = ({ type }: Props) => {
                 title="Confirm Delete"
                 open={deleteModalVisible}
                 onCancel={() => setDeleteModalVisible(false)}
-                onOk={() => handleDelete(deleteAnnouncementId as any)}
+                onOk={() => handleDelete(deleteAnnouncementId as string)}
             >
                 <p className="flex gap-2">
                     <ExclamationCircleIcon className="w-6 h-6 text-orange-400" />

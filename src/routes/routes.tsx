@@ -22,6 +22,7 @@ import QnA from "@/pages/QnA";
 import QnADetail from "@/pages/QnA/QnADetail";
 import Announcements from "@/pages/Admin/Announcements";
 import path from "path";
+import Schedule from "@/pages/Admin/Schedule";
 export const routes = [
     {
         path: "/",
@@ -113,7 +114,11 @@ export const routes = [
             },
             {
                 path: "announcements",
-                element: <Announcements />
+                element: <Announcements type="Announcement" />
+            },
+            {
+                path: "schedule",
+                element: <Schedule type="Schedule" />
             }
         ],
     },
