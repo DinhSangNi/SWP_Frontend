@@ -1,6 +1,5 @@
-<
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import API from '@/utils/axiosInstance';
+import API from "@/utils/axiosInstance";
 
 const announcemmentsApi = {
     getAnnouncemmentsByIdCourse: async (courseId: string) => {

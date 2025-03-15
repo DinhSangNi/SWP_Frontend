@@ -186,3 +186,9 @@ export const getUnassignedCourses = async () => {
     const response = await API.get(`/Course/unassigned-courses`);
     return response;
 };
+
+// Get students not enrolled
+export const getStudentsNotEnrolled = async () => {
+    const response = await API.get(`/Course/students-not-enrolled`);
+    return response;
+};
