@@ -17,7 +17,7 @@ import {
     editCourse,
     getAllCourses,
     getCourseById,
-    getCourseEnrollments,
+    getUnassignedCourses,
     showStudentsListInACourse,
     unassignTeacherToCourse,
 } from "@/services/courseService";
@@ -56,6 +56,7 @@ const Courses = ({ type }: Props) => {
     const [teachers, setTeachers] = useState<[] | null>(null);
     const [students, setStudents] = useState<[] | null>(null);
     const [valueRadio, setValueRadio] = useState("details");
+    const [coursesRadio, setCoursesRadio] = useState("all");
     const [reload, setReload] = useState(false);
     const [pagination, setPagination] = useState<PaginationType>({
         currentPage: 1,
@@ -67,7 +68,7 @@ const Courses = ({ type }: Props) => {
     const [query, setQuery] = useState<string>("");
     const [searchedData, setSearchedData] = useState<Partial<Course>[]>([]);
 
-    // Functions
+    //Reload Functions
     const handleReload = () => {
         setReload(!reload);
     };
@@ -94,6 +95,7 @@ const Courses = ({ type }: Props) => {
         []
     );
 
+    // Confirn assign function
     const hanldeConfirmAssign = (
         teacherId: number,
         courseId: number,
@@ -118,21 +120,26 @@ const Courses = ({ type }: Props) => {
         });
     };
 
-    const fetchData = useCallback(async () => {
-        setLoading(true);
+    // Fetch all course function
+    const fetchData = async () => {
         try {
-            const response = await getAllCourses();
-            console.log("Response from server:", response);
-            setDataCourse(response.data.$values);
-            // toast.success(`Fetched ${type} successfully!`);
+            setLoading(true);
+            let response;
+            if (coursesRadio !== "all") {
+                response = await getUnassignedCourses();
+            } else {
+                response = await getAllCourses();
+            }
+            setDataCourse(response?.data.$values);
         } catch (error) {
             console.error("Error fetching courses:", error);
             toast.error(`Failed to fetch ${type}.`);
         } finally {
             setLoading(false);
         }
-    }, []);
+    };
 
+    // Fecth teacher list
     const fetchTeachersList = useCallback(async () => {
         try {
             const response = await getAllUser();
@@ -157,7 +164,7 @@ const Courses = ({ type }: Props) => {
 
     useEffect(() => {
         fetchData();
-    }, [reload]);
+    }, [reload, coursesRadio]);
 
     const handleDetailClick = async (courseId: string) => {
         try {
@@ -273,6 +280,11 @@ const Courses = ({ type }: Props) => {
         setQuery(e.target.value);
     };
 
+    // Radio change function
+    const handleCoursesRadioChange = (e: RadioChangeEvent) => {
+        setCoursesRadio(e.target.value);
+    };
+
     useEffect(() => {
         if (query.length === 0) {
             console.log("reload");
@@ -306,6 +318,8 @@ const Courses = ({ type }: Props) => {
         setValueRadio(e.target.value);
     };
 
+    console.log("courses Radio: ", coursesRadio);
+
     return (
         <div className="w-full">
             <div className="w-full flex justify-between items-center">
@@ -319,17 +333,36 @@ const Courses = ({ type }: Props) => {
                 </div>
             </div>
             {/* Search Form */}
-            <div className="mb-10 w-1/4">
-                <Input
-                    allowClear
-                    className="w-full rounded-3xl hover:border-[#6d28d2] focus-within:border-[#6d28d2]"
-                    prefix={<IoMdSearch className="text-[1.5rem]" />}
-                    onChange={handleSearch}
-                    value={query}
-                    // onPressEnter={handleEnter}
-                    placeholder="Search teacher"
-                    size="large"
-                />
+            <div className="flex gap-4 items-center mb-10">
+                <div className=" w-1/4">
+                    <Input
+                        allowClear
+                        className="w-full rounded-3xl hover:border-[#6d28d2] focus-within:border-[#6d28d2]"
+                        prefix={<IoMdSearch className="text-[1.5rem]" />}
+                        onChange={handleSearch}
+                        value={query}
+                        // onPressEnter={handleEnter}
+                        placeholder="Search teacher"
+                        size="large"
+                    />
+                </div>
+                <div>
+                    <Radio.Group
+                        className="flex"
+                        options={[
+                            {
+                                value: "all",
+                                label: "All",
+                            },
+                            {
+                                value: "noAssgined",
+                                label: "No Assigned",
+                            },
+                        ]}
+                        value={coursesRadio}
+                        onChange={handleCoursesRadioChange}
+                    />
+                </div>
             </div>
             <Table
                 scroll={{
@@ -623,6 +656,15 @@ const Courses = ({ type }: Props) => {
                                 title: "Status",
                                 dataIndex: "status",
                                 key: "status",
+                                render: (_: any, record: any) => {
+                                    return (
+                                        <div
+                                            className={`${record.status === "Active" ? "text-green-600" : "text-red-600"} font-bold`}
+                                        >
+                                            {record.status}
+                                        </div>
+                                    );
+                                },
                             },
                         ]}
                         dataSource={teachers as []}

@@ -50,6 +50,7 @@ import dayjs from "dayjs";
 import { FaEdit } from "react-icons/fa";
 import SpinnerLoading from "@/components/SpinnerLoading";
 import { IoIosArrowDropup } from "react-icons/io";
+import CustomRadio from "@/components/CustomRadio";
 
 interface courseResponse {
     $id: string;
@@ -137,6 +138,8 @@ const MyCourseDetail = () => {
         useState<boolean>(false);
     const [submissionOfStudent, setSubmissionOfStudent] = useState<any>(null);
     const [isVisibleButton, setIsVisibleButton] = useState(false);
+    const [selectedRadio, setSelectedRadio] = useState<string>("");
+    const [submissionsByGraded, setSubmissionsByGraded] = useState<any[]>([]);
 
     // Get user
     const user = useSelector((state: RootState) => state.auth.user);
@@ -419,9 +422,9 @@ const MyCourseDetail = () => {
         }
     };
 
-    console.log("selected: ", selectedAssignment);
-    console.log("submissionOfStudent: ", submissionOfStudent);
-    console.log("openSubmissionsList: ", openSubmissionsList);
+    // console.log("selected: ", selectedAssignment);
+    // console.log("submissionOfStudent: ", submissionOfStudent);
+    // console.log("openSubmissionsList: ", openSubmissionsList);
 
     // Fetch submissions function
     const fetchSubminssions = async () => {
@@ -445,6 +448,19 @@ const MyCourseDetail = () => {
             setSubmissionsListLoading(false);
         }
     };
+
+    console.log("selectedRadio: ", selectedRadio);
+
+    useEffect(() => {
+        if (submissions && selectedRadio.length > 0) {
+            const gradedSubmissions = submissions.filter((sub: any) => {
+                return selectedRadio === "Graded" ? sub.grade : !sub.grade;
+            });
+            setSubmissionsByGraded(gradedSubmissions);
+        } else {
+            setSubmissionsByGraded([]);
+        }
+    }, [selectedRadio]);
 
     // Fetch submission from DB
     useEffect(() => {
@@ -682,6 +698,9 @@ const MyCourseDetail = () => {
                                                                                 setSelectedAssignment(
                                                                                     record
                                                                                 );
+                                                                                setSelectedRadio(
+                                                                                    ""
+                                                                                );
                                                                             }}
                                                                         >
                                                                             <BiDetail className="text-[1rem]" />
@@ -912,172 +931,196 @@ const MyCourseDetail = () => {
                 {openSubmissionsList ? (
                     !submissionsListLoading ? (
                         <div>
-                            <h1 className="py-5 font-bold text-xl">
-                                Submissions of students
-                            </h1>
+                            <div className="flex justify-start gap-3 items-end py-5">
+                                <h1 className="font-bold text-xl">
+                                    Submissions of students
+                                </h1>
+                                <div>
+                                    <CustomRadio
+                                        items={[
+                                            "Graded",
+                                            "Ungraded",
+                                            "Unsubmitted",
+                                        ]}
+                                        onChange={setSelectedRadio}
+                                    />
+                                </div>
+                            </div>
                             <div className="w-full">
-                                {submissions.map((submission: any) => {
-                                    return (
-                                        <div
-                                            key={submission.submissionId}
-                                            className="w-full flex flex-col gap-4 mb-5"
-                                        >
-                                            <div className="min-h-[250px] border-[1px] border-gray-300 bg-white">
-                                                <div className="w-full mt-3 px-3 text-gray-600 flex justify-between border-b-[1px] border-gray-300">
-                                                    <div className="mb-3 flex gap-1">
-                                                        <p className="font-bold text-black">
-                                                            {
-                                                                submission.studentName
-                                                            }
-                                                        </p>
-                                                        <p>
-                                                            on{" "}
-                                                            <span>
-                                                                {dayjs(
-                                                                    submission.submissionDate
-                                                                ).format(
-                                                                    "YYYY-MM-DD HH:mm:ss"
-                                                                )}
-                                                            </span>
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex gap-4">
-                                                        <div className="flex items-start gap-2">
-                                                            <div
-                                                                className="flex items-start gap-2 transition-opacity duration-300 hover:opacity-60 cursor-pointer"
-                                                                onClick={() =>
-                                                                    handleOpenFeedBackBox(
-                                                                        submission.submissionId
-                                                                    )
+                                {submissions.length > 0 ? (
+                                    (submissionsByGraded?.length > 0
+                                        ? submissionsByGraded
+                                        : submissions
+                                    ).map((submission: any) => {
+                                        return (
+                                            <div
+                                                key={submission.submissionId}
+                                                className="w-full flex flex-col gap-4 mb-5"
+                                            >
+                                                <div className="min-h-[250px] border-[1px] border-gray-300 bg-white">
+                                                    <div className="w-full mt-3 px-3 text-gray-600 flex justify-between border-b-[1px] border-gray-300">
+                                                        <div className="mb-3 flex gap-1">
+                                                            <p className="font-bold text-black">
+                                                                {
+                                                                    submission.studentName
                                                                 }
-                                                            >
-                                                                <span className="">
-                                                                    <FaEdit className="text-[1.2rem]" />
-                                                                </span>
-                                                                <p>
-                                                                    Grade
-                                                                    {submission.grade && (
-                                                                        <span>
-                                                                            :{" "}
-                                                                            {
-                                                                                submission.grade
-                                                                            }
-                                                                        </span>
+                                                            </p>
+                                                            <p>
+                                                                on{" "}
+                                                                <span>
+                                                                    {dayjs(
+                                                                        submission.submissionDate
+                                                                    ).format(
+                                                                        "YYYY-MM-DD HH:mm:ss"
                                                                     )}
-                                                                </p>
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                        <div className="flex gap-4">
+                                                            <div className="flex items-start gap-2">
+                                                                <div
+                                                                    className="flex items-start gap-2 transition-opacity duration-300 hover:opacity-60 cursor-pointer"
+                                                                    onClick={() =>
+                                                                        handleOpenFeedBackBox(
+                                                                            submission.submissionId
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <span className="">
+                                                                        <FaEdit className="text-[1.2rem]" />
+                                                                    </span>
+                                                                    <p>
+                                                                        Grade
+                                                                        {submission.grade && (
+                                                                            <span>
+                                                                                :{" "}
+                                                                                {
+                                                                                    submission.grade
+                                                                                }
+                                                                            </span>
+                                                                        )}
+                                                                    </p>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <div className="w-full px-5">
+                                                        {
+                                                            submission.submissionLink
+                                                        }
+                                                    </div>
+                                                    <div className="w-full justify-end"></div>
                                                 </div>
-                                                <div className="w-full px-5">
-                                                    {submission.submissionLink}
-                                                </div>
-                                                <div className="w-full justify-end"></div>
-                                            </div>
-                                            <AnimatePresence>
-                                                {openFeedbackBoxArray.includes(
-                                                    submission.submissionId
-                                                ) && (
-                                                    <motion.div
-                                                        initial={{
-                                                            y: -100,
-                                                            opacity: 0,
-                                                        }}
-                                                        whileInView={{
-                                                            y: 0,
-                                                            opacity: [
-                                                                0, 0, 0.5, 1,
-                                                            ],
-                                                        }}
-                                                        exit={{
-                                                            y: -100,
-                                                            opacity: 0,
-                                                        }}
-                                                        transition={{
-                                                            duration: 0.4,
-                                                            ease: "linear",
-                                                        }}
-                                                        viewport={{
-                                                            once: true,
-                                                        }}
-                                                        className="min-h-[250px] w-4/5 border-[1px] border-gray-300 bg-white self-end"
-                                                    >
-                                                        <div className="w-full mt-3 px-3 text-gray-600 flex justify-between border-b-[1px] border-gray-300">
-                                                            <div className="mb-3 flex gap-1">
-                                                                <p className="font-bold text-black">
-                                                                    {
-                                                                        user?.userName
-                                                                    }
-                                                                </p>
-                                                                <p>
-                                                                    on{" "}
-                                                                    <span>
-                                                                        {dayjs(
-                                                                            Date.now()
-                                                                        ).format(
-                                                                            "YYYY-MM-DD HH:mm:ss"
-                                                                        )}
-                                                                    </span>
-                                                                </p>
-                                                            </div>
-                                                            <div className="flex gap-4">
-                                                                <p className="flex items-start gap-2 transition-opacity duration-300 hover:opacity-60 cursor-pointer"></p>
-                                                                <p className="flex items-start gap-2">
-                                                                    <p>
-                                                                        Grade:{" "}
+                                                <AnimatePresence>
+                                                    {openFeedbackBoxArray.includes(
+                                                        submission.submissionId
+                                                    ) && (
+                                                        <motion.div
+                                                            initial={{
+                                                                y: -100,
+                                                                opacity: 0,
+                                                            }}
+                                                            whileInView={{
+                                                                y: 0,
+                                                                opacity: [
+                                                                    0, 0, 0.5,
+                                                                    1,
+                                                                ],
+                                                            }}
+                                                            exit={{
+                                                                y: -100,
+                                                                opacity: 0,
+                                                            }}
+                                                            transition={{
+                                                                duration: 0.4,
+                                                                ease: "linear",
+                                                            }}
+                                                            viewport={{
+                                                                once: true,
+                                                            }}
+                                                            className="min-h-[250px] w-4/5 border-[1px] border-gray-300 bg-white self-end"
+                                                        >
+                                                            <div className="w-full mt-3 px-3 text-gray-600 flex justify-between border-b-[1px] border-gray-300">
+                                                                <div className="mb-3 flex gap-1">
+                                                                    <p className="font-bold text-black">
+                                                                        {
+                                                                            user?.userName
+                                                                        }
                                                                     </p>
-                                                                    <Input
-                                                                        value={
-                                                                            grade.length >
-                                                                            0
-                                                                                ? grade
-                                                                                : submission.grade
-                                                                        }
-                                                                        type="number"
-                                                                        className="p-0 px-2 w-[60px]"
-                                                                        onChange={
-                                                                            handleChange
-                                                                        }
-                                                                    />
-                                                                </p>
+                                                                    <p>
+                                                                        on{" "}
+                                                                        <span>
+                                                                            {dayjs(
+                                                                                Date.now()
+                                                                            ).format(
+                                                                                "YYYY-MM-DD HH:mm:ss"
+                                                                            )}
+                                                                        </span>
+                                                                    </p>
+                                                                </div>
+                                                                <div className="flex gap-4">
+                                                                    <p className="flex items-start gap-2 transition-opacity duration-300 hover:opacity-60 cursor-pointer"></p>
+                                                                    <p className="flex items-start gap-2">
+                                                                        <p>
+                                                                            Grade:{" "}
+                                                                        </p>
+                                                                        <Input
+                                                                            value={
+                                                                                grade.length >
+                                                                                0
+                                                                                    ? grade
+                                                                                    : submission.grade
+                                                                            }
+                                                                            type="number"
+                                                                            className="p-0 px-2 w-[60px]"
+                                                                            onChange={
+                                                                                handleChange
+                                                                            }
+                                                                        />
+                                                                    </p>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div className="w-full h-[130px] px-3 my-3">
-                                                            <TextEditor
-                                                                content={
-                                                                    content.length >
-                                                                    0
-                                                                        ? content
-                                                                        : submission.feedback
-                                                                }
-                                                                onContentChange={
-                                                                    setContent
-                                                                }
-                                                                className="h-[100px]"
-                                                            />
-                                                        </div>
-                                                        <div className="w-full mt-5 px-3 flex justify-end">
-                                                            <Button
-                                                                loading={
-                                                                    saveLoading
-                                                                }
-                                                                variant="solid"
-                                                                color="purple"
-                                                                onClick={() =>
-                                                                    handleSaveGradeAndFeedback(
-                                                                        submission.submissionId
-                                                                    )
-                                                                }
-                                                            >
-                                                                Save
-                                                            </Button>
-                                                        </div>
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-                                        </div>
-                                    );
-                                })}
+                                                            <div className="w-full h-[130px] px-3 my-3">
+                                                                <TextEditor
+                                                                    content={
+                                                                        content.length >
+                                                                        0
+                                                                            ? content
+                                                                            : submission.feedback
+                                                                    }
+                                                                    onContentChange={
+                                                                        setContent
+                                                                    }
+                                                                    className="h-[100px]"
+                                                                />
+                                                            </div>
+                                                            <div className="w-full mt-5 px-3 flex justify-end">
+                                                                <Button
+                                                                    loading={
+                                                                        saveLoading
+                                                                    }
+                                                                    variant="solid"
+                                                                    color="purple"
+                                                                    onClick={() =>
+                                                                        handleSaveGradeAndFeedback(
+                                                                            submission.submissionId
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    Save
+                                                                </Button>
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="w-full text-center text-gray-600 text-[1rem]">
+                                        No Submissions
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ) : (

@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 // Cấu hình Axios instance
 const API = axios.create({
     baseURL: "https://coursesystem.azurewebsites.net",
@@ -179,5 +178,11 @@ export const showStudentsListInACourse = async (courseId: number) => {
 // Get courses of a teacher
 export const getAllCoursesOfATeacher = async (teacherId: number | string) => {
     const response = await API.get(`/Course/teacher-courses/${teacherId}`);
+    return response;
+};
+
+// Get unassigned courses
+export const getUnassignedCourses = async () => {
+    const response = await API.get(`/Course/unassigned-courses`);
     return response;
 };

@@ -1,21 +1,21 @@
 import { submitQnA, viewAllQnA } from "@/services/q&aService";
 import { PaginationType } from "@/stores/types";
 import { handleWhenTokenExpire } from "@/utils/authUtils";
-import { randomHexColor } from "@/utils/formatUtils";
+// import { randomHexColor } from "@/utils/formatUtils";
 import { Button, Form, Input, Modal, Pagination } from "antd";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { IoMdSearch } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-type Props = {};
-
-const QnA = (props: Props) => {
+const QnA = () => {
     const [questions, setQuestions] = useState<any[]>([]);
+    const [searchedQuestions, setSearchedQuestions] = useState<any[]>([]);
     const [paginatedQuestions, setPaginatedQuestions] = useState<any[]>([]);
     const [isOpenCreateQuestionModal, setIsOpenCreateQuestionModal] =
         useState<boolean>(false);
+    const [query, setQuery] = useState<string>("");
     const [pagination, setPagination] = useState<PaginationType>({
         currentPage: 1,
         pageSize: 10,
@@ -23,22 +23,30 @@ const QnA = (props: Props) => {
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchAllQuestions = async () => {
-            try {
-                const response = await viewAllQnA();
-                if (response.status === 200 || response.status === 201) {
-                    setQuestions(response.data.$values);
-                }
-            } catch (error: any) {
-                console.log("error: ", error);
-                if (error.status === 401) {
-                    handleWhenTokenExpire();
-                    navigate("/login");
-                }
-            }
-        };
+    const fetchAllQuestions = async () => {
+        try {
+            const response = await viewAllQnA();
+            if (response.status === 200 || response.status === 201) {
+                const sortedQuestions = response.data.$values.sort(
+                    (a: any, b: any) => {
+                        const date1 = new Date(a.createdAt);
+                        const date2 = new Date(b.createdAt);
 
+                        return date2.getTime() - date1.getTime();
+                    }
+                );
+                setQuestions(sortedQuestions);
+            }
+        } catch (error: any) {
+            console.log("error: ", error);
+            if (error.status === 401) {
+                handleWhenTokenExpire();
+                navigate("/login");
+            }
+        }
+    };
+
+    useEffect(() => {
         fetchAllQuestions();
     }, []);
 
@@ -64,6 +72,8 @@ const QnA = (props: Props) => {
             });
             if (response.status === 200 || response.status === 201) {
                 toast.success("Submit successfully !");
+                fetchAllQuestions();
+                setIsOpenCreateQuestionModal(false);
             }
         } catch (error: any) {
             console.log("error: ", error);
@@ -83,36 +93,63 @@ const QnA = (props: Props) => {
         }));
     };
 
-    console.log(questions.length);
+    const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setQuery(e.target.value);
+    };
+
+    useEffect(() => {
+        if (query.length === 0) {
+            setSearchedQuestions([]);
+            return;
+        }
+
+        const handleShowSearchedQuestions = () => {
+            const arr = questions.filter((question) => {
+                return question.title.includes(query);
+            });
+
+            setSearchedQuestions(arr);
+        };
+
+        const debounceLimit = setTimeout(handleShowSearchedQuestions, 300);
+
+        return () => clearTimeout(debounceLimit);
+    }, [query]);
 
     return (
         <>
             <div className="w-mainContent mx-auto">
                 <div className="my-5 w-full flex justify-between">
-                    <h1 className="text-3xl">Q&A</h1>
-                    <Button
-                        className="font-bold"
+                    <h1 className="text-3xl font-bold">Q&A</h1>
+                    <button
+                        className="font-bold bg-white px-2 border-2 border-white rounded-md transition-all duration-300 hover:border-[2px] hover:border-primary-purple hover:text-primary-purple"
                         onClick={() => setIsOpenCreateQuestionModal(true)}
                     >
                         Post Question
-                    </Button>
+                    </button>
                 </div>
+
+                {/* Search Box */}
                 <div className="mb-10 w-full flex items-center justify-start gap-4">
                     <Input
                         allowClear
                         className="w-[25%] rounded-3xl hover:border-[#6d28d2] focus-within:border-[#6d28d2]"
                         prefix={<IoMdSearch className="text-[1.5rem]" />}
-                        // onChange={handleSearch}
-                        // value={query}
+                        onChange={handleSearchChange}
+                        value={query}
                         size="large"
+                        placeholder="Search by title"
                     />
                 </div>
                 <div className="mb-7">
-                    {paginatedQuestions.map((question) => {
-                        const randomBackground = `#${randomHexColor()}`;
+                    {(searchedQuestions.length === 0
+                        ? paginatedQuestions
+                        : searchedQuestions
+                    ).map((question) => {
+                        // const randomBackground = `#${randomHexColor()}`;
                         return (
                             <div
-                                className="flex items-center justify-between gap-5 px-5 border-[1px] border-gray-200 transition-colors duration-300 hover:border-purple-500 hover:bg-white cursor-pointer"
+                                className="flex items-center justify-between gap-5 px-5 border-b-[1px] border-black transition-colors duration-300 hover:border-purple-500 hover:bg-white cursor-pointer"
                                 onClick={() =>
                                     navigate(`/Qna/${question.questionId}`)
                                 }
@@ -120,13 +157,15 @@ const QnA = (props: Props) => {
                                 <div className="flex items-center gap-5">
                                     <div className="">
                                         <div
-                                            style={{
-                                                backgroundColor:
-                                                    randomBackground,
-                                            }}
-                                            className="w-[2.5rem] h-[2.5rem] flex justify-center items-center rounded-full text-white"
+                                            // style={{
+                                            //     backgroundColor:
+                                            //         randomBackground,
+                                            // }}
+                                            className="w-[3rem] h-[3rem] flex justify-center items-center rounded-full text-white bg-black"
                                         >
-                                            <p>{question.createdBy[0]}</p>
+                                            <p>
+                                                {question.createdBy[0].toUpperCase()}
+                                            </p>
                                         </div>
                                     </div>
                                     <div>

@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { API as api } from "./profileService";
 // Cấu hình Axios instance
 const API = axios.create({
     baseURL: "https://coursesystem.azurewebsites.net",
@@ -83,6 +83,20 @@ export const updateUser = async (userId: string, updatedData: any) => {
     try {
         const response = await API.put(
             `/User/update-status/${userId}`,
+            updatedData
+        );
+        console.log(`✅ Cập nhật người dùng ID ${userId} thành công`);
+        return response.data;
+    } catch (error) {
+        console.error("❌ Lỗi khi cập nhật người dùng:", error);
+        throw error;
+    }
+};
+
+export const updateUserById = async (userId: string, updatedData: any) => {
+    try {
+        const response = await api.put(
+            `/User/update-user/${userId}`,
             updatedData
         );
         console.log(`✅ Cập nhật người dùng ID ${userId} thành công`);

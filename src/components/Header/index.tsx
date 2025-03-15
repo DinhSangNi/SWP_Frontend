@@ -182,7 +182,12 @@ const Header = ({ setLoading }: Props) => {
                         <>
                             {user && (
                                 // NOTIFICATIONS
-                                <div className="">
+                                <div
+                                    className=""
+                                    onClick={() =>
+                                        navigate("/announcements-user")
+                                    }
+                                >
                                     <PopoverNotify>
                                         <Badge
                                             className="relative mt-1 cursor-pointer hover:text-purple-700"
